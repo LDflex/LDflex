@@ -1,4 +1,4 @@
-import LDflex from '..';
+import LDflex from '../../src/index';
 
 describe('The LDflex module', () => {
   it('is an object', () => {

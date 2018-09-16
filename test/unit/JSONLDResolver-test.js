@@ -1,4 +1,4 @@
-import JSONLDResolver from '../src/JSONLDResolver';
+import JSONLDResolver from '../../src/JSONLDResolver';
 
 describe('a JSONLDResolver instance', () => {
   let resolver;

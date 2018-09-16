@@ -1,4 +1,4 @@
-import QueryPath from '../src/QueryPath';
+import QueryPath from '../../src/QueryPath';
 
 describe('a QueryPath instance without handlers or resolvers', () => {
   let queryPath;
