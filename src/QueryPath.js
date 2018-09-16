@@ -14,7 +14,7 @@ export default class QueryPath {
 
     // Create proxy object
     const { handlers = EMPTY, resolvers = [] } = settings;
-    this._settings = settings;
+    this.settings = settings;
     this._resolvers = resolvers;
     return new Proxy(handlers, this);
   }
@@ -44,7 +44,7 @@ export default class QueryPath {
    * Extends the current path with a new one.
    */
   extend(data) {
-    return new QueryPath(this._settings,
+    return new QueryPath(this.settings,
       Object.assign({ parent: this }, data));
   }
 }
