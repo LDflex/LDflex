@@ -6,10 +6,17 @@ describe('a QueryPath instance without handlers or resolvers', () => {
     queryPath = new QueryPath();
   });
 
-  describe('when accessing a property', () => {
+  describe('when accessing a string property', () => {
     it('throws an error', () => {
       expect(() => queryPath.foo).toThrow(
         new Error("Cannot resolve property 'foo'"));
+    });
+  });
+
+  describe('when accessing a symbol property', () => {
+    it('throws an error', () => {
+      expect(() => queryPath[Symbol()]).toThrow(
+        new Error("Cannot resolve property 'Symbol()'"));
     });
   });
 });
