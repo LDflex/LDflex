@@ -12,6 +12,9 @@ export default class SparqlHandler extends PathExpressionHandler {
       throw new Error('Path should at least contain a subject and a predicate');
     const root = pathExpression.shift();
 
+    // Determine the query variable name
+    const queryVar = `?${queryPath.property}`;
+
     // Build basic graph pattern
     const last = pathExpression.length - 1;
     let object = `<${root.subject}>`;
@@ -19,14 +22,13 @@ export default class SparqlHandler extends PathExpressionHandler {
       // Obtain triple pattern components
       const subject = object;
       const { predicate } = path;
-      object = index !== last ? `?v${index}` : '?result';
-
+      object = index !== last ? `?v${index}` : queryVar;
       // Generate triple pattern
       return `${subject} <${predicate}> ${object}.`;
     });
 
     // Embed the basic graph pattern into a SPARQL query
     const joinedClauses = clauses.join('\n  ');
-    return `SELECT ?result WHERE {\n  ${joinedClauses}\n}`;
+    return `SELECT ${queryVar} WHERE {\n  ${joinedClauses}\n}`;
   }
 }

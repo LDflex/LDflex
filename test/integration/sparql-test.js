@@ -24,10 +24,10 @@ describe('a query path with a path expression handler', () => {
   it('resolves a path with 3 links', async () => {
     const query = await person.friends.friends.firstName.sparql;
     expect(query).toEqual(deindent(`
-      SELECT ?result WHERE {
+      SELECT ?firstName WHERE {
         <https://example.org/#me> <${FOAF}knows> ?v0.
         ?v0 <${FOAF}knows> ?v1.
-        ?v1 <${FOAF}givenName> ?result.
+        ?v1 <${FOAF}givenName> ?firstName.
       }`));
   });
 });

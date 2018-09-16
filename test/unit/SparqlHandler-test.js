@@ -31,37 +31,37 @@ describe('a SparqlHandler instance', () => {
 
   it('resolves a path of length 1', async () => {
     const path = { subject: 'https://example.org/#me' };
-    const first = { parent: path, predicate: 'https://example.org/p1' };
+    const first = { parent: path, property: 'p1', predicate: 'https://ex.org/p1' };
 
     expect(await handler.execute(first)).toEqual(deindent(`
-      SELECT ?result WHERE {
-        <https://example.org/#me> <https://example.org/p1> ?result.
+      SELECT ?p1 WHERE {
+        <https://example.org/#me> <https://ex.org/p1> ?p1.
       }`));
   });
 
   it('resolves a path of length 2', async () => {
     const path = { subject: 'https://example.org/#me' };
-    const first = { parent: path, predicate: 'https://example.org/p1' };
-    const second = { parent: first, predicate: 'https://example.org/p2' };
+    const first = { parent: path, property: 'p1', predicate: 'https://ex.org/p1' };
+    const second = { parent: first, property: 'p2', predicate: 'https://ex.org/p2' };
 
     expect(await handler.execute(second)).toEqual(deindent(`
-      SELECT ?result WHERE {
-        <https://example.org/#me> <https://example.org/p1> ?v0.
-        ?v0 <https://example.org/p2> ?result.
+      SELECT ?p2 WHERE {
+        <https://example.org/#me> <https://ex.org/p1> ?v0.
+        ?v0 <https://ex.org/p2> ?p2.
       }`));
   });
 
   it('resolves a path of length 3', async () => {
     const path = { subject: 'https://example.org/#me' };
-    const first = { parent: path, predicate: 'https://example.org/p1' };
-    const second = { parent: first, predicate: 'https://example.org/p2' };
-    const third = { parent: second, predicate: 'https://example.org/p3' };
+    const first = { parent: path, property: 'p1', predicate: 'https://ex.org/p1' };
+    const second = { parent: first, property: 'p2', predicate: 'https://ex.org/p2' };
+    const third = { parent: second, property: 'p3', predicate: 'https://ex.org/p3' };
 
     expect(await handler.execute(third)).toEqual(deindent(`
-      SELECT ?result WHERE {
-        <https://example.org/#me> <https://example.org/p1> ?v0.
-        ?v0 <https://example.org/p2> ?v1.
-        ?v1 <https://example.org/p3> ?result.
+      SELECT ?p3 WHERE {
+        <https://example.org/#me> <https://ex.org/p1> ?v0.
+        ?v0 <https://ex.org/p2> ?v1.
+        ?v1 <https://ex.org/p3> ?p3.
       }`));
   });
 });

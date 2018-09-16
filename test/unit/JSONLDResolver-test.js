@@ -39,12 +39,20 @@ describe('a JSONLDResolver instance with a context', () => {
     let result;
     beforeEach(() => result = resolver.resolve(queryPath, 'knows'));
 
-    it('extends the path with a foaf:knows expression', async () => {
+    it('extends the path', () => {
       expect(queryPath.extend).toBeCalledTimes(1);
       const args = queryPath.extend.mock.calls[0];
       expect(args).toHaveLength(1);
+      expect(args[0]).toBeInstanceOf(Object);
+    });
 
-      const { predicate } = args[0];
+    it('sets property to knows', () => {
+      const { property } = queryPath.extend.mock.calls[0][0];
+      expect(property).toBe('knows');
+    });
+
+    it('sets predicate to a promise for foaf:knows', async () => {
+      const { predicate } = queryPath.extend.mock.calls[0][0];
       expect(await predicate).toBe('http://xmlns.com/foaf/0.1/knows');
     });
 
