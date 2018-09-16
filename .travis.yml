@@ -13,3 +13,6 @@ addons:
 
 before_script:
   - npm run build
+
+cache:
+  apt: true
