@@ -261,3 +261,55 @@ describe('a QueryPath instance with a handler and a resolver', () => {
     });
   });
 });
+
+describe('a QueryPath instance that is extended by a handler', () => {
+  const handlers = {
+    internal: {
+      execute: queryPath => queryPath,
+    },
+  };
+  const initialData = { a: 1 };
+
+  let proxiedQueryPath;
+  beforeAll(() => {
+    proxiedQueryPath = new QueryPath({ handlers }, initialData);
+  });
+
+  describe('the original path', () => {
+    it('does not proxy the initial data', () => {
+      expect(() => proxiedQueryPath.a).toThrow();
+    });
+
+    it('contains a copy of the initial data', () => {
+      expect(proxiedQueryPath.internal).toHaveProperty('a', 1);
+      expect(proxiedQueryPath.internal).not.toBe(initialData);
+    });
+  });
+
+  describe('the extended path', () => {
+    const extendedData = { b: 2 };
+
+    let proxiedExtension;
+    beforeAll(() => {
+      proxiedExtension = proxiedQueryPath.internal.extend(extendedData);
+    });
+
+    it('has the same handlers as the original path', () => {
+      expect(proxiedExtension.internal).toBeTruthy();
+    });
+
+    it('contains a copy of the extended data', () => {
+      expect(proxiedExtension.internal).toHaveProperty('b', 2);
+      expect(proxiedExtension.internal).not.toBe(extendedData);
+    });
+
+    it('does not contain a copy of the initial data', () => {
+      expect(proxiedExtension.internal).not.toHaveProperty('a');
+    });
+
+    it('contains a parent field with the original path', () => {
+      expect(proxiedExtension.internal)
+        .toHaveProperty('parent', proxiedQueryPath.internal);
+    });
+  });
+});

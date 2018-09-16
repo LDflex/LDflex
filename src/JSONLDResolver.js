@@ -21,7 +21,7 @@ export default class JSONLDResolver {
       then: (resolve, reject) =>
         this.expandProperty(property).then(resolve, reject),
     };
-    return queryPath.extend(pathExpression);
+    return queryPath.extend({ pathExpression });
   }
 
   /**

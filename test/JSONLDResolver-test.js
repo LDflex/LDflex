@@ -42,13 +42,13 @@ describe('a JSONLDResolver instance with a context', () => {
     let result;
     beforeEach(() => result = resolver.resolve(queryPath, 'knows'));
 
-    it('extends the path with foaf:knows', async () => {
+    it('extends the path with a foaf:knows expression', async () => {
       expect(queryPath.extend).toBeCalledTimes(1);
       const args = queryPath.extend.mock.calls[0];
       expect(args).toHaveLength(1);
 
-      const pathExpression = await args[0];
-      expect(pathExpression).toBe('http://xmlns.com/foaf/0.1/knows');
+      const { pathExpression } = args[0];
+      expect(await pathExpression).toBe('http://xmlns.com/foaf/0.1/knows');
     });
 
     it('returns the extended path', () => {

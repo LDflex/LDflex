@@ -1,16 +1,21 @@
 const EMPTY = Object.create(null);
 
+/**
+ * A QueryPath is a generic data structure
+ * that can be manipulated through _handlers_
+ * (providing functionality for specific properties)
+ * and _resolvers_
+ * (providing functionality for arbitrary properties).
+ */
 export default class QueryPath {
-  constructor(options = {}, pathExpression, parent) {
-    // public properties
-    this.pathExpression = pathExpression;
-    this.parent = parent;
+  constructor(settings = {}, data = {}) {
+    // Set data fields
+    Object.assign(this, data);
 
-    // private options
-    const { handlers = EMPTY, resolvers = [] } = options;
-    this._options = options;
+    // Create proxy object
+    const { handlers = EMPTY, resolvers = [] } = settings;
+    this._settings = settings;
     this._resolvers = resolvers;
-
     return new Proxy(handlers, this);
   }
 
@@ -37,9 +42,9 @@ export default class QueryPath {
 
   /**
    * Extends the current path with a new one.
-   * The given expression expresses their relation.
    */
-  extend(pathExpression) {
-    return new QueryPath(this._options, pathExpression, this);
+  extend(data) {
+    return new QueryPath(this._settings,
+      Object.assign({ parent: this }, data));
   }
 }
