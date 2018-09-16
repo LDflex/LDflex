@@ -1,7 +1,17 @@
-import LDflex from '../../src/index';
+import * as ldflex from '../../src/index';
 
 describe('The LDflex module', () => {
-  it('is an object', () => {
-    expect(LDflex).toBeInstanceOf(Object);
+  const exports = [
+    'ExecuteQueryHandler',
+    'JSONLDResolver',
+    'PathExpressionHandler',
+    'QueryPath',
+    'SparqlHandler',
+  ];
+
+  exports.forEach(name => {
+    it(`exports ${name}`, () => {
+      expect(ldflex[name]).toBeInstanceOf(Object);
+    });
   });
 });

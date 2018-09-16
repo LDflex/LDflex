@@ -1,4 +1,13 @@
-const LDFlex = {
-};
+import ExecuteQueryHandler from './ExecuteQueryHandler.js';
+import JSONLDResolver from './JSONLDResolver.js';
+import PathExpressionHandler from './PathExpressionHandler.js';
+import QueryPath from './QueryPath.js';
+import SparqlHandler from './SparqlHandler.js';
 
-export default LDFlex;
+export {
+  ExecuteQueryHandler,
+  JSONLDResolver,
+  PathExpressionHandler,
+  QueryPath,
+  SparqlHandler,
+};
