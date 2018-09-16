@@ -1,4 +1,5 @@
 import JSONLDResolver from '../../src/JSONLDResolver';
+import context from '../context';
 
 describe('a JSONLDResolver instance', () => {
   let resolver;
@@ -14,10 +15,6 @@ describe('a JSONLDResolver instance', () => {
 });
 
 describe('a JSONLDResolver instance with a context', () => {
-  const context = {
-    knows: 'http://xmlns.com/foaf/0.1/knows',
-  };
-
   let resolver;
   beforeAll(() => resolver = new JSONLDResolver(context));
 
