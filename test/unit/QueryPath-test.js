@@ -7,16 +7,14 @@ describe('a QueryPath instance without handlers or resolvers', () => {
   });
 
   describe('when accessing a string property', () => {
-    it('throws an error', () => {
-      expect(() => queryPath.foo).toThrow(
-        new Error("Cannot resolve property 'foo'"));
+    it('returns undefined', () => {
+      expect(queryPath.foo).toBeUndefined();
     });
   });
 
   describe('when accessing a symbol property', () => {
-    it('throws an error', () => {
-      expect(() => queryPath[Symbol()]).toThrow(
-        new Error("Cannot resolve property 'Symbol()'"));
+    it('returns undefined', () => {
+      expect(queryPath[Symbol()]).toBeUndefined();
     });
   });
 });
@@ -37,15 +35,8 @@ describe('a QueryPath instance with two handlers', () => {
   });
 
   describe('when accessing a property covered by no handlers', () => {
-    let error;
-    beforeEach(() => {
-      try {
-        queryPath.other;
-      }
-      catch (err) {
-        error = err;
-      }
-    });
+    let result;
+    beforeEach(() => result = queryPath.other);
 
     it('does not execute the first handler', () => {
       expect(handlers.foo.execute).toBeCalledTimes(0);
@@ -55,8 +46,8 @@ describe('a QueryPath instance with two handlers', () => {
       expect(handlers.bar.execute).toBeCalledTimes(0);
     });
 
-    it('throws an error', () => {
-      expect(error).toEqual(new Error("Cannot resolve property 'other'"));
+    it('returns undefined', () => {
+      expect(result).toBeUndefined();
     });
   });
 
@@ -113,15 +104,8 @@ describe('a QueryPath instance with two resolvers', () => {
   });
 
   describe('when accessing a property matched by no resolvers', () => {
-    let error;
-    beforeEach(() => {
-      try {
-        queryPath.other;
-      }
-      catch (err) {
-        error = err;
-      }
-    });
+    let result;
+    beforeEach(() => result = queryPath.other);
 
     it('tests the first resolver', () => {
       expect(resolvers[0].supports).toBeCalledTimes(1);
@@ -141,8 +125,8 @@ describe('a QueryPath instance with two resolvers', () => {
       expect(resolvers[1].resolve).toBeCalledTimes(0);
     });
 
-    it('throws an error', () => {
-      expect(error).toEqual(new Error("Cannot resolve property 'other'"));
+    it('returns undefined', () => {
+      expect(result).toBeUndefined();
     });
   });
 
@@ -219,15 +203,8 @@ describe('a QueryPath instance with a handler and a resolver', () => {
   });
 
   describe('when accessing a property matched by no resolvers', () => {
-    let error;
-    beforeEach(() => {
-      try {
-        queryPath.other;
-      }
-      catch (err) {
-        error = err;
-      }
-    });
+    let result;
+    beforeEach(() => result = queryPath.other);
 
     it('does not execute the handler', () => {
       expect(handlers.foo.execute).toBeCalledTimes(0);
@@ -242,8 +219,8 @@ describe('a QueryPath instance with a handler and a resolver', () => {
       expect(resolvers[0].resolve).toBeCalledTimes(0);
     });
 
-    it('throws an error', () => {
-      expect(error).toEqual(new Error("Cannot resolve property 'other'"));
+    it('returns undefined', () => {
+      expect(result).toBeUndefined();
     });
   });
 
@@ -284,7 +261,7 @@ describe('a QueryPath instance that is extended by a handler', () => {
 
   describe('the original path', () => {
     it('does not proxy the initial data', () => {
-      expect(() => proxiedQueryPath.a).toThrow();
+      expect(proxiedQueryPath.a).toBeUndefined();
     });
 
     it('contains a copy of the initial data', () => {

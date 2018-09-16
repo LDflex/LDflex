@@ -36,8 +36,8 @@ export default class QueryPath {
         return resolver.resolve(this, property);
     }
 
-    // Error if no adequate resolver was found
-    throw new Error(`Cannot resolve property '${property.toString()}'`);
+    // Otherwise, the property does not exist
+    return undefined;
   }
 
   /**
