@@ -1,6 +1,10 @@
 import assert from 'assert';
 import { expand } from 'jsonld';
 
+/**
+ * Resolves property names of a QueryPath
+ * to their corresponding IRIs through a JSON-LD context.
+ */
 export default class JSONLDResolver {
   constructor(context) {
     this._context = context;
@@ -17,11 +21,11 @@ export default class JSONLDResolver {
    * Resolves the property by extending the query path with it.
    */
   resolve(queryPath, property) {
-    const pathExpression = {
+    const predicate = {
       then: (resolve, reject) =>
         this.expandProperty(property).then(resolve, reject),
     };
-    return queryPath.extend({ pathExpression });
+    return queryPath.extend({ predicate });
   }
 
   /**

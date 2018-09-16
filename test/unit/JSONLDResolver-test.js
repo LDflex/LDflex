@@ -44,8 +44,8 @@ describe('a JSONLDResolver instance with a context', () => {
       const args = queryPath.extend.mock.calls[0];
       expect(args).toHaveLength(1);
 
-      const { pathExpression } = args[0];
-      expect(await pathExpression).toBe('http://xmlns.com/foaf/0.1/knows');
+      const { predicate } = args[0];
+      expect(await predicate).toBe('http://xmlns.com/foaf/0.1/knows');
     });
 
     it('returns the extended path', () => {
