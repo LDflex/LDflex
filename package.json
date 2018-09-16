@@ -4,6 +4,10 @@
   "author": "Ruben Verborgh <ruben@verborgh.org> (https://ruben.verborgh.org/)",
   "license": "MIT",
   "main": "lib/index.js",
+  "files": [
+    "src",
+    "lib"
+  ],
   "dependencies": {
     "jsonld": "^1.1.0"
   },
