@@ -5,6 +5,6 @@ module.exports = {
     "<rootDir>/src/**/*.js",
   ],
   testMatch: [
-    "<rootDir>/test/**/*.js",
+    "<rootDir>/test/**/*-test.js",
   ],
 };
