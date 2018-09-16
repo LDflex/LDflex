@@ -95,7 +95,7 @@
     no-undef-init: error,
     no-undefined: off,
     no-unused-vars: error,
-    no-use-before-define: [ error, { functions: false } ],
+    no-use-before-define: [ error, { functions: false, classes: false } ],
 
     // Node.js
     callback-return: error,

@@ -9,4 +9,10 @@ describe('a ExecuteQueryHandler instance', () => {
     expect(() => handler.execute(path))
       .toThrow(new Error('No query engine defined in path'));
   });
+
+  it('errors with multi-variable results', () => {
+    const bindings = new Map([['?a', ''], ['?b', '']]);
+    expect(() => handler.extractTerm(bindings))
+      .toThrow(new Error('Only single-variable queries are supported'));
+  });
 });

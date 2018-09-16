@@ -15,10 +15,14 @@ describe('a query path with a path expression handler', () => {
 
   const queryEngine = {
     execute: jest.fn(() => {
-      const results = ['Alice', 'Bob', 'Carol'];
+      const results = ['Alice', 'Bob', 'Carol']
+        .map(value => ({ value }));
       return {
         next: () => new Promise(resolve =>
-          resolve({ done: results.length === 0, value: results.shift() })),
+          resolve({
+            done: results.length === 0,
+            value: new Map([['?firstName', results.shift()]]),
+          })),
       };
     }),
   };
@@ -32,6 +36,6 @@ describe('a query path with a path expression handler', () => {
     const names = [];
     for await (const firstName of person.friends.firstName)
       names.push(firstName);
-    expect(names).toEqual(['Alice', 'Bob', 'Carol']);
+    expect(names.map(n => `${n}`)).toEqual(['Alice', 'Bob', 'Carol']);
   });
 });
