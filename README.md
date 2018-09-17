@@ -25,13 +25,13 @@ npm install ldflex-comunica
 ```
 
 ## Usage
-When you have obtained an starting subject,
+When you have obtained a starting subject,
 you can navigate through its properties
 using standard JavaScript dot property syntax.
 
 In order to query for the result,
 use `await` if you want a single value,
-or `for await` to iterator over all values.
+or `for await` to iterate over all values.
 
 ### Looking up data on the Web
 ```JavaScript
@@ -64,7 +64,7 @@ async function showPerson(person) {
     console.log(`- ${name}`);
 }
 
-const person = path.create({ subject: 'https://ruben.verborgh.org/profile/#me' });
+const ruben = path.create({ subject: 'https://ruben.verborgh.org/profile/#me' });
 showPerson(ruben);
 ```
 
