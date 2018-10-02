@@ -33,7 +33,7 @@ In order to query for the result,
 use `await` if you want a single value,
 or `for await` to iterate over all values.
 
-### Looking up data on the Web
+### Initialization
 ```JavaScript
 const { QueryPathFactory } = require('ldflex');
 const { default: ComunicaEngine } = require('ldflex-comunica');
@@ -50,8 +50,13 @@ const context = {
 const queryEngine = new ComunicaEngine('https://ruben.verborgh.org/profile/');
 // The object that can create new paths
 const path = new QueryPathFactory({ context, queryEngine });
+```
 
-// This is where the real LDflex magic happens
+### Looking up data on the Web
+```JavaScript
+const ruben = path.create({ subject: 'https://ruben.verborgh.org/profile/#me' });
+showPerson(ruben);
+
 async function showPerson(person) {
   console.log(`This person is ${await person.name}`);
 
@@ -63,11 +68,7 @@ async function showPerson(person) {
   for await (const name of person.friends.givenName)
     console.log(`- ${name}`);
 }
-
-const ruben = path.create({ subject: 'https://ruben.verborgh.org/profile/#me' });
-showPerson(ruben);
 ```
-
 
 ### Inspecting the generated path expression
 ```JavaScript
@@ -77,7 +78,7 @@ showPerson(ruben);
 
 ```
 
-### Converting into SPARQL query
+### Converting into a SPARQL query
 ```JavaScript
 (async person => {
   console.log(await person.friends.givenName.sparql);
