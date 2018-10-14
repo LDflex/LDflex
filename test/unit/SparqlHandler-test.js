@@ -64,4 +64,14 @@ describe('a SparqlHandler instance', () => {
         ?v1 <https://ex.org/p3> ?p3.
       }`));
   });
+
+  it('resolves a path with an property name ending in a non-word', async () => {
+    const path = { subject: 'https://example.org/#me' };
+    const first = { parent: path, property: '/x/', predicate: 'https://ex.org/p1' };
+
+    expect(await handler.execute(first)).toEqual(deindent(`
+      SELECT ?result WHERE {
+        <https://example.org/#me> <https://ex.org/p1> ?result.
+      }`));
+  });
 });
