@@ -31,6 +31,16 @@ describe('a query path with a path expression handler', () => {
       }`));
   });
 
+  it('resolves a path with a prefixed name', async () => {
+    const query = await person.friends.friends.foaf_depiction.sparql;
+    expect(query).toEqual(deindent(`
+      SELECT ?depiction WHERE {
+        <https://example.org/#me> <${FOAF}knows> ?v0.
+        ?v0 <${FOAF}knows> ?v1.
+        ?v1 <${FOAF}depiction> ?depiction.
+      }`));
+  });
+
   it('resolves a path with a full URI', async () => {
     const query = await person.friends.friends[`${FOAF}depiction`].sparql;
     expect(query).toEqual(deindent(`
