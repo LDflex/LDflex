@@ -10,23 +10,23 @@ export default class ExecuteQueryHandler extends SparqlHandler {
   }
 
   execute(queryPath) {
-    // Retrieve the query engine and query
-    const { queryEngine } = queryPath.settings;
-    if (!queryEngine)
-      throw new Error(`No query engine defined in ${queryPath}`);
-    const query = super.execute(queryPath);
-
-    // Create an asynchronous iterator over the query results
     let results;
     const next = async () => {
-      if (!results)
+      if (!results) {
+        // Retrieve the query engine and query
+        const { queryEngine } = queryPath.settings;
+        if (!queryEngine)
+          throw new Error(`No query engine defined in ${queryPath}`);
+        const query = super.execute(queryPath);
+        // Create an asynchronous iterator over the query results
         results = queryEngine.execute(await query);
+      }
       // Obtain the next binding and extract the result term
       const { value, done } = await results.next();
       return done ? { done } : { value: this.extractTerm(value) };
     };
 
-    // Return either the iterator, or a promise to a single value
+    // Return either an asynchronous iterator, or a promise to a single value
     return !this._single ? () => ({ next }) :
       (resolve, reject) => next().then(v => resolve(v.value), reject);
   }

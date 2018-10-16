@@ -14,11 +14,11 @@ describe('a QueryPathFactory instance without parameters', () => {
   });
 
   it('adds ExecuteQueryHandler for single values', () => {
-    expect(() => factory.create().then).toThrow(/no query engine/i);
+    expect(() => factory.create().then).toBeInstanceOf(Function);
   });
 
   it('adds ExecuteQueryHandler for asynchronous iteration', () => {
-    expect(() => factory.create()[Symbol.asyncIterator]).toThrow(/no query engine/i);
+    expect(() => factory.create()[Symbol.asyncIterator]).toBeInstanceOf(Function);
   });
 
   it('does not add a JSONLDResolver', () => {
