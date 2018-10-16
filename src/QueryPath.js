@@ -15,17 +15,18 @@ export default class QueryPath {
     // Create proxy object
     const { handlers = EMPTY, resolvers = [] } = settings;
     this.settings = settings;
+    this._handlers = handlers;
     this._resolvers = resolvers;
-    return new Proxy(handlers, this);
+    return new Proxy({}, this);
   }
 
   /**
    * Handles access to a property as a Proxy
    */
-  get(handlers, property) {
+  get(source, property) {
     // Handlers provide functionality for a specific property,
     // so check if we find a handler first
-    const handler = handlers[property];
+    const handler = this._handlers[property];
     if (handler && typeof handler.execute === 'function')
       return handler.execute(this);
 

@@ -47,7 +47,7 @@ describe('a QueryPathFactory instance with a context parameter', () => {
   let factory;
   beforeAll(() => factory = new QueryPathFactory({ context }));
 
-  it('does adds a JSONLDResolver', () => {
+  it('adds a JSONLDResolver', () => {
     expect(factory.create().knows).toBeInstanceOf(Object);
   });
 });
