@@ -3,7 +3,8 @@ node_js:
  - 10
  - node
 env:
-  - CXX=g++-4.9
+  - DEFAULT_NODE_VERSION=10
+    CXX=g++-4.9
 addons:
   apt:
     sources:
@@ -13,6 +14,13 @@ addons:
 
 before_script:
   - npm run build
+
+after_success:
+  - if [ "$TRAVIS_NODE_VERSION" == "$DEFAULT_NODE_VERSION" ]; then
+      npm install coveralls;
+      node_modules/.bin/jest --coverage --coverageReporters=text-lcov |
+        node_modules/.bin/coveralls;
+    fi
 
 cache:
   apt: true
