@@ -5,8 +5,8 @@ describe('The LDflex module', () => {
     'ExecuteQueryHandler',
     'JSONLDResolver',
     'PathExpressionHandler',
-    'QueryPath',
-    'QueryPathFactory',
+    'PathProxy',
+    'PathFactory',
     'SparqlHandler',
   ];
 

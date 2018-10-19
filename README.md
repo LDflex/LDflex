@@ -35,7 +35,7 @@ or `for await` to iterate over all values.
 
 ### Initialization
 ```JavaScript
-const { QueryPathFactory } = require('ldflex');
+const { PathFactory } = require('ldflex');
 const { default: ComunicaEngine } = require('ldflex-comunica');
 
 // The JSON-LD context for resolving properties
@@ -49,7 +49,7 @@ const context = {
 // The query engine and its source
 const queryEngine = new ComunicaEngine('https://ruben.verborgh.org/profile/');
 // The object that can create new paths
-const path = new QueryPathFactory({ context, queryEngine });
+const path = new PathFactory({ context, queryEngine });
 ```
 
 ### Looking up data on the Web

@@ -1,4 +1,4 @@
-import QueryPath from '../../src/QueryPath';
+import PathProxy from '../../src/PathProxy';
 import SparqlHandler from '../../src/SparqlHandler';
 import JSONLDResolver from '../../src/JSONLDResolver';
 
@@ -18,7 +18,8 @@ describe('a query path with a path expression handler', () => {
 
   let person;
   beforeAll(() => {
-    person = new QueryPath({ handlers, resolvers }, { subject });
+    const pathProxy = new PathProxy({ handlers, resolvers });
+    person = pathProxy.createPath({ subject });
   });
 
   it('resolves a path with 3 links', async () => {

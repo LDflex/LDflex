@@ -1,7 +1,7 @@
 import SparqlHandler from './SparqlHandler';
 
 /**
- * Executes the query represented by a QueryPath.
+ * Executes the query represented by a path.
  */
 export default class ExecuteQueryHandler extends SparqlHandler {
   constructor(options = {}) {
@@ -9,15 +9,15 @@ export default class ExecuteQueryHandler extends SparqlHandler {
     this._single = options.single;
   }
 
-  execute(queryPath) {
+  execute(path) {
     let results;
     const next = async () => {
       if (!results) {
         // Retrieve the query engine and query
-        const { queryEngine } = queryPath.settings;
+        const { queryEngine } = path.settings;
         if (!queryEngine)
-          throw new Error(`No query engine defined in ${queryPath}`);
-        const query = super.execute(queryPath);
+          throw new Error(`No query engine defined in ${path}`);
+        const query = super.execute(path);
         // Create an asynchronous iterator over the query results
         results = queryEngine.execute(await query);
       }
