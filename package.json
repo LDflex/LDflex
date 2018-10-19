@@ -18,14 +18,13 @@
     "babel-core": "^7.0.0-bridge.0",
     "eslint": "^5.6.0",
     "eslint-plugin-jest": "^21.22.0",
-    "husky": "^0.14.3",
+    "husky": "^1.1.2",
     "jest": "^23.6.0"
   },
   "scripts": {
     "build": "babel src --out-dir lib",
     "jest": "jest",
     "lint": "eslint src test",
-    "precommit": "npm test",
     "prepublishOnly": "npm run build",
     "test": "npm run lint && npm run jest",
     "test:dev": "npm run jest -- --watch"
