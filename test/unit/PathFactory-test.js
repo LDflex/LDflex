@@ -5,12 +5,12 @@ describe('a PathFactory instance without parameters', () => {
   let factory;
   beforeAll(() => factory = new PathFactory());
 
-  it('adds PathExpressionHandler', () => {
-    expect(factory.create().pathExpression).rejects.toThrow(/root subject/);
+  it('adds PathExpressionHandler', async () => {
+    await expect(factory.create().pathExpression).rejects.toThrow(/root subject/);
   });
 
-  it('adds SparqlHandler', () => {
-    expect(factory.create().sparql).rejects.toThrow(/root subject/);
+  it('adds SparqlHandler', async () => {
+    await expect(factory.create().sparql).rejects.toThrow(/root subject/);
   });
 
   it('adds ExecuteQueryHandler for single values', () => {

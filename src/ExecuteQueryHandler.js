@@ -1,23 +1,26 @@
-import SparqlHandler from './SparqlHandler';
-
 /**
  * Executes the query represented by a path.
+ *
+ * Requires:
+ * - a queryEngine property in the path settings
+ * - a sparql property on the path proxy
  */
-export default class ExecuteQueryHandler extends SparqlHandler {
-  constructor(options = {}) {
-    super(options);
-    this._single = options.single;
+export default class ExecuteQueryHandler {
+  constructor({ single } = {}) {
+    this._single = single;
   }
 
-  execute(path) {
+  execute(path, pathProxy) {
     let results;
     const next = async () => {
       if (!results) {
         // Retrieve the query engine and query
         const { queryEngine } = path.settings;
         if (!queryEngine)
-          throw new Error(`No query engine defined in ${path}`);
-        const query = super.execute(path);
+          throw new Error(`${path} has no queryEngine setting`);
+        const query = await pathProxy.sparql;
+        if (!query)
+          throw new Error(`${path} has no sparql property`);
         // Create an asynchronous iterator over the query results
         results = queryEngine.execute(await query);
       }

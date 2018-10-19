@@ -5,16 +5,23 @@ describe('a ExecuteQueryHandler instance', () => {
     let handler;
     beforeAll(() => handler = new ExecuteQueryHandler());
 
-    it('errors when a path defines no query engine', () => {
+    it('errors when a path defines no query engine', async () => {
       const path = { settings: {}, toString: () => 'path' };
-      const iterator = handler.execute(path)();
-      expect(iterator.next()).rejects
-        .toThrow(new Error('No query engine defined in path'));
+      const iterator = handler.execute(path, {})();
+      await expect(iterator.next()).rejects
+        .toThrow(new Error('path has no queryEngine setting'));
     });
 
-    it('errors with multi-variable results', () => {
+    it('errors when a path defines no sparql property', async () => {
+      const path = { settings: { queryEngine: {} }, toString: () => 'path' };
+      const iterator = handler.execute(path, {})();
+      await expect(iterator.next()).rejects
+        .toThrow(new Error('path has no sparql property'));
+    });
+
+    it('errors with multi-variable results', async () => {
       const bindings = new Map([['?a', ''], ['?b', '']]);
-      expect(() => handler.extractTerm(bindings))
+      await expect(() => handler.extractTerm(bindings))
         .toThrow(new Error('Only single-variable queries are supported'));
     });
   });
@@ -23,10 +30,11 @@ describe('a ExecuteQueryHandler instance', () => {
     let handler;
     beforeAll(() => handler = new ExecuteQueryHandler({ single: true }));
 
-    it('errors when a path defines no query engine', () => {
+    it('errors when a path defines no query engine', async () => {
       const path = { settings: {}, toString: () => 'path' };
-      const thenable = { then: handler.execute(path) };
-      expect(thenable).rejects.toThrow(new Error('No query engine defined in path'));
+      const thenable = { then: handler.execute(path, {}) };
+      await expect(thenable).rejects
+        .toThrow(new Error('path has no queryEngine setting'));
     });
   });
 });

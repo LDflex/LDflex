@@ -1,15 +1,18 @@
-import PathExpressionHandler from './PathExpressionHandler';
-
 /**
  * Expresses a path as a SPARQL query.
+ *
+ * Requires:
+ * - a pathExpression property on the path proxy
  */
-export default class SparqlHandler extends PathExpressionHandler {
-  async execute(path) {
-    const pathExpression = await super.execute(path);
+export default class SparqlHandler {
+  async execute(path, proxy) {
+    const pathExpression = await proxy.pathExpression;
+    if (!Array.isArray(pathExpression))
+      throw new Error(`${path} has no pathExpression property`);
 
     // Require at least a subject and a link
     if (pathExpression.length < 2)
-      throw new Error('Path should at least contain a subject and a predicate');
+      throw new Error(`${path} should at least contain a subject and a predicate`);
     const root = pathExpression.shift();
 
     // Determine the query variable name

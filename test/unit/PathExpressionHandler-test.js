@@ -4,19 +4,19 @@ describe('a PathExpressionHandler instance', () => {
   let handler;
   beforeAll(() => handler = new PathExpressionHandler());
 
-  it('errors when an immediate link has no predicate', () => {
+  it('errors when an immediate link has no predicate', async () => {
     const parent = {};
     const child = { parent, toString: () => 'child' };
 
-    expect(handler.execute(child)).rejects
+    await expect(handler.execute(child)).rejects
       .toThrow(new Error('Expected predicate in child'));
   });
 
-  it('errors when a root has no subject', () => {
+  it('errors when a root has no subject', async () => {
     const parent = { toString: () => 'root' };
     const child = { parent, predicate: 'foo' };
 
-    expect(handler.execute(child)).rejects
+    await expect(handler.execute(child)).rejects
       .toThrow(new Error('Expected root subject in root'));
   });
 

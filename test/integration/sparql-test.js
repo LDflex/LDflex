@@ -1,5 +1,6 @@
 import PathProxy from '../../src/PathProxy';
 import SparqlHandler from '../../src/SparqlHandler';
+import PathExpressionHandler from '../../src/PathExpressionHandler';
 import JSONLDResolver from '../../src/JSONLDResolver';
 
 import context from '../context';
@@ -10,6 +11,7 @@ const FOAF = 'http://xmlns.com/foaf/0.1/';
 describe('a query path with a path expression handler', () => {
   const handlers = {
     sparql: new SparqlHandler(),
+    pathExpression: new PathExpressionHandler(),
   };
   const resolvers = [
     new JSONLDResolver(context),

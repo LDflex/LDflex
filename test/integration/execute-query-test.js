@@ -1,5 +1,7 @@
 import PathProxy from '../../src/PathProxy';
 import ExecuteQueryHandler from '../../src/ExecuteQueryHandler';
+import SparqlHandler from '../../src/SparqlHandler';
+import PathExpressionHandler from '../../src/PathExpressionHandler';
 import JSONLDResolver from '../../src/JSONLDResolver';
 
 import context from '../context';
@@ -24,6 +26,8 @@ const resolvers = [
 
 describe('a query path with a path expression handler', () => {
   const handlers = {
+    sparql: new SparqlHandler(),
+    pathExpression: new PathExpressionHandler(),
     [Symbol.asyncIterator]: new ExecuteQueryHandler(),
   };
 
@@ -43,6 +47,8 @@ describe('a query path with a path expression handler', () => {
 
 describe('a query path with a path expression handler in single mode', () => {
   const handlers = {
+    sparql: new SparqlHandler(),
+    pathExpression: new PathExpressionHandler(),
     then: new ExecuteQueryHandler({ single: true }),
   };
 
