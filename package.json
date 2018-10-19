@@ -1,8 +1,13 @@
 {
   "name": "ldflex",
   "version": "1.0.0",
+  "description": "A JavaScript DSL for querying Linked Data on the Web",
   "author": "Ruben Verborgh <ruben@verborgh.org> (https://ruben.verborgh.org/)",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/RubenVerborgh/LDflex"
+  },
   "main": "lib/index.js",
   "files": [
     "src",
