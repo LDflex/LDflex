@@ -2,6 +2,11 @@
 LDflex is a domain-specific language for JavaScript
 that lets you traverse Linked Data graphs like dynamic objects.
 
+[![npm version](https://img.shields.io/npm/v/ldflex.svg)](https://www.npmjs.com/package/ldflex)
+[![Build Status](https://travis-ci.org/RubenVerborgh/LDflex.svg?branch=master)](https://travis-ci.org/RubenVerborgh/LDflex)
+[![Coverage Status](https://coveralls.io/repos/github/RubenVerborgh/LDflex/badge.svg?branch=master)](https://coveralls.io/github/RubenVerborgh/LDflex?branch=master)
+[![Dependency Status](https://david-dm.org/RubenVerborgh/LDflex.svg)](https://david-dm.org/RubenVerborgh/LDflex)
+
 You can write things like `person.friends.firstName`
 to get a list of your friends.
 Thanks to the power of [JSON-LD contexts](https://www.w3.org/TR/json-ld/#the-context)
