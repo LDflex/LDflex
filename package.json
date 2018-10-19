@@ -1,6 +1,6 @@
 {
   "name": "ldflex",
-  "version": "0.1.1",
+  "version": "1.0.0",
   "author": "Ruben Verborgh <ruben@verborgh.org> (https://ruben.verborgh.org/)",
   "license": "MIT",
   "main": "lib/index.js",
