@@ -1,6 +1,7 @@
 # LDflex makes Linked Data in JavaScript fun
-LDflex is a domain-specific language for JavaScript
-that lets you traverse Linked Data graphs like dynamic objects.
+LDflex is a domain-specific language
+for querying Linked Data on the Web
+as if you were browsing a local JavaScript graph.
 
 [![npm version](https://img.shields.io/npm/v/ldflex.svg)](https://www.npmjs.com/package/ldflex)
 [![Build Status](https://travis-ci.org/RubenVerborgh/LDflex.svg?branch=master)](https://travis-ci.org/RubenVerborgh/LDflex)
@@ -11,8 +12,11 @@ You can write things like `person.friends.firstName`
 to get a list of your friends.
 Thanks to the power of [JSON-LD contexts](https://www.w3.org/TR/json-ld/#the-context)
 and [JavaScript's Proxy](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy),
-these properties are not hard-coded in LDflex
-and can be chosen at runtime.
+these properties are not hard-coded in LDflex,
+but can be chosen at runtime.
+They feel as if you're traversing a local object,
+while you're actually querying the Web—without
+pulling in all data first.
 
 [Tim Berners-Lee](https://www.w3.org/People/Berners-Lee/)
 came up with the idea for such a fluid JavaScript interface to Linked Data,
