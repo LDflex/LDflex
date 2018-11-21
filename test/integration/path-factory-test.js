@@ -13,6 +13,18 @@ describe('a PathFactory instance', () => {
     person = factory.create({ subject });
   });
 
+  it('returns results for a path with 1 link', async () => {
+    const names = [];
+    for await (const firstName of person)
+      names.push(firstName);
+    expect(names.map(n => `${n}`)).toEqual(['https://example.org/#me']);
+  });
+
+  it('returns the first result for a path with 1 link', async () => {
+    const name = await person;
+    expect(`${name}`).toBe('https://example.org/#me');
+  });
+
   it('returns results for a path with 3 links', async () => {
     const names = [];
     for await (const firstName of person.friends.firstName)

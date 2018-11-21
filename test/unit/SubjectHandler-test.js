@@ -5,16 +5,28 @@ describe('a SubjectHandler instance', () => {
   beforeAll(() => handler = new SubjectHandler());
 
   it('returns undefined if no subject is set', () => {
-    return expect(handler.execute({})).resolves.toBeUndefined();
+    expect(handler.execute({})).toBeUndefined();
   });
 
-  it('returns a subject string', () => {
+  it('returns a subject string', async () => {
     const subject = 'abc';
-    return expect(handler.execute({ subject })).resolves.toBe('abc');
+    const iterable = {
+      [Symbol.asyncIterator]: handler.execute({ subject }),
+    };
+    const values = [];
+    for await (const value of iterable)
+      values.push(value);
+    expect(values).toEqual(['abc']);
   });
 
-  it('returns a subject promise', () => {
+  it('returns a subject promise', async () => {
     const subject = Promise.resolve('abc');
-    return expect(handler.execute({ subject })).resolves.toBe('abc');
+    const iterable = {
+      [Symbol.asyncIterator]: handler.execute({ subject }),
+    };
+    const values = [];
+    for await (const value of iterable)
+      values.push(value);
+    expect(values).toEqual(['abc']);
   });
 });

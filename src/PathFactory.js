@@ -3,15 +3,24 @@ import PathExpressionHandler from './PathExpressionHandler.js';
 import ExecuteQueryHandler from './ExecuteQueryHandler.js';
 import SparqlHandler from './SparqlHandler.js';
 import JSONLDResolver from './JSONLDResolver.js';
+import FallbackHandler from './FallbackHandler';
+import SubjectHandler from './SubjectHandler';
 import toSingularHandler from './toSingularHandler';
 
-const queryHandler = new ExecuteQueryHandler();
+// Default iterator behavior:
+// - first try returning the subject (single-segment path)
+// - then execute a path query (multi-segment path)
+const iteratorHandler = new FallbackHandler([
+  new SubjectHandler(),
+  new ExecuteQueryHandler(),
+]);
 
-const DEFAULT_HANDLERS = {
+// Collection of default property handlers
+const defaultHandlers = {
   pathExpression: new PathExpressionHandler(),
   sparql: new SparqlHandler(),
-  [Symbol.asyncIterator]: queryHandler,
-  then: toSingularHandler(queryHandler),
+  [Symbol.asyncIterator]: iteratorHandler,
+  then: toSingularHandler(iteratorHandler),
 };
 
 /**
@@ -24,7 +33,7 @@ export default class PathFactory {
     this._data = data;
 
     // Instantiate PathProxy that will create the paths
-    const handlers = settings.handlers || DEFAULT_HANDLERS;
+    const handlers = settings.handlers || defaultHandlers;
     const resolvers = settings.resolvers || [];
     if (settings.context)
       resolvers.push(new JSONLDResolver(settings.context));
