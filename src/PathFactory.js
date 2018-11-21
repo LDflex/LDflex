@@ -37,7 +37,7 @@ export default class PathFactory {
   }
 
   /**
-   * Creates a PathProxy with the given (optional) settings and data.
+   * Creates a path with the given (optional) settings and data.
    */
   create(settings = {}, data) {
     // The settings parameter is optional

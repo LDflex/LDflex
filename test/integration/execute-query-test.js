@@ -4,23 +4,13 @@ import SparqlHandler from '../../src/SparqlHandler';
 import PathExpressionHandler from '../../src/PathExpressionHandler';
 import JSONLDResolver from '../../src/JSONLDResolver';
 import toSingularHandler from '../../src/toSingularHandler';
+import { createQueryEngine } from '../util';
 
 import context from '../context';
 
 const subject = 'https://example.org/#me';
-const queryEngine = {
-  execute: jest.fn(() => {
-    const results = ['Alice', 'Bob', 'Carol']
-      .map(value => ({ value }));
-    return {
-      next: () => new Promise(resolve =>
-        resolve({
-          done: results.length === 0,
-          value: new Map([['?firstName', results.shift()]]),
-        })),
-    };
-  }),
-};
+const queryEngine = createQueryEngine(['Alice', 'Bob', 'Carol']);
+
 const resolvers = [
   new JSONLDResolver(context),
 ];
