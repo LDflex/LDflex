@@ -1,4 +1,5 @@
 import ExecuteQueryHandler from './ExecuteQueryHandler.js';
+import FallbackHandler from './FallbackHandler.js';
 import JSONLDResolver from './JSONLDResolver.js';
 import PathExpressionHandler from './PathExpressionHandler.js';
 import PathProxy from './PathProxy.js';
@@ -8,6 +9,7 @@ import SubjectHandler from './SubjectHandler.js';
 
 export {
   ExecuteQueryHandler,
+  FallbackHandler,
   JSONLDResolver,
   PathExpressionHandler,
   PathProxy,
