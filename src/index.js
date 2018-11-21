@@ -6,6 +6,7 @@ import PathProxy from './PathProxy.js';
 import PathFactory from './PathFactory.js';
 import SparqlHandler from './SparqlHandler.js';
 import SubjectHandler from './SubjectHandler.js';
+import toSingularHandler from './toSingularHandler.js';
 
 export {
   ExecuteQueryHandler,
@@ -16,4 +17,5 @@ export {
   PathFactory,
   SparqlHandler,
   SubjectHandler,
+  toSingularHandler,
 };

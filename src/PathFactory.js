@@ -3,12 +3,15 @@ import PathExpressionHandler from './PathExpressionHandler.js';
 import ExecuteQueryHandler from './ExecuteQueryHandler.js';
 import SparqlHandler from './SparqlHandler.js';
 import JSONLDResolver from './JSONLDResolver.js';
+import toSingularHandler from './toSingularHandler';
+
+const queryHandler = new ExecuteQueryHandler();
 
 const DEFAULT_HANDLERS = {
   pathExpression: new PathExpressionHandler(),
   sparql: new SparqlHandler(),
-  then: new ExecuteQueryHandler({ single: true }),
-  [Symbol.asyncIterator]: new ExecuteQueryHandler(),
+  [Symbol.asyncIterator]: queryHandler,
+  then: toSingularHandler(queryHandler),
 };
 
 /**

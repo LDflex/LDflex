@@ -1,3 +1,5 @@
+import toSingularHandler from './toSingularHandler';
+
 /**
  * Executes the query represented by a path.
  *
@@ -7,7 +9,10 @@
  */
 export default class ExecuteQueryHandler {
   constructor({ single } = {}) {
-    this._single = single;
+    if (single) {
+      console.warn('The single option is deprecated in favor of toSingularHandler');
+      return toSingularHandler(this);
+    }
   }
 
   execute(path, pathProxy) {
@@ -28,10 +33,7 @@ export default class ExecuteQueryHandler {
       const { value, done } = await results.next();
       return done ? { done } : { value: this.extractTerm(value) };
     };
-
-    // Return either an asynchronous iterator, or a promise to a single value
-    return !this._single ? () => ({ next }) :
-      (resolve, reject) => next().then(v => resolve(v.value), reject);
+    return () => ({ next });
   }
 
   /**

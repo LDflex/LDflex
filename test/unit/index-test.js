@@ -10,6 +10,7 @@ describe('The LDflex module', () => {
     'PathFactory',
     'SparqlHandler',
     'SubjectHandler',
+    'toSingularHandler',
   ];
 
   exports.forEach(name => {
