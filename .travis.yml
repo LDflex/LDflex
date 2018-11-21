@@ -1,6 +1,7 @@
 language: node_js
 node_js:
  - 10
+ - 11
  - node
 env:
   - DEFAULT_NODE_VERSION=10
@@ -21,6 +22,3 @@ after_success:
       node_modules/.bin/jest --coverage --coverageReporters=text-lcov |
         node_modules/.bin/coveralls;
     fi
-
-cache:
-  apt: true
