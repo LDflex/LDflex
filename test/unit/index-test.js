@@ -8,6 +8,7 @@ describe('The LDflex module', () => {
     'PathProxy',
     'PathFactory',
     'SparqlHandler',
+    'SubjectHandler',
   ];
 
   exports.forEach(name => {
