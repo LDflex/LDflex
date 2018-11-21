@@ -1,12 +1,12 @@
-import ExecuteQueryHandler from './ExecuteQueryHandler.js';
-import FallbackHandler from './FallbackHandler.js';
-import JSONLDResolver from './JSONLDResolver.js';
-import PathExpressionHandler from './PathExpressionHandler.js';
-import PathProxy from './PathProxy.js';
-import PathFactory from './PathFactory.js';
-import SparqlHandler from './SparqlHandler.js';
-import SubjectHandler from './SubjectHandler.js';
-import toSingularHandler from './toSingularHandler.js';
+import ExecuteQueryHandler from './ExecuteQueryHandler';
+import FallbackHandler from './FallbackHandler';
+import JSONLDResolver from './JSONLDResolver';
+import PathExpressionHandler from './PathExpressionHandler';
+import PathProxy from './PathProxy';
+import PathFactory from './PathFactory';
+import SparqlHandler from './SparqlHandler';
+import SubjectHandler from './SubjectHandler';
+import toSingularHandler from './toSingularHandler';
 
 export {
   ExecuteQueryHandler,
