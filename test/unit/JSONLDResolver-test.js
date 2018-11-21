@@ -26,7 +26,7 @@ describe('a JSONLDResolver instance with a context', () => {
 
     it('errors when expanding an unknown property', async () => {
       await expect(resolver.expandProperty('other')).rejects
-        .toThrow(new Error("Property 'other' could not be expanded from the context"));
+        .toThrow(new Error("The JSON-LD context cannot expand the 'other' property"));
     });
   });
 

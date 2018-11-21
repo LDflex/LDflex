@@ -46,7 +46,7 @@ export default class JSONLDResolver {
     // Expand the document to obtain the full IRI
     const expanded = await expand(document);
     if (expanded.length === 0)
-      throw new Error(`Property '${property}' could not be expanded from the context`);
+      throw new Error(`The JSON-LD context cannot expand the '${property}' property`);
     assert.equal(expanded.length, 1);
     const propertyIRIs = Object.keys(expanded[0]);
     assert.equal(propertyIRIs.length, 1);
