@@ -19,10 +19,16 @@ const iteratorHandler = new FallbackHandler([
  * Collection of default property handlers.
  */
 export const defaultHandlers = {
-  pathExpression: new PathExpressionHandler(),
-  sparql: new SparqlHandler(),
+  // Flag to loaders that exported paths are not ES6 modules
+  __esModule: () => undefined,
+
+  // Add iterable and thenable behavior
   [Symbol.asyncIterator]: iteratorHandler,
   then: toSingularHandler(iteratorHandler),
+
+  // Add path handling
+  pathExpression: new PathExpressionHandler(),
+  sparql: new SparqlHandler(),
 };
 
 /**
