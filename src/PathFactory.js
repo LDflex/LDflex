@@ -15,8 +15,10 @@ const iteratorHandler = new FallbackHandler([
   new ExecuteQueryHandler(),
 ]);
 
-// Collection of default property handlers
-const defaultHandlers = {
+/**
+ * Collection of default property handlers.
+ */
+export const defaultHandlers = {
   pathExpression: new PathExpressionHandler(),
   sparql: new SparqlHandler(),
   [Symbol.asyncIterator]: iteratorHandler,
