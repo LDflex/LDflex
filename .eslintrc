@@ -21,7 +21,7 @@
     dot-location: [ error, property ],
     dot-notation: error,
     eqeqeq: error,
-    guard-for-in: error,
+    guard-for-in: off,
     no-alert: error,
     no-caller: error,
     no-console: [ error, { allow: [ warn ] } ],

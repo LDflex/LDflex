@@ -30,15 +30,22 @@ export const defaultHandlers = {
  */
 export default class PathFactory {
   constructor(settings, data) {
+    // Store settings and data
     settings = Object.assign(Object.create(null), settings);
     this._settings = settings;
     this._data = data;
 
-    // Instantiate PathProxy that will create the paths
-    const handlers = settings.handlers || defaultHandlers;
-    const resolvers = settings.resolvers || [];
+    // Prepare the handlers
+    const handlers = (settings.handlers || defaultHandlers);
+    for (var key in handlers)
+      handlers[key] = toHandler(handlers[key]);
+
+    // Prepare the resolvers
+    const resolvers = (settings.resolvers || []).map(toResolver);
     if (settings.context)
       resolvers.push(new JSONLDResolver(settings.context));
+
+    // Instantiate PathProxy that will create the paths
     this._pathProxy = new PathProxy({ handlers, resolvers });
 
     // Remove PathProxy settings from the settings object
@@ -60,4 +67,23 @@ export default class PathFactory {
       Object.assign(Object.create(null), this._settings, settings),
       Object.assign(Object.create(null), this._data, data));
   }
+}
+
+/**
+ * Converts a handler function into a handler object.
+ */
+export function toHandler(execute) {
+  return typeof execute.execute === 'function' ? execute : { execute };
+}
+
+/**
+ * Converts a resolver function into a catch-all resolver object.
+ */
+export function toResolver(resolve) {
+  return typeof resolve.resolve === 'function' ? resolve : { supports, resolve };
+}
+
+// Catch-all resolvers support everything
+function supports() {
+  return true;
 }

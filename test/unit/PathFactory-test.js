@@ -92,6 +92,27 @@ describe('a PathFactory instance with initial settings and data', () => {
   });
 });
 
+describe('a PathFactory instance with functions as handlers and resolvers', () => {
+  let factory;
+  beforeAll(() => factory = new PathFactory({
+    handlers: {
+      foo: () => 'foo',
+    },
+    resolvers: [
+      () => 'bar',
+      { supports: () => true, resolve: () => 'baz' },
+    ],
+  }));
+
+  it('creates a handler', () => {
+    expect(factory.create().foo).toBe('foo');
+  });
+
+  it('creates a catch-all resolver', () => {
+    expect(factory.create().other).toBe('bar');
+  });
+});
+
 describe('a PathFactory instance with a context parameter', () => {
   let factory;
   beforeAll(() => factory = new PathFactory({ context }));
