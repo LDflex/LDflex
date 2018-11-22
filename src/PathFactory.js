@@ -4,6 +4,7 @@ import ExecuteQueryHandler from './ExecuteQueryHandler';
 import SparqlHandler from './SparqlHandler';
 import JSONLDResolver from './JSONLDResolver';
 import FallbackHandler from './FallbackHandler';
+import StringToLDflexHandler from './StringToLDflexHandler';
 import SubjectHandler from './SubjectHandler';
 import toSingularHandler from './toSingularHandler';
 
@@ -29,6 +30,9 @@ export const defaultHandlers = {
   // Add path handling
   pathExpression: new PathExpressionHandler(),
   sparql: new SparqlHandler(),
+
+  // Parse a string into an LDflex object
+  resolve: new StringToLDflexHandler(),
 };
 
 /**

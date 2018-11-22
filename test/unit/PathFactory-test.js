@@ -11,45 +11,54 @@ describe('the PathFactory class', () => {
 });
 
 describe('a PathFactory instance without parameters', () => {
-  let factory;
-  beforeAll(() => factory = new PathFactory());
+  let factory, path;
+  beforeAll(() => {
+    factory = new PathFactory();
+    path = factory.create();
+  });
 
   it('adds __esModule', () => {
-    expect(factory.create().__esModule).toBeUndefined();
+    expect(path.__esModule).toBeUndefined();
   });
 
   it('adds ExecuteQueryHandler for single values', () => {
-    expect(factory.create().then).toBeInstanceOf(Function);
+    expect(path.then).toBeInstanceOf(Function);
   });
 
   it('adds ExecuteQueryHandler for asynchronous iteration', () => {
-    expect(factory.create()[Symbol.asyncIterator]).toBeInstanceOf(Function);
+    expect(path[Symbol.asyncIterator]).toBeInstanceOf(Function);
   });
 
   it('adds PathExpressionHandler', async () => {
-    await expect(factory.create().pathExpression).rejects.toThrow(/root subject/);
+    await expect(path.pathExpression).rejects.toThrow(/root subject/);
   });
 
   it('adds SparqlHandler', async () => {
-    await expect(factory.create().sparql).rejects.toThrow(/root subject/);
+    await expect(path.sparql).rejects.toThrow(/root subject/);
   });
 
+  it('adds StringToLDflexHandler', async () => {
+    await expect(path.resolve('resolve')).toBeInstanceOf(Function);
+  });
 
   it('does not add a JSONLDResolver', () => {
-    expect(factory.create({}).other).toBeUndefined();
+    expect(path.other).toBeUndefined();
   });
 });
 
 describe('a PathFactory instance without empty handlers and resolvers', () => {
-  let factory;
-  beforeAll(() => factory = new PathFactory({ handlers: {}, resolvers: [] }));
+  let factory, path;
+  beforeAll(() => {
+    factory = new PathFactory({ handlers: {}, resolvers: [] });
+    path = factory.create();
+  });
 
   it('does not add a SparqlHandler', () => {
-    expect(factory.create().sparql).toBeUndefined();
+    expect(path.sparql).toBeUndefined();
   });
 
   it('does not add a JSONLDResolver', () => {
-    expect(factory.create().other).toBeUndefined();
+    expect(path.other).toBeUndefined();
   });
 });
 
@@ -128,14 +137,17 @@ describe('a PathFactory instance with functions as handlers and resolvers', () =
 });
 
 describe('a PathFactory instance with a context parameter', () => {
-  let factory;
-  beforeAll(() => factory = new PathFactory({ context }));
+  let factory, path;
+  beforeAll(() => {
+    factory = new PathFactory({ context });
+    path = factory.create();
+  });
 
   it('adds __esModule', () => {
-    expect(factory.create().__esModule).toBeUndefined();
+    expect(path.__esModule).toBeUndefined();
   });
 
   it('adds a JSONLDResolver', () => {
-    expect(factory.create().knows).toBeInstanceOf(Object);
+    expect(path.knows).toBeInstanceOf(Object);
   });
 });

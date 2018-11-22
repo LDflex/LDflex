@@ -9,6 +9,7 @@ describe('The LDflex module', () => {
     'PathProxy',
     'PathFactory',
     'SparqlHandler',
+    'StringToLDflexHandler',
     'SubjectHandler',
     'toSingularHandler',
   ];
