@@ -12,8 +12,9 @@ export default function toSingularHandler(handler) {
 
       // Return a then function to the first item's value
       const iterator = value();
-      return (resolve, reject) =>
-        iterator.next().then(item => resolve(item.value), reject);
+      return (resolve, reject) => iterator.next()
+        .then(item => item.value)
+        .then(resolve, reject);
     },
   };
 }

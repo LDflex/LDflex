@@ -25,9 +25,17 @@ describe('toSingularHandler', () => {
     expect(value).toBe('abc');
   });
 
-  it('returns a then function to the first value of the iterator', async () => {
+  it('returns a then function to the first value', async () => {
     iteratorHandler.execute.mockReturnValueOnce(() => ({
       next: async () => ({ value: 'xyz' }),
+    }));
+    const promise = { then: singularHandler.execute(path, proxy) };
+    return expect(promise).resolves.toBe('xyz');
+  });
+
+  it('returns a then function to the first value if it is a promise', async () => {
+    iteratorHandler.execute.mockReturnValueOnce(() => ({
+      next: async () => ({ value: Promise.resolve('xyz') }),
     }));
     const promise = { then: singularHandler.execute(path, proxy) };
     return expect(promise).resolves.toBe('xyz');
