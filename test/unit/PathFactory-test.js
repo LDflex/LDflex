@@ -1,6 +1,15 @@
 import PathFactory from '../../src/PathFactory';
 import context from '../context';
 
+describe('the PathFactory class', () => {
+  it('exposes the defaultHandlers', () => {
+    expect(PathFactory.defaultHandlers).toBeInstanceOf(Object);
+    expect(PathFactory.defaultHandlers).toHaveProperty('then');
+    expect(PathFactory.defaultHandlers).toHaveProperty('pathExpression');
+    expect(PathFactory.defaultHandlers).toHaveProperty('sparql');
+  });
+});
+
 describe('a PathFactory instance without parameters', () => {
   let factory;
   beforeAll(() => factory = new PathFactory());

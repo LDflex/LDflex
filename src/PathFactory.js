@@ -42,7 +42,7 @@ export default class PathFactory {
     this._data = data;
 
     // Prepare the handlers
-    const handlers = (settings.handlers || defaultHandlers);
+    const handlers = (settings.handlers || PathFactory.defaultHandlers);
     for (var key in handlers)
       handlers[key] = toHandler(handlers[key]);
 
@@ -74,6 +74,7 @@ export default class PathFactory {
       Object.assign(Object.create(null), this._data, data));
   }
 }
+PathFactory.defaultHandlers = defaultHandlers;
 
 /**
  * Converts a handler function into a handler object.
