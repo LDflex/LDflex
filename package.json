@@ -14,11 +14,13 @@
     "lib"
   ],
   "dependencies": {
+    "@babel/runtime": "^7.1.5",
     "jsonld": "^1.1.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.0.0",
     "@babel/core": "^7.0.1",
+    "@babel/plugin-transform-runtime": "^7.1.0",
     "@babel/preset-env": "^7.0.0",
     "babel-core": "^7.0.0-bridge.0",
     "eslint": "^5.6.0",

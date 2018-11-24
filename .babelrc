@@ -5,5 +5,8 @@
         node: "8",
       },
     }],
-  ]
+  ],
+  plugins: [
+    "@babel/plugin-transform-runtime",
+  ],
 }
