@@ -1,5 +1,3 @@
-import toSingularHandler from './toSingularHandler';
-
 /**
  * Executes the query represented by a path.
  *
@@ -8,32 +6,18 @@ import toSingularHandler from './toSingularHandler';
  * - a sparql property on the path proxy
  */
 export default class ExecuteQueryHandler {
-  constructor({ single } = {}) {
-    if (single) {
-      console.warn('The single option is deprecated in favor of toSingularHandler');
-      return toSingularHandler(this);
-    }
-  }
+  async *execute(path, pathProxy) {
+    // Retrieve the query engine and query
+    const { queryEngine } = path.settings;
+    if (!queryEngine)
+      throw new Error(`${path} has no queryEngine setting`);
+    const query = await pathProxy.sparql;
+    if (!query)
+      throw new Error(`${path} has no sparql property`);
 
-  execute(path, pathProxy) {
-    let results;
-    const next = async () => {
-      if (!results) {
-        // Retrieve the query engine and query
-        const { queryEngine } = path.settings;
-        if (!queryEngine)
-          throw new Error(`${path} has no queryEngine setting`);
-        const query = await pathProxy.sparql;
-        if (!query)
-          throw new Error(`${path} has no sparql property`);
-        // Create an asynchronous iterator over the query results
-        results = queryEngine.execute(await query);
-      }
-      // Obtain the next binding and extract the result term
-      const { value, done } = await results.next();
-      return done ? { done } : { value: this.extractTerm(value) };
-    };
-    return () => ({ next });
+    // Extract the term from every query result
+    for await (const bindings of queryEngine.execute(query))
+      yield this.extractTerm(bindings);
   }
 
   /**

@@ -7,7 +7,12 @@ import PathFactory from './PathFactory';
 import SparqlHandler from './SparqlHandler';
 import StringToLDflexHandler from './StringToLDflexHandler';
 import SubjectHandler from './SubjectHandler';
-import toSingularHandler from './toSingularHandler';
+import {
+  getIterator,
+  iterablePromise,
+  iterableToThen,
+  promiseToIterable,
+} from './iterableUtils';
 
 export {
   ExecuteQueryHandler,
@@ -19,5 +24,8 @@ export {
   SparqlHandler,
   StringToLDflexHandler,
   SubjectHandler,
-  toSingularHandler,
+  getIterator,
+  iterablePromise,
+  iterableToThen,
+  promiseToIterable,
 };

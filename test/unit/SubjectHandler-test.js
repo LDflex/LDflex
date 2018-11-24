@@ -8,25 +8,13 @@ describe('a SubjectHandler instance', () => {
     expect(handler.execute({})).toBeUndefined();
   });
 
-  it('returns a subject string', async () => {
+  it('returns a subject string as a promise', () => {
     const subject = 'abc';
-    const iterable = {
-      [Symbol.asyncIterator]: handler.execute({ subject }),
-    };
-    const values = [];
-    for await (const value of iterable)
-      values.push(value);
-    expect(values).toEqual(['abc']);
+    return expect(handler.execute({ subject })).resolves.toBe('abc');
   });
 
-  it('returns a subject promise', async () => {
+  it('returns a subject promise', () => {
     const subject = Promise.resolve('abc');
-    const iterable = {
-      [Symbol.asyncIterator]: handler.execute({ subject }),
-    };
-    const values = [];
-    for await (const value of iterable)
-      values.push(value);
-    expect(values).toEqual(['abc']);
+    return expect(handler.execute({ subject })).resolves.toBe('abc');
   });
 });

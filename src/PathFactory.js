@@ -6,13 +6,13 @@ import JSONLDResolver from './JSONLDResolver';
 import FallbackHandler from './FallbackHandler';
 import StringToLDflexHandler from './StringToLDflexHandler';
 import SubjectHandler from './SubjectHandler';
-import toSingularHandler from './toSingularHandler';
+import { promiseToIterable, getIterator, iterableToThen } from './iterableUtils';
 
 // Default iterator behavior:
 // - first try returning the subject (single-segment path)
 // - then execute a path query (multi-segment path)
 const iteratorHandler = new FallbackHandler([
-  new SubjectHandler(),
+  promiseToIterable(new SubjectHandler()),
   new ExecuteQueryHandler(),
 ]);
 
@@ -24,8 +24,8 @@ export const defaultHandlers = {
   __esModule: () => undefined,
 
   // Add iterable and thenable behavior
-  [Symbol.asyncIterator]: iteratorHandler,
-  then: toSingularHandler(iteratorHandler),
+  [Symbol.asyncIterator]: getIterator(iteratorHandler),
+  then: iterableToThen(iteratorHandler),
 
   // Add path handling
   pathExpression: new PathExpressionHandler(),

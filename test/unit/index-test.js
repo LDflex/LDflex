@@ -11,7 +11,10 @@ describe('The LDflex module', () => {
     'SparqlHandler',
     'StringToLDflexHandler',
     'SubjectHandler',
-    'toSingularHandler',
+    'getIterator',
+    'iterablePromise',
+    'iterableToThen',
+    'promiseToIterable',
   ];
 
   exports.forEach(name => {

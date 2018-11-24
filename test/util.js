@@ -4,14 +4,9 @@ export function deindent(string) {
 
 export function createQueryEngine(results) {
   return {
-    execute: jest.fn(() => {
-      const values = results.map(value => ({ value }));
-      return {
-        next: async () => ({
-          done: values.length === 0,
-          value: new Map([['?value', values.shift()]]),
-        }),
-      };
+    execute: jest.fn(async function*() {
+      for (const term of results.map(value => ({ value })))
+        yield new Map([['?value', term]]);
     }),
   };
 }
