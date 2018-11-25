@@ -56,19 +56,18 @@ export function promiseToIterable(handler) {
  * Returns an iterable that is also a promise to the first element.
  */
 export function iterablePromise(iterable) {
-  // If called with a generator function, execute it
+  // If called with a generator function,
+  // memoize it to enable multiple iterations
   if (typeof iterable === 'function')
-    iterable = iterable();
-  // Obtain the iterator
-  const iterator = iterable[Symbol.asyncIterator]();
+    iterable = memoizeIterable(iterable());
 
   // Return an object that is iterable and a promise
   return {
     [Symbol.asyncIterator]() {
-      return iterator;
+      return iterable[Symbol.asyncIterator]();
     },
     get then() {
-      return createThenToFirstItem(iterator);
+      return createThenToFirstItem(this[Symbol.asyncIterator]());
     },
     catch(onRejected) {
       return this.then(null, onRejected);
@@ -77,6 +76,38 @@ export function iterablePromise(iterable) {
       return this.then().finally(callback);
     },
   };
+}
+
+/**
+ * Returns a memoized version of the iterable
+ * that can be iterated over as much as needed.
+ */
+export function memoizeIterable(iterable) {
+  let iterator = iterable[Symbol.asyncIterator]();
+  const cache = [];
+
+  // Creates a new iterator with the same items as the iterable
+  function newIterator() {
+    let i = 0;
+    async function next() {
+      // Return the item if it has been read already
+      if (i < cache.length)
+        return cache[i++];
+
+      // Stop if there are no more items
+      if (!iterator)
+        return Promise.resolve({ done: true });
+
+      // Read and cache an item from the iterable otherwise
+      const item = cache[i++] = iterator.next();
+      if ((await item).done)
+        iterator = null;
+      return item;
+    }
+    return { next };
+  }
+
+  return { [Symbol.asyncIterator]: newIterator };
 }
 
 /**
