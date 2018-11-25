@@ -34,8 +34,8 @@ export default class JSONLDResolver {
   async expandProperty(property) {
     // JavaScript requires keys containing colons to be quoted,
     // so prefixed names would need to written as path['foaf:knows'].
-    // Allowing underscores lets us write path.foaf_knows.
-    property = property.replace('_', ':');
+    // We thus allow writing path.foaf_knows or path.foaf$knows instead.
+    property = property.replace(/[_$]/, ':');
 
     // Create a JSON-LD document with the given property
     const document = {
