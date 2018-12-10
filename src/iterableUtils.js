@@ -48,31 +48,31 @@ export function iterablePromise(iterable) {
  * that can be iterated over as many times as needed.
  */
 export function memoizeIterable(iterable) {
-  let iterator = iterable[Symbol.asyncIterator]();
   const cache = [];
+  let iterator = iterable[Symbol.asyncIterator]();
 
-  // Creates a new iterator with the same items as the iterable
-  function newIterator() {
-    let i = 0;
-    async function next() {
-      // Return the item if it has been read already
-      if (i < cache.length)
-        return cache[i++];
+  return {
+    [Symbol.asyncIterator]() {
+      let i = 0;
+      return {
+        async next() {
+          // Return the item if it has been read already
+          if (i < cache.length)
+            return cache[i++];
 
-      // Stop if there are no more items
-      if (!iterator)
-        return Promise.resolve({ done: true });
+          // Stop if there are no more items
+          if (!iterator)
+            return { done: true };
 
-      // Read and cache an item from the iterable otherwise
-      const item = cache[i++] = iterator.next();
-      if ((await item).done)
-        iterator = null;
-      return item;
-    }
-    return { next };
-  }
-
-  return { [Symbol.asyncIterator]: newIterator };
+          // Read and cache an item from the iterable otherwise
+          const item = cache[i++] = iterator.next();
+          if ((await item).done)
+            iterator = null;
+          return item;
+        },
+      };
+    },
+  };
 }
 
 /**
@@ -107,7 +107,7 @@ function createIterable(promise) {
       return {
         next() {
           const current = next;
-          next = { done: true };
+          next = Promise.resolve({ done: true });
           return current;
         },
       };
