@@ -5,13 +5,8 @@
 export function getIterator(handler) {
   return {
     execute(path, proxy) {
-      // Get the iterable from the handler
       const iterable = handler.execute(path, proxy);
-      if (!iterable)
-        return undefined;
-      // Return a function that returns the iterator
-      const iterator = iterable[Symbol.asyncIterator]();
-      return () => iterator;
+      return !iterable ? undefined : () => iterable[Symbol.asyncIterator]();
     },
   };
 }
@@ -23,13 +18,8 @@ export function getIterator(handler) {
 export function iterableToThen(handler) {
   return {
     execute(path, proxy) {
-      // Get the iterable from the handler
       const iterable = handler.execute(path, proxy);
-      if (!iterable)
-        return undefined;
-      // Return a then function to the first element
-      const iterator = iterable[Symbol.asyncIterator]();
-      return createThenToFirstItem(iterator);
+      return !iterable ? undefined : createThenToFirstItem(iterable);
     },
   };
 }
@@ -40,14 +30,8 @@ export function iterableToThen(handler) {
 export function promiseToIterable(handler) {
   return {
     execute(path, proxy) {
-      // Obtain the promise
       const promise = handler.execute(path, proxy);
-      if (!promise)
-        return undefined;
-      // Return an async iterable with the promise as only element
-      return (async function*() {
-        yield promise;
-      }());
+      return !promise ? undefined : createIterable(promise);
     },
   };
 }
@@ -67,7 +51,7 @@ export function iterablePromise(iterable) {
       return iterable[Symbol.asyncIterator]();
     },
     get then() {
-      return createThenToFirstItem(this[Symbol.asyncIterator]());
+      return createThenToFirstItem(this);
     },
     catch(onRejected) {
       return this.then(null, onRejected);
@@ -80,7 +64,7 @@ export function iterablePromise(iterable) {
 
 /**
  * Returns a memoized version of the iterable
- * that can be iterated over as much as needed.
+ * that can be iterated over as many times as needed.
  */
 export function memoizeIterable(iterable) {
   let iterator = iterable[Symbol.asyncIterator]();
@@ -111,10 +95,29 @@ export function memoizeIterable(iterable) {
 }
 
 /**
- * Creates a then function to the first element of the iterator.
+ * Creates a then function to the first element of the iterable.
  */
-function createThenToFirstItem(iterator) {
+function createThenToFirstItem(iterable) {
+  const iterator = iterable[Symbol.asyncIterator]();
   return (onResolved, onRejected) => iterator.next()
     .then(item => item.value)
     .then(onResolved, onRejected);
+}
+
+/**
+ * Creates an async iterable with the promise as only element.
+ */
+function createIterable(promise) {
+  return {
+    [Symbol.asyncIterator]() {
+      let next = promise.then(value => ({ value }));
+      return {
+        next() {
+          const current = next;
+          next = { done: true };
+          return current;
+        },
+      };
+    },
+  };
 }
