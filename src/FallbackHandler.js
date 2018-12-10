@@ -1,5 +1,6 @@
 /**
- * Converts a handler that returns an asynchronous iterator into a single-value handler.
+ * Handler that delegates to a list of other handlers
+ * and returns the first value that is not undefined.
  */
 export default class FallbackHandler {
   constructor(handlers = []) {
