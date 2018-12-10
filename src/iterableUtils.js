@@ -2,39 +2,20 @@
  * Gets the iterator function
  * from an iterable returned by a handler.
  */
-export function getIterator(handler) {
-  return {
-    execute(path, proxy) {
-      const iterable = handler.execute(path, proxy);
-      return !iterable ? undefined : () => iterable[Symbol.asyncIterator]();
-    },
-  };
-}
+export const getIterator = mapHandler(iterable =>
+  () => iterable[Symbol.asyncIterator]());
 
 /**
  * Creates a then function to the first element
  * of an iterable returned by a handler.
  */
-export function iterableToThen(handler) {
-  return {
-    execute(path, proxy) {
-      const iterable = handler.execute(path, proxy);
-      return !iterable ? undefined : createThenToFirstItem(iterable);
-    },
-  };
-}
+export const iterableToThen = mapHandler(createThen);
 
 /**
- * Creates an async iterable from a promise returned by a handler.
+ * Creates an async iterable
+ * from a promise returned by a handler.
  */
-export function promiseToIterable(handler) {
-  return {
-    execute(path, proxy) {
-      const promise = handler.execute(path, proxy);
-      return !promise ? undefined : createIterable(promise);
-    },
-  };
-}
+export const promiseToIterable = mapHandler(createIterable);
 
 /**
  * Returns an iterable that is also a promise to the first element.
@@ -51,7 +32,7 @@ export function iterablePromise(iterable) {
       return iterable[Symbol.asyncIterator]();
     },
     get then() {
-      return createThenToFirstItem(this);
+      return createThen(this);
     },
     catch(onRejected) {
       return this.then(null, onRejected);
@@ -95,9 +76,21 @@ export function memoizeIterable(iterable) {
 }
 
 /**
+ * Creates a handler that maps the result of another handler.
+ */
+function mapHandler(mapper) {
+  return handler => ({
+    execute(path, proxy) {
+      const result = handler.execute(path, proxy);
+      return result ? mapper(result) : undefined;
+    },
+  });
+}
+
+/**
  * Creates a then function to the first element of the iterable.
  */
-function createThenToFirstItem(iterable) {
+function createThen(iterable) {
   const iterator = iterable[Symbol.asyncIterator]();
   return (onResolved, onRejected) => iterator.next()
     .then(item => item.value)
