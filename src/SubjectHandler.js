@@ -4,7 +4,7 @@
  * Requires:
  * - a subject property on the path proxy
  */
-export default class PathExpressionHandler {
+export default class SubjectHandler {
   execute({ subject }) {
     return subject && Promise.resolve(subject);
   }
