@@ -21,27 +21,27 @@ describe('a StringToLDflexHandler instance', () => {
     expect(parseLDflex('.foo.bar.baz')).toBe(baz);
   });
 
-  it('resolves brace-based property access with double quotes', () => {
+  it('resolves bracket-based property access with double quotes', () => {
     expect(parseLDflex('["foo"].bar.baz')).toBe(baz);
   });
 
-  it('resolves brace-based property access with single quotes', () => {
+  it('resolves bracket-based property access with single quotes', () => {
     expect(parseLDflex("['foo'].bar.baz")).toBe(baz);
   });
 
-  it('resolves brace-based property access with backticks', () => {
+  it('resolves bracket-based property access with backticks', () => {
     expect(parseLDflex('[`foo`].bar.baz')).toBe(baz);
   });
 
-  it('resolves brace-based property access without quotes', () => {
+  it('resolves bracket-based property access without quotes', () => {
     expect(parseLDflex('[foo].bar.baz')).toBe(baz);
   });
 
-  it('resolves multiple brace-based property accesses without quotes', () => {
+  it('resolves multiple bracket-based property accesses without quotes', () => {
     expect(parseLDflex('[foo][bar][baz]')).toBe(baz);
   });
 
-  it('resolves parentheses in brace-based property access', () => {
+  it('resolves parentheses in bracket-based property access', () => {
     expect(parseLDflex('[("foo")].bar.baz')).toBe(baz);
     expect(parseLDflex('[(globalVar)].bar.baz')).toBe(baz);
   });
