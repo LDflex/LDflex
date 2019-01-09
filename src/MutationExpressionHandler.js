@@ -21,7 +21,7 @@ export default class MutationExpressionHandler {
         args: arguments,
       });
       return new PathProxy({
-        handlers: { ...path.proxyHandler._handlers, mutationExpression: callbackHandler },
+        handlers: { ...path.proxyHandler._handlers, mutationExpressions: callbackHandler },
         resolvers: path.proxyHandler._resolvers,
       }).createPath(path);
     };

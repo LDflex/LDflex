@@ -20,7 +20,7 @@ const resolvers = [
 const handlersPath = {
   sparql: new SparqlHandler(),
   pathExpression: new PathExpressionHandler(),
-  mutationExpression: new VoidHandler(), // Initialize mutationExpression to undefined to avoid being handled by another handler.
+  mutationExpressions: new VoidHandler(), // Initialize mutationExpressions to undefined to avoid being handled by another handler.
   [Symbol.asyncIterator]: getIterator(executeQueryHandler),
   then: iterableToThen(executeQueryHandler),
 };
@@ -28,7 +28,7 @@ const handlersPath = {
 const handlersMutation = {
   sparql: new SparqlHandler(),
   pathExpression: new PathExpressionHandler(),
-  mutationExpression: new VoidHandler(), // Initialize mutationExpression to undefined to avoid being handled by another handler.
+  mutationExpressions: new VoidHandler(), // Initialize mutationExpressions to undefined to avoid being handled by another handler.
   add: new MutationExpressionHandler(MutationExpressionHandler.INSERT),
   delete: new MutationExpressionHandler(MutationExpressionHandler.DELETE),
   [Symbol.asyncIterator]: getIterator(executeQueryHandler),

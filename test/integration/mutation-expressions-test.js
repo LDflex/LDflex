@@ -22,7 +22,7 @@ describe('a query path with a path expression handler', () => {
   });
 
   it('resolves an addition path with 2 links and a raw arg', async () => {
-    const path = await person.friends.firstName.add('Ruben').mutationExpression;
+    const path = await person.friends.firstName.add('Ruben').mutationExpressions;
     expect(path).toEqual([
       {
         mutationType: 'INSERT',
@@ -37,7 +37,7 @@ describe('a query path with a path expression handler', () => {
   });
 
   it('resolves an addition path with 2 links and a path arg of length 0', async () => {
-    const path = await person.friends.firstName.add(person).mutationExpression;
+    const path = await person.friends.firstName.add(person).mutationExpressions;
     expect(path).toEqual([
       {
         mutationType: 'INSERT',
@@ -54,7 +54,7 @@ describe('a query path with a path expression handler', () => {
   });
 
   it('resolves an addition path with 2 links and a path arg of length 1', async () => {
-    const path = await person.friends.firstName.add(person.firstName).mutationExpression;
+    const path = await person.friends.firstName.add(person.firstName).mutationExpressions;
     expect(path).toEqual([
       {
         mutationType: 'INSERT',
@@ -72,7 +72,7 @@ describe('a query path with a path expression handler', () => {
   });
 
   it('resolves an addition path with 2 links and a path arg of length 2', async () => {
-    const path = await person.friends.firstName.add(person.friends.firstName).mutationExpression;
+    const path = await person.friends.firstName.add(person.friends.firstName).mutationExpressions;
     expect(path).toEqual([
       {
         mutationType: 'INSERT',
@@ -91,7 +91,7 @@ describe('a query path with a path expression handler', () => {
   });
 
   it('resolves an addition path with 2 links and a raw and path arg', async () => {
-    const path = await person.friends.firstName.add('Ruben', person.firstName).mutationExpression;
+    const path = await person.friends.firstName.add('Ruben', person.firstName).mutationExpressions;
     expect(path).toEqual([
       {
         mutationType: 'INSERT',
@@ -118,7 +118,7 @@ describe('a query path with a path expression handler', () => {
   });
 
   it('resolves a deletion path with 2 links and a raw and path arg', async () => {
-    const path = await person.friends.firstName.delete('Ruben', person.firstName).mutationExpression;
+    const path = await person.friends.firstName.delete('Ruben', person.firstName).mutationExpressions;
     expect(path).toEqual([
       {
         mutationType: 'DELETE',

@@ -68,18 +68,18 @@ describe('a SparqlHandler instance', () => {
     });
   });
 
-  describe('with a mutationExpression', () => {
+  describe('with a mutationExpressions', () => {
     it('errors with 0 expressions', async () => {
-      const mutationExpression = [];
+      const mutationExpressions = [];
       const path = { toString: () => 'path' };
 
-      await expect(handler.execute(path, { mutationExpression })).rejects
+      await expect(handler.execute(path, { mutationExpressions: mutationExpressions })).rejects
         .toThrow(new Error('path should at least have one mutation expression'));
     });
 
     describe('with one INSERT expression', () => {
       it('resolves with domain of length 0 and range of length of 0', async () => {
-        const mutationExpression = [
+        const mutationExpressions = [
           {
             mutationType: 'INSERT',
             domainExpression: [{ subject: 'https://example.org/#D0' }],
@@ -88,14 +88,14 @@ describe('a SparqlHandler instance', () => {
           },
         ];
 
-        await expect(await handler.execute({}, { mutationExpression })).toEqual(deindent(`
+        await expect(await handler.execute({}, { mutationExpressions: mutationExpressions })).toEqual(deindent(`
       INSERT DATA {
         <https://example.org/#D0> <https://example.org/p> <https://example.org/#R0>
       }`));
       });
 
       it('resolves with domain of length 0 and range of length of 0 with literal', async () => {
-        const mutationExpression = [
+        const mutationExpressions = [
           {
             mutationType: 'INSERT',
             domainExpression: [{ subject: 'https://example.org/#D0' }],
@@ -104,14 +104,14 @@ describe('a SparqlHandler instance', () => {
           },
         ];
 
-        await expect(await handler.execute({}, { mutationExpression })).toEqual(deindent(`
+        await expect(await handler.execute({}, { mutationExpressions: mutationExpressions })).toEqual(deindent(`
       INSERT DATA {
         <https://example.org/#D0> <https://example.org/p> "Ruben"
       }`));
       });
 
       it('resolves with domain of length 2 and range of length of 0', async () => {
-        const mutationExpression = [
+        const mutationExpressions = [
           {
             mutationType: 'INSERT',
             domainExpression: [
@@ -124,7 +124,7 @@ describe('a SparqlHandler instance', () => {
           },
         ];
 
-        await expect(await handler.execute({}, { mutationExpression })).toEqual(deindent(`
+        await expect(await handler.execute({}, { mutationExpressions: mutationExpressions })).toEqual(deindent(`
       INSERT {
         ?Dp2 <https://example.org/p> <https://example.org/#R0>
       } WHERE {
@@ -134,7 +134,7 @@ describe('a SparqlHandler instance', () => {
       });
 
       it('resolves with domain of length 1 with exotic predicate and range of length of 0', async () => {
-        const mutationExpression = [
+        const mutationExpressions = [
           {
             mutationType: 'INSERT',
             domainExpression: [
@@ -146,7 +146,7 @@ describe('a SparqlHandler instance', () => {
           },
         ];
 
-        await expect(await handler.execute({}, { mutationExpression })).toEqual(deindent(`
+        await expect(await handler.execute({}, { mutationExpressions: mutationExpressions })).toEqual(deindent(`
       INSERT {
         ?result <https://example.org/p> <https://example.org/#R0>
       } WHERE {
@@ -155,7 +155,7 @@ describe('a SparqlHandler instance', () => {
       });
 
       it('resolves with domain of length 0 and range of length of 2', async () => {
-        const mutationExpression = [
+        const mutationExpressions = [
           {
             mutationType: 'INSERT',
             domainExpression: [{ subject: 'https://example.org/#D0' }],
@@ -168,7 +168,7 @@ describe('a SparqlHandler instance', () => {
           },
         ];
 
-        await expect(await handler.execute({}, { mutationExpression })).toEqual(deindent(`
+        await expect(await handler.execute({}, { mutationExpressions: mutationExpressions })).toEqual(deindent(`
       INSERT {
         <https://example.org/#D0> <https://example.org/p> ?Rp2
       } WHERE {
@@ -178,7 +178,7 @@ describe('a SparqlHandler instance', () => {
       });
 
       it('resolves with domain of length 2 and range of length of 2', async () => {
-        const mutationExpression = [
+        const mutationExpressions = [
           {
             mutationType: 'INSERT',
             domainExpression: [
@@ -195,7 +195,7 @@ describe('a SparqlHandler instance', () => {
           },
         ];
 
-        await expect(await handler.execute({}, { mutationExpression })).toEqual(deindent(`
+        await expect(await handler.execute({}, { mutationExpressions: mutationExpressions })).toEqual(deindent(`
       INSERT {
         ?Dp2 <https://example.org/p> ?Rp2
       } WHERE {
@@ -210,7 +210,7 @@ describe('a SparqlHandler instance', () => {
 
     describe('with one DELETE expression', () => {
       it('resolves with domain of length 0 and range of length of 0', async () => {
-        const mutationExpression = [
+        const mutationExpressions = [
           {
             mutationType: 'DELETE',
             domainExpression: [{ subject: 'https://example.org/#D0' }],
@@ -219,7 +219,7 @@ describe('a SparqlHandler instance', () => {
           },
         ];
 
-        await expect(await handler.execute({}, { mutationExpression })).toEqual(deindent(`
+        await expect(await handler.execute({}, { mutationExpressions: mutationExpressions })).toEqual(deindent(`
       DELETE DATA {
         <https://example.org/#D0> <https://example.org/p> <https://example.org/#R0>
       }`));
@@ -228,7 +228,7 @@ describe('a SparqlHandler instance', () => {
 
     describe('with multiple expressions', () => {
       it('resolves with queries separated by semicolons', async () => {
-        const mutationExpression = [
+        const mutationExpressions = [
           {
             mutationType: 'INSERT',
             domainExpression: [
@@ -257,7 +257,7 @@ describe('a SparqlHandler instance', () => {
           },
         ];
 
-        await expect(await handler.execute({}, { mutationExpression })).toEqual(deindent(`
+        await expect(await handler.execute({}, { mutationExpressions: mutationExpressions })).toEqual(deindent(`
       INSERT {
         ?Dp2 <https://example.org/p> ?Rp2
       } WHERE {

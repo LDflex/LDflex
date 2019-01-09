@@ -2,14 +2,14 @@
  * Expresses a path or mutation as a SPARQL query.
  *
  * Requires:
- * - a mutationExpression or pathExpression property on the path proxy
+ * - a mutationExpressions or pathExpression property on the path proxy
  */
 export default class SparqlHandler {
   async execute(path, proxy) {
     // First check if we have a mutation expression
-    const mutationExpression = await proxy.mutationExpression;
-    if (Array.isArray(mutationExpression))
-      return this.executeMutationExpression(path, proxy, mutationExpression);
+    const mutationExpressions = await proxy.mutationExpressions;
+    if (Array.isArray(mutationExpressions))
+      return this.executeMutationExpression(path, proxy, mutationExpressions);
 
     // Otherwise, fallback to checking for a path expression
     const pathExpression = await proxy.pathExpression;

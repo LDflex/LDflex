@@ -31,7 +31,7 @@ export const defaultHandlers = {
 
   // Add path handling
   pathExpression: new PathExpressionHandler(),
-  mutationExpression: new VoidHandler(), // Initialize mutationExpression to undefined to avoid being handled by another handler.
+  mutationExpressions: new VoidHandler(), // Initialize mutationExpressions to undefined to avoid being handled by another handler.
   add: new MutationExpressionHandler(MutationExpressionHandler.INSERT),
   delete: new MutationExpressionHandler(MutationExpressionHandler.DELETE),
   sparql: new SparqlHandler(),

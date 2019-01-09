@@ -8,7 +8,7 @@ describe('a MutationExpressionHandler instance', () => {
     expect(typeof await handler.execute({}, {})).toEqual('function');
   });
 
-  it('resolves to function that returns a proxy with mutationExpression', async () => {
+  it('resolves to function that returns a proxy with mutationExpressions', async () => {
     const pathExpression = [
       { subject: 'https://example.org/#me' },
       { predicate: 'https://ex.org/p1' },
@@ -19,7 +19,7 @@ describe('a MutationExpressionHandler instance', () => {
       },
       _resolvers: [],
     };
-    expect(await handler.execute({ proxyHandler }, {})('Ruben').mutationExpression).toEqual([
+    expect(await handler.execute({ proxyHandler }, {})('Ruben').mutationExpressions).toEqual([
       {
         mutationType: 'INSERT',
         domainExpression: [{ subject: 'https://example.org/#me' }],

@@ -3,7 +3,7 @@
  *
  * This handler should not be added as a handler manually.
  * It is created by MutationExpressionHandler as part of the callback
- * to provide a mutationExpression field.
+ * to provide a mutationExpressions field.
  *
  * Requires:
  * - a pathExpression property on the path proxy and all non-raw arguments.
