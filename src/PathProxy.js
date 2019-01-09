@@ -36,7 +36,6 @@ export default class PathProxy {
 
     const path = { settings, ...data };
     path.proxy = new Proxy(path, this);
-    path.proxyHandler = this;
     path.extend = newData =>
       this.createPath(settings, { parent: path, ...newData });
     return path.proxy;

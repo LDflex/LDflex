@@ -1,22 +1,33 @@
 /**
- * Callback handler for mutation expressions.
+ * Returns a function that, when called with arguments,
+ * extends the path with mutationExpressions.
  *
- * This handler should not be added as a handler manually.
- * It is created by MutationExpressionHandler as part of the callback
- * to provide a mutationExpressions field.
+ * It uses the current path expression as domain
+ * and the given arguments as range.
+ * These arguments can either be raw, or other path expressions.
  *
  * Requires:
  * - a pathExpression property on the path proxy and all non-raw arguments.
  */
-export default class MutationExpressionCallbackHandler {
-  constructor({ mutationType, args }) {
+export default class MutationFunctionHandler {
+  constructor(mutationType) {
     this._mutationType = mutationType;
-    this._args = args;
   }
 
-  async execute(path, proxy) {
+  execute(path, proxy) {
+    const self = this;
+    return function () {
+      const mutationExpressions = {
+        then: (resolve, reject) =>
+          self.createMutationExpressions(path, proxy, arguments).then(resolve, reject),
+      };
+      return path.extend({ mutationExpressions });
+    };
+  }
+
+  async createMutationExpressions(path, proxy, args) {
     // Check if the given arguments are valid
-    if (!this._args.length)
+    if (!args.length)
       throw new Error(`Mutation on ${path} can not be invoked without arguments`);
 
     // Check if we have a valid path
@@ -35,7 +46,7 @@ export default class MutationExpressionCallbackHandler {
 
     // Determine right variables and patterns
     const mutationExpressions = [];
-    for (let argument of this._args) {
+    for (let argument of args) {
       // If an argument does not expose a pathExpression, we consider it a raw value.
       let rangeExpression = await argument.pathExpression;
       if (!Array.isArray(rangeExpression))

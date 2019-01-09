@@ -1,15 +1,17 @@
 import PathProxy from '../../src/PathProxy';
 import PathExpressionHandler from '../../src/PathExpressionHandler';
-import InsertExpressionHandler from '../../src/InsertExpressionHandler';
-import DeleteExpressionHandler from '../../src/DeleteExpressionHandler';
+import InsertFunctionHandler from '../../src/InsertFunctionHandler';
+import DeleteFunctionHandler from '../../src/DeleteFunctionHandler';
+import MutationExpressionsHandler from '../../src/MutationExpressionsHandler';
 import JSONLDResolver from '../../src/JSONLDResolver';
 import context from '../context';
 
 describe('a query path with a path expression handler', () => {
   const handlers = {
     pathExpression: new PathExpressionHandler(),
-    add: new InsertExpressionHandler(),
-    delete: new DeleteExpressionHandler(),
+    add: new InsertFunctionHandler(),
+    delete: new DeleteFunctionHandler(),
+    mutationExpressions: new MutationExpressionsHandler(),
   };
   const resolvers = [
     new JSONLDResolver(context),

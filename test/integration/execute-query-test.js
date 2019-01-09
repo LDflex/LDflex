@@ -2,9 +2,9 @@ import PathProxy from '../../src/PathProxy';
 import ExecuteQueryHandler from '../../src/ExecuteQueryHandler';
 import SparqlHandler from '../../src/SparqlHandler';
 import PathExpressionHandler from '../../src/PathExpressionHandler';
-import InsertExpressionHandler from '../../src/InsertExpressionHandler';
-import DeleteExpressionHandler from '../../src/DeleteExpressionHandler';
-import VoidHandler from '../../src/VoidHandler';
+import InsertFunctionHandler from '../../src/InsertFunctionHandler';
+import DeleteFunctionHandler from '../../src/DeleteFunctionHandler';
+import MutationExpressionsHandler from '../../src/MutationExpressionsHandler';
 import JSONLDResolver from '../../src/JSONLDResolver';
 import { getIterator, iterableToThen } from '../../src/iterableUtils';
 import { createQueryEngine } from '../util';
@@ -21,7 +21,7 @@ const resolvers = [
 const handlersPath = {
   sparql: new SparqlHandler(),
   pathExpression: new PathExpressionHandler(),
-  mutationExpressions: new VoidHandler(), // Initialize mutationExpressions to undefined to avoid being handled by another handler.
+  mutationExpressions: new MutationExpressionsHandler(),
   [Symbol.asyncIterator]: getIterator(executeQueryHandler),
   then: iterableToThen(executeQueryHandler),
 };
@@ -29,9 +29,9 @@ const handlersPath = {
 const handlersMutation = {
   sparql: new SparqlHandler(),
   pathExpression: new PathExpressionHandler(),
-  mutationExpressions: new VoidHandler(), // Initialize mutationExpressions to undefined to avoid being handled by another handler.
-  add: new InsertExpressionHandler(),
-  delete: new DeleteExpressionHandler(),
+  add: new InsertFunctionHandler(),
+  delete: new DeleteFunctionHandler(),
+  mutationExpressions: new MutationExpressionsHandler(),
   [Symbol.asyncIterator]: getIterator(executeQueryHandler),
   then: iterableToThen(executeQueryHandler),
 };
