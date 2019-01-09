@@ -27,5 +27,3 @@ export default class MutationExpressionHandler {
     };
   }
 }
-MutationExpressionHandler.INSERT = 'INSERT';
-MutationExpressionHandler.DELETE = 'DELETE';

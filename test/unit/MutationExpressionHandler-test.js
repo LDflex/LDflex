@@ -1,8 +1,8 @@
-import MutationExpressionHandler from '../../src/MutationExpressionHandler';
+import InsertExpressionHandler from '../../src/InsertExpressionHandler';
 
 describe('a MutationExpressionHandler instance', () => {
   let handler;
-  beforeAll(() => handler = new MutationExpressionHandler('INSERT'));
+  beforeAll(() => handler = new InsertExpressionHandler());
 
   it('resolves to function', async () => {
     expect(typeof await handler.execute({}, {})).toEqual('function');

@@ -2,7 +2,8 @@ import PathProxy from '../../src/PathProxy';
 import ExecuteQueryHandler from '../../src/ExecuteQueryHandler';
 import SparqlHandler from '../../src/SparqlHandler';
 import PathExpressionHandler from '../../src/PathExpressionHandler';
-import MutationExpressionHandler from '../../src/MutationExpressionHandler';
+import InsertExpressionHandler from '../../src/InsertExpressionHandler';
+import DeleteExpressionHandler from '../../src/DeleteExpressionHandler';
 import VoidHandler from '../../src/VoidHandler';
 import JSONLDResolver from '../../src/JSONLDResolver';
 import { getIterator, iterableToThen } from '../../src/iterableUtils';
@@ -29,8 +30,8 @@ const handlersMutation = {
   sparql: new SparqlHandler(),
   pathExpression: new PathExpressionHandler(),
   mutationExpressions: new VoidHandler(), // Initialize mutationExpressions to undefined to avoid being handled by another handler.
-  add: new MutationExpressionHandler(MutationExpressionHandler.INSERT),
-  delete: new MutationExpressionHandler(MutationExpressionHandler.DELETE),
+  add: new InsertExpressionHandler(),
+  delete: new DeleteExpressionHandler(),
   [Symbol.asyncIterator]: getIterator(executeQueryHandler),
   then: iterableToThen(executeQueryHandler),
 };

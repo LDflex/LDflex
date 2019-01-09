@@ -1,6 +1,7 @@
 import PathProxy from './PathProxy';
 import PathExpressionHandler from './PathExpressionHandler';
-import MutationExpressionHandler from './MutationExpressionHandler';
+import InsertExpressionHandler from './InsertExpressionHandler';
+import DeleteExpressionHandler from './DeleteExpressionHandler';
 import VoidHandler from './VoidHandler';
 import ExecuteQueryHandler from './ExecuteQueryHandler';
 import SparqlHandler from './SparqlHandler';
@@ -32,8 +33,8 @@ export const defaultHandlers = {
   // Add path handling
   pathExpression: new PathExpressionHandler(),
   mutationExpressions: new VoidHandler(), // Initialize mutationExpressions to undefined to avoid being handled by another handler.
-  add: new MutationExpressionHandler(MutationExpressionHandler.INSERT),
-  delete: new MutationExpressionHandler(MutationExpressionHandler.DELETE),
+  add: new InsertExpressionHandler(),
+  delete: new DeleteExpressionHandler(),
   sparql: new SparqlHandler(),
 
   // Parse a string into an LDflex object

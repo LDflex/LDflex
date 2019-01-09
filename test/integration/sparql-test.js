@@ -1,7 +1,8 @@
 import PathProxy from '../../src/PathProxy';
 import SparqlHandler from '../../src/SparqlHandler';
 import PathExpressionHandler from '../../src/PathExpressionHandler';
-import MutationExpressionHandler from '../../src/MutationExpressionHandler';
+import InsertExpressionHandler from '../../src/InsertExpressionHandler';
+import DeleteExpressionHandler from '../../src/DeleteExpressionHandler';
 import JSONLDResolver from '../../src/JSONLDResolver';
 
 import context from '../context';
@@ -13,8 +14,8 @@ describe('a query path with a path expression handler', () => {
   const handlers = {
     sparql: new SparqlHandler(),
     pathExpression: new PathExpressionHandler(),
-    add: new MutationExpressionHandler(MutationExpressionHandler.INSERT),
-    delete: new MutationExpressionHandler(MutationExpressionHandler.DELETE),
+    add: new InsertExpressionHandler(),
+    delete: new DeleteExpressionHandler(),
   };
   const resolvers = [
     new JSONLDResolver(context),
