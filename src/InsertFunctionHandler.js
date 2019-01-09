@@ -5,6 +5,6 @@ import MutationFunctionHandler from './MutationFunctionHandler';
  */
 export default class InsertFunctionHandler extends MutationFunctionHandler {
   constructor() {
-    super('INSERT');
+    super('INSERT', false);
   }
 }

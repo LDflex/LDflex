@@ -10,8 +10,9 @@
  * - a pathExpression property on the path proxy and all non-raw arguments.
  */
 export default class MutationFunctionHandler {
-  constructor(mutationType) {
+  constructor(mutationType, allowZeroArgs) {
     this._mutationType = mutationType;
+    this._allowZeroArgs = allowZeroArgs;
   }
 
   execute(path, proxy) {
@@ -27,7 +28,7 @@ export default class MutationFunctionHandler {
 
   async createMutationExpressions(path, proxy, args) {
     // Check if the given arguments are valid
-    if (!args.length)
+    if (!this._allowZeroArgs && !args.length)
       throw new Error(`Mutation on ${path} can not be invoked without arguments`);
 
     // Check if we have a valid path
@@ -39,28 +40,38 @@ export default class MutationFunctionHandler {
     if (domainExpression.length < 2)
       throw new Error(`${path} should at least contain a subject and a predicate`);
 
-    // The last path segment represents the predicate of the triple to insert
-    const predicate = domainExpression.splice(domainExpression.length - 1)[0].predicate;
-    if (!predicate)
-      throw new Error(`Expected predicate in ${path}`);
+    // If we have args, the range is defined by these args
+    if (args.length) {
+      // The last path segment represents the predicate of the triple to insert
+      const predicate = domainExpression.splice(domainExpression.length - 1)[0].predicate;
+      if (!predicate)
+        throw new Error(`Expected predicate in ${path}`);
 
-    // Determine right variables and patterns
-    const mutationExpressions = [];
-    for (let argument of args) {
-      // If an argument does not expose a pathExpression, we consider it a raw value.
-      let rangeExpression = await argument.pathExpression;
-      if (!Array.isArray(rangeExpression))
-        rangeExpression = [{ subject: `"${argument}"` }];
+      // Determine right variables and patterns
+      const mutationExpressions = [];
+      for (let argument of args) {
+        // If an argument does not expose a pathExpression, we consider it a raw value.
+        let rangeExpression = await argument.pathExpression;
+        if (!Array.isArray(rangeExpression))
+          rangeExpression = [{ subject: `"${argument}"` }];
 
-      // Store the domain, predicate and range in the insert expression.
-      mutationExpressions.push({
-        mutationType: this._mutationType,
-        domainExpression,
-        predicate,
-        rangeExpression,
-      });
+        // Store the domain, predicate and range in the insert expression.
+        mutationExpressions.push({
+          mutationType: this._mutationType,
+          domainExpression,
+          predicate,
+          rangeExpression,
+        });
+      }
+
+      return mutationExpressions;
     }
 
-    return mutationExpressions;
+    // If we don't have args, the range simply corresponds to the domain,
+    // so we don't store the range and predicate explicitly.
+    return [{
+      mutationType: this._mutationType,
+      domainExpression,
+    }];
   }
 }

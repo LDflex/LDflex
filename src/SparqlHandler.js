@@ -56,23 +56,34 @@ export default class SparqlHandler {
 
   mutationExpressionToQuery({ mutationType, domainExpression, predicate, rangeExpression }) {
     // Determine the patterns that should appear in the WHERE clause
-    const { queryVar: domainQueryVar, clause: domainClause } = this.getQueryVarAndClauses(domainExpression);
-    const { queryVar: rangeQueryVar, clause: rangeClause } = this.getQueryVarAndClauses(rangeExpression);
-    const clauses = [];
-    if (domainClause)
-      clauses.push(domainClause);
-    if (rangeClause)
-      clauses.push(rangeClause);
+    let clauses = [];
+    let insertPattern;
+    const { queryVar: domainQueryVar, clauses: domainClauses } = this.getQueryVarAndClauses(domainExpression);
+    if (domainClauses.length)
+      clauses = domainClauses;
+    if (rangeExpression) {
+      const { queryVar: rangeQueryVar, clauses: rangeClauses } = this.getQueryVarAndClauses(rangeExpression);
+      if (rangeClauses.length) {
+        if (clauses.length)
+          clauses = clauses.concat(rangeClauses);
+        else
+          clauses = rangeClauses;
+      }
 
-    // Determine the insert pattern
-    const insertPattern = `${domainQueryVar} <${predicate}> ${rangeQueryVar}`;
+      // If we have a range, the mutation is on <domainVar> <predicate> <rangeVar>
+      insertPattern = `${domainQueryVar} <${predicate}> ${rangeQueryVar}`;
+    }
+    else {
+      // If we don't have a range, assume that the mutation is on the last segment of the domain
+      insertPattern = domainClauses[domainClauses.length - 1].slice(0, -1);
+    }
 
     // If we don't have any WHERE clauses, we just insert raw data
     if (!clauses.length)
       return `${mutationType} DATA {\n  ${insertPattern}\n}`;
 
     // Otherwise, return an INSERT ... WHERE ... query
-    return `${mutationType} {\n  ${insertPattern}\n} WHERE {\n  ${clauses.join('\n\n  ')}\n}`;
+    return `${mutationType} {\n  ${insertPattern}\n} WHERE {\n  ${clauses.join('\n  ')}\n}`;
   }
 
   getQueryVarAndClauses(expression) {
@@ -88,7 +99,7 @@ export default class SparqlHandler {
     const queryVar = lastSegment.predicate.match(/[a-z0-9]*$/i)[0] || 'result';
     return {
       queryVar: `?${queryVar}`,
-      clause: this.expressionToTriplePatterns(expression, queryVar).join('\n  '),
+      clauses: this.expressionToTriplePatterns(expression, queryVar),
     };
   }
 }

@@ -109,7 +109,6 @@ describe('a query path with a path expression handler', () => {
       } WHERE {
         <https://example.org/#me> <http://xmlns.com/foaf/0.1/knows> ?v0.
         ?v0 <http://xmlns.com/foaf/0.1/knows> ?knows.
-
         <https://example.org/#me> <http://xmlns.com/foaf/0.1/givenName> ?givenName.
       }`));
   });
@@ -139,6 +138,22 @@ describe('a query path with a path expression handler', () => {
       }`));
   });
 
+  it('resolves a path with 3 links and a deletion without args', async () => {
+    const query = await person.friends.friends.delete().sparql;
+    expect(query).toEqual(deindent(`
+      DELETE {
+        ?v0 <http://xmlns.com/foaf/0.1/knows> ?knows
+      } WHERE {
+        <https://example.org/#me> <http://xmlns.com/foaf/0.1/knows> ?v0.
+        ?v0 <http://xmlns.com/foaf/0.1/knows> ?knows.
+      }`));
+  });
+
+  it('errors on a path with 3 links and an addition without args', async () => {
+    expect(person.friends.friends.add().sparql).rejects
+      .toThrow(new Error('Mutation on [object Object] can not be invoked without arguments'));
+  });
+
   it('resolves a path with 3 links and an addition with a raw arg and path arg with length 1', async () => {
     const query = await person.friends.friends.firstName.add('Ruben', person.firstName).sparql;
     expect(query).toEqual(deindent(`
@@ -154,7 +169,6 @@ describe('a query path with a path expression handler', () => {
       } WHERE {
         <https://example.org/#me> <http://xmlns.com/foaf/0.1/knows> ?v0.
         ?v0 <http://xmlns.com/foaf/0.1/knows> ?knows.
-
         <https://example.org/#me> <http://xmlns.com/foaf/0.1/givenName> ?givenName.
       }`));
   });

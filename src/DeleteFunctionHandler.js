@@ -5,6 +5,6 @@ import MutationFunctionHandler from './MutationFunctionHandler';
  */
 export default class DeleteFunctionHandler extends MutationFunctionHandler {
   constructor() {
-    super('DELETE');
+    super('DELETE', true);
   }
 }

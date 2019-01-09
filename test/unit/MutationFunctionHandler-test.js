@@ -1,11 +1,12 @@
 import MutationFunctionHandler from '../../src/MutationFunctionHandler';
 
-describe('a MutationFunctionHandler instance', () => {
-  const mutationType = 'TYPE';
-  const extendedPath = {};
-  const path = { extend: jest.fn(() => extendedPath), toString: () => 'path' };
+const mutationType = 'TYPE';
+const extendedPath = {};
+const path = { extend: jest.fn(() => extendedPath), toString: () => 'path' };
+
+describe('a MutationFunctionHandler instance not allowing 0 args', () => {
   let handler;
-  beforeAll(() => handler = new MutationFunctionHandler(mutationType));
+  beforeAll(() => handler = new MutationFunctionHandler(mutationType, false));
 
   describe('resolving a property', async () => {
     const pathExpression = [
@@ -355,6 +356,50 @@ describe('a MutationFunctionHandler instance', () => {
           ],
         },
       ]);
+    });
+  });
+});
+
+describe('a MutationFunctionHandler instance allowing 0 args', () => {
+  let handler;
+  beforeAll(() => handler = new MutationFunctionHandler(mutationType, true));
+
+  describe('#createMutationExpressions', () => {
+    describe('without args', () => {
+      it('resolves a path of length 1', async () => {
+        const pathExpression = [
+          { subject: 'https://example.org/#me' },
+          { predicate: 'https://ex.org/p1' },
+        ];
+
+        expect(await handler.createMutationExpressions(path, { pathExpression }, [])).toEqual([
+          {
+            mutationType,
+            domainExpression: [{ subject: 'https://example.org/#me' }, { predicate: 'https://ex.org/p1' }],
+          },
+        ]);
+      });
+
+      it('resolves a path of length 3', async () => {
+        const pathExpression = [
+          { subject: 'https://example.org/#me' },
+          { predicate: 'https://ex.org/p1' },
+          { predicate: 'https://ex.org/p2' },
+          { predicate: 'https://ex.org/p3' },
+        ];
+
+        expect(await handler.createMutationExpressions(path, { pathExpression }, [])).toEqual([
+          {
+            mutationType,
+            domainExpression: [
+              { subject: 'https://example.org/#me' },
+              { predicate: 'https://ex.org/p1' },
+              { predicate: 'https://ex.org/p2' },
+              { predicate: 'https://ex.org/p3' },
+            ],
+          },
+        ]);
+      });
     });
   });
 });

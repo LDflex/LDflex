@@ -201,7 +201,6 @@ describe('a SparqlHandler instance', () => {
       } WHERE {
         <https://example.org/#D0> <https://example.org/#Dp1> ?v0.
         ?v0 <https://example.org/#Dp2> ?Dp2.
-      
         <https://example.org/#R0> <https://example.org/#Rp1> ?v0.
         ?v0 <https://example.org/#Rp2> ?Rp2.
       }`));
@@ -222,6 +221,24 @@ describe('a SparqlHandler instance', () => {
         await expect(await handler.execute({}, { mutationExpressions: mutationExpressions })).toEqual(deindent(`
       DELETE DATA {
         <https://example.org/#D0> <https://example.org/p> <https://example.org/#R0>
+      }`));
+      });
+    });
+
+    describe('with one DELETE expression without range', () => {
+      it('resolves with domain of length 0 and range of length of 0', async () => {
+        const mutationExpressions = [
+          {
+            mutationType: 'DELETE',
+            domainExpression: [{ subject: 'https://example.org/#D0' }, { predicate: 'https://example.org/#Dp1' }],
+          },
+        ];
+
+        await expect(await handler.execute({}, { mutationExpressions: mutationExpressions })).toEqual(deindent(`
+      DELETE {
+        <https://example.org/#D0> <https://example.org/#Dp1> ?Dp1
+      } WHERE {
+        <https://example.org/#D0> <https://example.org/#Dp1> ?Dp1.
       }`));
       });
     });
@@ -263,7 +280,6 @@ describe('a SparqlHandler instance', () => {
       } WHERE {
         <https://example.org/#D0> <https://example.org/#Dp1> ?v0.
         ?v0 <https://example.org/#Dp2> ?Dp2.
-      
         <https://example.org/#R0> <https://example.org/#Rp1> ?v0.
         ?v0 <https://example.org/#Rp2> ?Rp2.
       }
