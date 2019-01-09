@@ -201,8 +201,8 @@ describe('a SparqlHandler instance', () => {
       } WHERE {
         <https://example.org/#D0> <https://example.org/#Dp1> ?v0.
         ?v0 <https://example.org/#Dp2> ?Dp2.
-        <https://example.org/#R0> <https://example.org/#Rp1> ?v0.
-        ?v0 <https://example.org/#Rp2> ?Rp2.
+        <https://example.org/#R0> <https://example.org/#Rp1> ?v0_0.
+        ?v0_0 <https://example.org/#Rp2> ?Rp2.
       }`));
       });
     });
@@ -280,8 +280,8 @@ describe('a SparqlHandler instance', () => {
       } WHERE {
         <https://example.org/#D0> <https://example.org/#Dp1> ?v0.
         ?v0 <https://example.org/#Dp2> ?Dp2.
-        <https://example.org/#R0> <https://example.org/#Rp1> ?v0.
-        ?v0 <https://example.org/#Rp2> ?Rp2.
+        <https://example.org/#R0> <https://example.org/#Rp1> ?v0_0.
+        ?v0_0 <https://example.org/#Rp2> ?Rp2.
       }
       ;
       DELETE DATA {
@@ -292,6 +292,36 @@ describe('a SparqlHandler instance', () => {
         <https://example.org/#D0> <https://example.org/p> <https://example.org/#R0>
       }`));
       });
+    });
+  });
+
+  describe('#getQueryVar', () => {
+    it('returns the suggestion for an empty scope', () => {
+      const variableScope = {};
+      const queryVar = handler.getQueryVar('a', variableScope);
+      expect(queryVar).toEqual('a');
+      expect(variableScope).toEqual({ a: true });
+    });
+
+    it('returns the suggestion for a scope without matches', () => {
+      const variableScope = { b: true };
+      const queryVar = handler.getQueryVar('a', variableScope);
+      expect(queryVar).toEqual('a');
+      expect(variableScope).toEqual({ b: true, a: true });
+    });
+
+    it('returns an incremented label for a scope with 1 match', () => {
+      const variableScope = { a: true };
+      const queryVar = handler.getQueryVar('a', variableScope);
+      expect(queryVar).toEqual('a_0');
+      expect(variableScope).toEqual({ 'a': true, 'a_0': true }); // eslint-disable-line quote-props
+    });
+
+    it('returns an incremented label for a scope with 3 matches', () => {
+      const variableScope = { 'a': true, 'a_0': true, 'a_1': true, 'a_2': true }; // eslint-disable-line quote-props
+      const queryVar = handler.getQueryVar('a', variableScope);
+      expect(queryVar).toEqual('a_3');
+      expect(variableScope).toEqual({ 'a': true, 'a_0': true, 'a_1': true, 'a_2': true, 'a_3': true }); // eslint-disable-line quote-props
     });
   });
 });

@@ -40,7 +40,7 @@ export default class SparqlHandler {
       .join('\n;\n');
   }
 
-  expressionToTriplePatterns(pathExpression, queryVar) {
+  expressionToTriplePatterns(pathExpression, queryVar, variableScope = {}) {
     const root = pathExpression[0];
     const last = pathExpression.length - 2;
     let object = `<${root.subject}>`;
@@ -48,7 +48,7 @@ export default class SparqlHandler {
       // Obtain triple pattern components
       const subject = object;
       const { predicate } = segment;
-      object = index !== last ? `?v${index}` : `?${queryVar}`;
+      object = index !== last ? `?${this.getQueryVar(`v${index}`, variableScope)}` : `?${queryVar}`;
       // Generate triple pattern
       return `${subject} <${predicate}> ${object}.`;
     });
@@ -56,13 +56,14 @@ export default class SparqlHandler {
 
   mutationExpressionToQuery({ mutationType, domainExpression, predicate, rangeExpression }) {
     // Determine the patterns that should appear in the WHERE clause
+    const variableScope = {};
     let clauses = [];
     let insertPattern;
-    const { queryVar: domainQueryVar, clauses: domainClauses } = this.getQueryVarAndClauses(domainExpression);
+    const { queryVar: domainQueryVar, clauses: domainClauses } = this.getQueryVarAndClauses(domainExpression, variableScope);
     if (domainClauses.length)
       clauses = domainClauses;
     if (rangeExpression) {
-      const { queryVar: rangeQueryVar, clauses: rangeClauses } = this.getQueryVarAndClauses(rangeExpression);
+      const { queryVar: rangeQueryVar, clauses: rangeClauses } = this.getQueryVarAndClauses(rangeExpression, variableScope);
       if (rangeClauses.length) {
         if (clauses.length)
           clauses = clauses.concat(rangeClauses);
@@ -86,7 +87,7 @@ export default class SparqlHandler {
     return `${mutationType} {\n  ${insertPattern}\n} WHERE {\n  ${clauses.join('\n  ')}\n}`;
   }
 
-  getQueryVarAndClauses(expression) {
+  getQueryVarAndClauses(expression, variableScope) {
     const lastSegment = expression[expression.length - 1];
 
     if (expression.length === 1) {
@@ -96,10 +97,20 @@ export default class SparqlHandler {
       };
     }
 
-    const queryVar = lastSegment.predicate.match(/[a-z0-9]*$/i)[0] || 'result';
+    const queryVar = this.getQueryVar(lastSegment.predicate.match(/[a-z0-9]*$/i)[0] || 'result', variableScope);
     return {
       queryVar: `?${queryVar}`,
-      clauses: this.expressionToTriplePatterns(expression, queryVar),
+      clauses: this.expressionToTriplePatterns(expression, queryVar, variableScope),
     };
+  }
+
+  // Creates a unique query variable label within the given scope based on the given suggestion
+  getQueryVar(labelSuggestion, variableScope) {
+    let label = labelSuggestion;
+    let counter = 0;
+    while (variableScope[label])
+      label = `${labelSuggestion}_${counter++}`;
+    variableScope[label] = true;
+    return label;
   }
 }
