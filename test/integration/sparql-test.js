@@ -5,6 +5,7 @@ import InsertFunctionHandler from '../../src/InsertFunctionHandler';
 import DeleteFunctionHandler from '../../src/DeleteFunctionHandler';
 import MutationExpressionsHandler from '../../src/MutationExpressionsHandler';
 import SetFunctionHandler from '../../src/SetFunctionHandler';
+import ReplaceFunctionHandler from '../../src/ReplaceFunctionHandler';
 import JSONLDResolver from '../../src/JSONLDResolver';
 
 import context from '../context';
@@ -19,6 +20,7 @@ describe('a query path with a path expression handler', () => {
     add: new InsertFunctionHandler(),
     delete: new DeleteFunctionHandler(),
     mutationExpressions: new MutationExpressionsHandler(),
+    replace: new ReplaceFunctionHandler(),
     set: new SetFunctionHandler(),
   };
   const resolvers = [
@@ -243,6 +245,24 @@ describe('a query path with a path expression handler', () => {
       ;
       INSERT {
         ?knows <http://xmlns.com/foaf/0.1/givenName> "ruben"
+      } WHERE {
+        <https://example.org/#me> <http://xmlns.com/foaf/0.1/knows> ?v0.
+        ?v0 <http://xmlns.com/foaf/0.1/knows> ?knows.
+      }`));
+  });
+
+  it('resolves a path with 3 links and a replace', async () => {
+    const query = await person.friends.friends.firstName.replace('ruben', 'Ruben').sparql;
+    expect(query).toEqual(deindent(`
+      DELETE {
+        ?knows <http://xmlns.com/foaf/0.1/givenName> "ruben"
+      } WHERE {
+        <https://example.org/#me> <http://xmlns.com/foaf/0.1/knows> ?v0.
+        ?v0 <http://xmlns.com/foaf/0.1/knows> ?knows.
+      }
+      ;
+      INSERT {
+        ?knows <http://xmlns.com/foaf/0.1/givenName> "Ruben"
       } WHERE {
         <https://example.org/#me> <http://xmlns.com/foaf/0.1/knows> ?v0.
         ?v0 <http://xmlns.com/foaf/0.1/knows> ?knows.
