@@ -169,4 +169,22 @@ describe('a query path with a path expression handler', () => {
         ?v0 <http://xmlns.com/foaf/0.1/knows> ?knows.
       }`));
   });
+
+  it('resolves a path with 3 links and a deletion and addition', async () => {
+    const query = await person.friends.friends.firstName.delete('ruben').add('Ruben').sparql;
+    expect(query).toEqual(deindent(`
+      DELETE {
+        ?knows <http://xmlns.com/foaf/0.1/givenName> "ruben"
+      } WHERE {
+        <https://example.org/#me> <http://xmlns.com/foaf/0.1/knows> ?v0.
+        ?v0 <http://xmlns.com/foaf/0.1/knows> ?knows.
+      }
+      ;
+      INSERT {
+        ?knows <http://xmlns.com/foaf/0.1/givenName> "Ruben"
+      } WHERE {
+        <https://example.org/#me> <http://xmlns.com/foaf/0.1/knows> ?v0.
+        ?v0 <http://xmlns.com/foaf/0.1/knows> ?knows.
+      }`));
+  });
 });

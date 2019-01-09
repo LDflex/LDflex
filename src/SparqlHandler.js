@@ -8,7 +8,7 @@ export default class SparqlHandler {
   async execute(path, proxy) {
     // First check if we have a mutation expression
     const mutationExpressions = await proxy.mutationExpressions;
-    if (Array.isArray(mutationExpressions))
+    if (Array.isArray(mutationExpressions) && mutationExpressions.length)
       return this.executeMutationExpression(path, proxy, mutationExpressions);
 
     // Otherwise, fallback to checking for a path expression
@@ -35,10 +35,6 @@ export default class SparqlHandler {
   }
 
   executeMutationExpression(path, proxy, mutationExpressions) {
-    // Require at least one mutation query
-    if (!mutationExpressions.length)
-      throw new Error(`${path} should at least have one mutation expression`);
-
     return mutationExpressions
       .map(mutationExpression => this.mutationExpressionToQuery(mutationExpression))
       .join('\n;\n');

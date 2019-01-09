@@ -6,6 +6,14 @@ describe('a SparqlHandler instance', () => {
   let handler;
   beforeAll(() => handler = new SparqlHandler());
 
+  it('errors with empty mutationExpressions and when no pathExpression is present', async () => {
+    const mutationExpressions = [];
+    const path = { toString: () => 'path' };
+
+    await expect(handler.execute(path, { mutationExpressions: mutationExpressions })).rejects
+      .toThrow(new Error('path has no pathExpression property'));
+  });
+
   it('errors when no pathExpression is present', async () => {
     const path = { toString: () => 'path' };
 
@@ -68,15 +76,7 @@ describe('a SparqlHandler instance', () => {
     });
   });
 
-  describe('with a mutationExpressions', () => {
-    it('errors with 0 expressions', async () => {
-      const mutationExpressions = [];
-      const path = { toString: () => 'path' };
-
-      await expect(handler.execute(path, { mutationExpressions: mutationExpressions })).rejects
-        .toThrow(new Error('path should at least have one mutation expression'));
-    });
-
+  describe('with mutationExpressions', () => {
     describe('with one INSERT expression', () => {
       it('resolves with domain of length 0 and range of length of 0', async () => {
         const mutationExpressions = [

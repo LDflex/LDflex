@@ -146,4 +146,51 @@ describe('a query path with a path expression handler', () => {
       },
     ]);
   });
+
+  it('resolves a path with 2 links and an deletion and addition', async () => {
+    const path = await person.friends.firstName.delete('ruben').add('Ruben').mutationExpressions;
+    expect(path).toEqual([
+      {
+        mutationType: 'DELETE',
+        domainExpression: [
+          { subject },
+          { predicate: 'http://xmlns.com/foaf/0.1/knows' },
+        ],
+        predicate: 'http://xmlns.com/foaf/0.1/givenName',
+        rangeExpression: [{ subject: '"ruben"' }],
+      },
+      {
+        mutationType: 'INSERT',
+        domainExpression: [
+          { subject },
+          { predicate: 'http://xmlns.com/foaf/0.1/knows' },
+        ],
+        predicate: 'http://xmlns.com/foaf/0.1/givenName',
+        rangeExpression: [{ subject: '"Ruben"' }],
+      },
+    ]);
+  });
+
+  it('resolves a path with 2 links and an deletion, a link, and addition', async () => {
+    const path = await person.friends.delete(person).firstName.add('Ruben').mutationExpressions;
+    expect(path).toEqual([
+      {
+        mutationType: 'DELETE',
+        domainExpression: [
+          { subject },
+        ],
+        predicate: 'http://xmlns.com/foaf/0.1/knows',
+        rangeExpression: [{ subject }],
+      },
+      {
+        mutationType: 'INSERT',
+        domainExpression: [
+          { subject },
+          { predicate: 'http://xmlns.com/foaf/0.1/knows' },
+        ],
+        predicate: 'http://xmlns.com/foaf/0.1/givenName',
+        rangeExpression: [{ subject: '"Ruben"' }],
+      },
+    ]);
+  });
 });
