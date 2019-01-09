@@ -53,7 +53,7 @@ export default class MutationFunctionHandler {
         // If an argument does not expose a pathExpression, we consider it a raw value.
         let rangeExpression = await argument.pathExpression;
         if (!Array.isArray(rangeExpression))
-          rangeExpression = [{ subject: `"${argument}"` }];
+          rangeExpression = [{ subject: `"${argument.replace(/"/g, '\\"')}"` }];
 
         // Store the domain, predicate and range in the insert expression.
         mutationExpressions.push({
