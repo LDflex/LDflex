@@ -4,12 +4,13 @@ describe('a PathExpressionHandler instance', () => {
   let handler;
   beforeAll(() => handler = new PathExpressionHandler());
 
-  it('errors when an immediate link has no predicate', async () => {
-    const parent = {};
+  it('ignores an immediate link has no predicate', async () => {
+    const parent = { subject: 'abc' };
     const child = { parent, toString: () => 'child' };
 
-    await expect(handler.execute(child)).rejects
-      .toThrow(new Error('Expected predicate in child'));
+    expect(await handler.execute(child)).toEqual([
+      { subject: 'abc' },
+    ]);
   });
 
   it('errors when a root has no subject', async () => {

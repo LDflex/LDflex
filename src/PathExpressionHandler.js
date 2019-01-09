@@ -9,10 +9,10 @@ export default class PathExpressionHandler {
     // Add all predicates to the path
     while (current.parent) {
       // Obtain and store predicate
-      if (!current.predicate)
-        throw new Error(`Expected predicate in ${current}`);
-      const predicate = await current.predicate;
-      segments.unshift({ predicate });
+      if (current.predicate) {
+        const predicate = await current.predicate;
+        segments.unshift({ predicate });
+      }
 
       // Move to parent link
       current = current.parent;
