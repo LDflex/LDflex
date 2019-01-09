@@ -8,7 +8,6 @@
  */
 export default class SetFunctionHandler {
   execute(path, proxy) {
-    const postDeleteProxy = proxy.delete();
-    return postDeleteProxy.add.bind(postDeleteProxy);
+    return (...args) => proxy.delete().add(...args);
   }
 }

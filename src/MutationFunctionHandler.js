@@ -16,11 +16,10 @@ export default class MutationFunctionHandler {
   }
 
   execute(path, proxy) {
-    const self = this;
-    return function () {
+    return (...args) => {
       const mutationExpressions = {
         then: (resolve, reject) =>
-          self.createMutationExpressions(path, proxy, arguments).then(resolve, reject),
+          this.createMutationExpressions(path, proxy, args).then(resolve, reject),
       };
       return path.extend({ mutationExpressions });
     };
