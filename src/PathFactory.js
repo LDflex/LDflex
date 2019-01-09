@@ -3,6 +3,7 @@ import PathExpressionHandler from './PathExpressionHandler';
 import InsertFunctionHandler from './InsertFunctionHandler';
 import DeleteFunctionHandler from './DeleteFunctionHandler';
 import MutationExpressionsHandler from './MutationExpressionsHandler';
+import SetFunctionHandler from './SetFunctionHandler';
 import ExecuteQueryHandler from './ExecuteQueryHandler';
 import SparqlHandler from './SparqlHandler';
 import JSONLDResolver from './JSONLDResolver';
@@ -35,6 +36,7 @@ export const defaultHandlers = {
   add: new InsertFunctionHandler(),
   delete: new DeleteFunctionHandler(),
   mutationExpressions: new MutationExpressionsHandler(),
+  set: new SetFunctionHandler(),
   sparql: new SparqlHandler(),
 
   // Parse a string into an LDflex object

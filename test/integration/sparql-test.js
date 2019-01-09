@@ -4,6 +4,7 @@ import PathExpressionHandler from '../../src/PathExpressionHandler';
 import InsertFunctionHandler from '../../src/InsertFunctionHandler';
 import DeleteFunctionHandler from '../../src/DeleteFunctionHandler';
 import MutationExpressionsHandler from '../../src/MutationExpressionsHandler';
+import SetFunctionHandler from '../../src/SetFunctionHandler';
 import JSONLDResolver from '../../src/JSONLDResolver';
 
 import context from '../context';
@@ -18,6 +19,7 @@ describe('a query path with a path expression handler', () => {
     add: new InsertFunctionHandler(),
     delete: new DeleteFunctionHandler(),
     mutationExpressions: new MutationExpressionsHandler(),
+    set: new SetFunctionHandler(),
   };
   const resolvers = [
     new JSONLDResolver(context),
@@ -196,6 +198,51 @@ describe('a query path with a path expression handler', () => {
       ;
       INSERT {
         ?knows <http://xmlns.com/foaf/0.1/givenName> "Ruben"
+      } WHERE {
+        <https://example.org/#me> <http://xmlns.com/foaf/0.1/knows> ?v0.
+        ?v0 <http://xmlns.com/foaf/0.1/knows> ?knows.
+      }`));
+  });
+
+  it('resolves a path with 3 links and a set', async () => {
+    const query = await person.friends.friends.firstName.set('Ruben').sparql;
+    expect(query).toEqual(deindent(`
+      DELETE {
+        ?v1 <http://xmlns.com/foaf/0.1/givenName> ?givenName
+      } WHERE {
+        <https://example.org/#me> <http://xmlns.com/foaf/0.1/knows> ?v0.
+        ?v0 <http://xmlns.com/foaf/0.1/knows> ?v1.
+        ?v1 <http://xmlns.com/foaf/0.1/givenName> ?givenName.
+      }
+      ;
+      INSERT {
+        ?knows <http://xmlns.com/foaf/0.1/givenName> "Ruben"
+      } WHERE {
+        <https://example.org/#me> <http://xmlns.com/foaf/0.1/knows> ?v0.
+        ?v0 <http://xmlns.com/foaf/0.1/knows> ?knows.
+      }`));
+  });
+
+  it('resolves a path with 3 links and a set with multiple values', async () => {
+    const query = await person.friends.friends.firstName.set('Ruben', 'ruben').sparql;
+    expect(query).toEqual(deindent(`
+      DELETE {
+        ?v1 <http://xmlns.com/foaf/0.1/givenName> ?givenName
+      } WHERE {
+        <https://example.org/#me> <http://xmlns.com/foaf/0.1/knows> ?v0.
+        ?v0 <http://xmlns.com/foaf/0.1/knows> ?v1.
+        ?v1 <http://xmlns.com/foaf/0.1/givenName> ?givenName.
+      }
+      ;
+      INSERT {
+        ?knows <http://xmlns.com/foaf/0.1/givenName> "Ruben"
+      } WHERE {
+        <https://example.org/#me> <http://xmlns.com/foaf/0.1/knows> ?v0.
+        ?v0 <http://xmlns.com/foaf/0.1/knows> ?knows.
+      }
+      ;
+      INSERT {
+        ?knows <http://xmlns.com/foaf/0.1/givenName> "ruben"
       } WHERE {
         <https://example.org/#me> <http://xmlns.com/foaf/0.1/knows> ?v0.
         ?v0 <http://xmlns.com/foaf/0.1/knows> ?knows.

@@ -8,6 +8,7 @@ import MutationFunctionHandler from './MutationFunctionHandler';
 import PathExpressionHandler from './PathExpressionHandler';
 import PathProxy from './PathProxy';
 import PathFactory from './PathFactory';
+import SetFunctionHandler from './SetFunctionHandler';
 import SparqlHandler from './SparqlHandler';
 import StringToLDflexHandler from './StringToLDflexHandler';
 import SubjectHandler from './SubjectHandler';
@@ -29,6 +30,7 @@ export {
   PathExpressionHandler,
   PathProxy,
   PathFactory,
+  SetFunctionHandler,
   SparqlHandler,
   StringToLDflexHandler,
   SubjectHandler,

@@ -5,6 +5,7 @@ import PathExpressionHandler from '../../src/PathExpressionHandler';
 import InsertFunctionHandler from '../../src/InsertFunctionHandler';
 import DeleteFunctionHandler from '../../src/DeleteFunctionHandler';
 import MutationExpressionsHandler from '../../src/MutationExpressionsHandler';
+import SetFunctionHandler from '../../src/SetFunctionHandler';
 import JSONLDResolver from '../../src/JSONLDResolver';
 import { getIterator, iterableToThen } from '../../src/iterableUtils';
 import { createQueryEngine } from '../util';
@@ -32,6 +33,7 @@ const handlersMutation = {
   add: new InsertFunctionHandler(),
   delete: new DeleteFunctionHandler(),
   mutationExpressions: new MutationExpressionsHandler(),
+  set: new SetFunctionHandler(),
   [Symbol.asyncIterator]: getIterator(executeQueryHandler),
   then: iterableToThen(executeQueryHandler),
 };
@@ -67,5 +69,9 @@ describe('a query path with a path and mutation expression handler', () => {
 
   it('returns true for an addition with 3 links', async () => {
     expect(await person.friends.firstName.add('Ruben')).toBeTruthy();
+  });
+
+  it('returns true for an set with 3 links', async () => {
+    expect(await person.friends.firstName.set('Ruben')).toBeTruthy();
   });
 });
