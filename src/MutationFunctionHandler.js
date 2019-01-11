@@ -2,8 +2,8 @@
  * Returns a function that, when called with arguments,
  * extends the path with mutationExpressions.
  *
- * It uses the current path expression as domain
- * and the given arguments as range.
+ * It uses the current path expression as domain expression
+ * and the given arguments as range expression.
  * These arguments can either be raw, or other path expressions.
  *
  * Requires:
@@ -39,7 +39,7 @@ export default class MutationFunctionHandler {
     if (domainExpression.length < 2)
       throw new Error(`${path} should at least contain a subject and a predicate`);
 
-    // If we have args, the range is defined by these args
+    // If we have args, each arg defines a mutation expression with a certain range expression.
     if (args.length) {
       // The last path segment represents the predicate of the triple to insert
       const predicate = domainExpression.splice(domainExpression.length - 1)[0].predicate;
