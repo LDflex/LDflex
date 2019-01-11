@@ -8,10 +8,10 @@
  */
 export default class ReplaceFunctionHandler {
   execute(path, proxy) {
-    return function (first, ...rest) {
-      if (!first || !rest.length)
+    return function (oldValue, ...newValues) {
+      if (!oldValue || !newValues.length)
         throw new Error('Replacing values requires at least two arguments');
-      return proxy.delete(first).add(...rest);
+      return proxy.delete(oldValue).add(...newValues);
     };
   }
 }
