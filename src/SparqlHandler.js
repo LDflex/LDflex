@@ -9,16 +9,16 @@ export default class SparqlHandler {
     // First check if we have a mutation expression
     const mutationExpressions = await proxy.mutationExpressions;
     if (Array.isArray(mutationExpressions) && mutationExpressions.length)
-      return this.executeMutationExpression(path, proxy, mutationExpressions);
+      return this.evaluateMutationExpression(path, proxy, mutationExpressions);
 
-    // Otherwise, fallback to checking for a path expression
+    // Otherwise, fall back to checking for a path expression
     const pathExpression = await proxy.pathExpression;
     if (!Array.isArray(pathExpression))
       throw new Error(`${path} has no pathExpression property`);
-    return this.executePathExpression(path, proxy, pathExpression);
+    return this.evaluatePathExpression(path, proxy, pathExpression);
   }
 
-  executePathExpression(path, proxy, pathExpression) {
+  evaluatePathExpression(path, proxy, pathExpression) {
     // Require at least a subject and a link
     if (pathExpression.length < 2)
       throw new Error(`${path} should at least contain a subject and a predicate`);
@@ -34,17 +34,16 @@ export default class SparqlHandler {
     return `SELECT ?${queryVar} WHERE {\n  ${joinedClauses}\n}`;
   }
 
-  executeMutationExpression(path, proxy, mutationExpressions) {
+  evaluateMutationExpression(path, proxy, mutationExpressions) {
     return mutationExpressions
       .map(mutationExpression => this.mutationExpressionToQuery(mutationExpression))
       .join('\n;\n');
   }
 
-  expressionToTriplePatterns(pathExpression, queryVar, variableScope = {}) {
-    const root = pathExpression[0];
-    const last = pathExpression.length - 2;
+  expressionToTriplePatterns([root, ...pathExpression], queryVar, variableScope = {}) {
+    const last = pathExpression.length - 1;
     let object = `<${root.subject}>`;
-    return pathExpression.slice(1).map((segment, index) => {
+    return pathExpression.map((segment, index) => {
       // Obtain triple pattern components
       const subject = object;
       const { predicate } = segment;
