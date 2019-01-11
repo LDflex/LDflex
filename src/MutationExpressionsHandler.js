@@ -7,14 +7,14 @@
  */
 export default class MutationExpressionsHandler {
   async execute(path) {
-    let mutationExpressions = [];
+    const mutationExpressions = [];
 
     // Add all mutationExpressions to the path
     let current = path;
     while (current) {
       // Obtain and store mutationExpressions
       if (current.mutationExpressions)
-        mutationExpressions = (await current.mutationExpressions).concat(mutationExpressions);
+        mutationExpressions.unshift(...await current.mutationExpressions);
 
       // Move to parent link
       current = current.parent;
