@@ -47,16 +47,16 @@ describe('a MutationFunctionHandler instance not allowing 0 args', () => {
         expect(functionResult).toEqual(extendedPath);
       });
     });
-  });
 
-  describe('#createMutationExpressions', () => {
-    describe('without args', () => {
+    describe('with the function called without arguments', () => {
       it('errors when the function is invoked without arguments', async () => {
-        await expect(handler.createMutationExpressions(path, {}, [])).rejects
+        await expect(() => result())
           .toThrow(new Error('Mutation on path can not be invoked without arguments'));
       });
     });
+  });
 
+  describe('#createMutationExpressions', () => {
     describe('with one raw arg', () => {
       const args = ['other'];
 

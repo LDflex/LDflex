@@ -17,6 +17,10 @@ export default class MutationFunctionHandler {
 
   execute(path, proxy) {
     return (...args) => {
+      // Check if the given arguments are valid
+      if (!this._allowZeroArgs && !args.length)
+        throw new Error(`Mutation on ${path} can not be invoked without arguments`);
+
       const mutationExpressions = {
         then: (resolve, reject) =>
           this.createMutationExpressions(path, proxy, args).then(resolve, reject),
@@ -26,10 +30,6 @@ export default class MutationFunctionHandler {
   }
 
   async createMutationExpressions(path, proxy, args) {
-    // Check if the given arguments are valid
-    if (!this._allowZeroArgs && !args.length)
-      throw new Error(`Mutation on ${path} can not be invoked without arguments`);
-
     // Check if we have a valid path
     const domainExpression = await proxy.pathExpression;
     if (!Array.isArray(domainExpression))

@@ -154,7 +154,7 @@ describe('a query path with a path expression handler', () => {
   });
 
   it('errors on a path with 3 links and an addition without args', async () => {
-    expect(person.friends.friends.add().sparql).rejects
+    expect(() => person.friends.friends.add().sparql)
       .toThrow(new Error('Mutation on [object Object] can not be invoked without arguments'));
   });
 
