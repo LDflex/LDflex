@@ -42,13 +42,13 @@ export default class MutationFunctionHandler {
     // If we have args, each arg defines a mutation expression with a certain range expression.
     if (args.length) {
       // The last path segment represents the predicate of the triple to insert
-      const predicate = domainExpression.splice(domainExpression.length - 1)[0].predicate;
+      const [{ predicate }] = domainExpression.splice(domainExpression.length - 1);
       if (!predicate)
         throw new Error(`Expected predicate in ${path}`);
 
       // Determine right variables and patterns
       const mutationExpressions = [];
-      for (let argument of args) {
+      for (const argument of args) {
         // If an argument does not expose a pathExpression, we consider it a raw value.
         let rangeExpression = await argument.pathExpression;
         if (!Array.isArray(rangeExpression))
