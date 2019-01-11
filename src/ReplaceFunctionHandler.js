@@ -10,7 +10,7 @@ export default class ReplaceFunctionHandler {
   execute(path, proxy) {
     return function (oldValue, ...newValues) {
       if (!oldValue || !newValues.length)
-        throw new Error('Replacing values requires at least two arguments');
+        throw new Error('Replacing values requires at least two arguments, old value followed by all new values');
       return proxy.delete(oldValue).add(...newValues);
     };
   }

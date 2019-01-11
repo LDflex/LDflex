@@ -20,11 +20,11 @@ describe('a ReplaceFunctionHandler instance', () => {
     });
 
     it('throws when the function is called with zero args', async () => {
-      expect(result).toThrow(new Error('Replacing values requires at least two arguments'));
+      expect(result).toThrow(new Error('Replacing values requires at least two arguments, old value followed by all new values'));
     });
 
     it('throws when the function is called with one args', async () => {
-      expect(() => result('Arg1')).toThrow(new Error('Replacing values requires at least two arguments'));
+      expect(() => result('Arg1')).toThrow(new Error('Replacing values requires at least two arguments, old value followed by all new values'));
     });
 
     describe('with the function called with two args', () => {
