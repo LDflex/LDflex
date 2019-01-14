@@ -10,7 +10,7 @@ describe('a SparqlHandler instance', () => {
     const mutationExpressions = [];
     const path = { toString: () => 'path' };
 
-    await expect(handler.execute(path, { mutationExpressions: mutationExpressions })).rejects
+    await expect(handler.execute(path, { mutationExpressions })).rejects
       .toThrow(new Error('path has no pathExpression property'));
   });
 
@@ -88,7 +88,7 @@ describe('a SparqlHandler instance', () => {
           },
         ];
 
-        await expect(await handler.execute({}, { mutationExpressions: mutationExpressions })).toEqual(deindent(`
+        expect(await handler.execute({}, { mutationExpressions })).toEqual(deindent(`
       INSERT DATA {
         <https://example.org/#D0> <https://example.org/p> <https://example.org/#R0>
       }`));
@@ -104,7 +104,7 @@ describe('a SparqlHandler instance', () => {
           },
         ];
 
-        await expect(await handler.execute({}, { mutationExpressions: mutationExpressions })).toEqual(deindent(`
+        expect(await handler.execute({}, { mutationExpressions })).toEqual(deindent(`
       INSERT DATA {
         <https://example.org/#D0> <https://example.org/p> "Ruben"
       }`));
@@ -124,7 +124,7 @@ describe('a SparqlHandler instance', () => {
           },
         ];
 
-        await expect(await handler.execute({}, { mutationExpressions: mutationExpressions })).toEqual(deindent(`
+        expect(await handler.execute({}, { mutationExpressions })).toEqual(deindent(`
       INSERT {
         ?Dp2 <https://example.org/p> <https://example.org/#R0>
       } WHERE {
@@ -146,7 +146,7 @@ describe('a SparqlHandler instance', () => {
           },
         ];
 
-        await expect(await handler.execute({}, { mutationExpressions: mutationExpressions })).toEqual(deindent(`
+        expect(await handler.execute({}, { mutationExpressions })).toEqual(deindent(`
       INSERT {
         ?result <https://example.org/p> <https://example.org/#R0>
       } WHERE {
@@ -168,7 +168,7 @@ describe('a SparqlHandler instance', () => {
           },
         ];
 
-        await expect(await handler.execute({}, { mutationExpressions: mutationExpressions })).toEqual(deindent(`
+        expect(await handler.execute({}, { mutationExpressions })).toEqual(deindent(`
       INSERT {
         <https://example.org/#D0> <https://example.org/p> ?Rp2
       } WHERE {
@@ -195,7 +195,7 @@ describe('a SparqlHandler instance', () => {
           },
         ];
 
-        await expect(await handler.execute({}, { mutationExpressions: mutationExpressions })).toEqual(deindent(`
+        expect(await handler.execute({}, { mutationExpressions })).toEqual(deindent(`
       INSERT {
         ?Dp2 <https://example.org/p> ?Rp2
       } WHERE {
@@ -218,7 +218,7 @@ describe('a SparqlHandler instance', () => {
           },
         ];
 
-        await expect(await handler.execute({}, { mutationExpressions: mutationExpressions })).toEqual(deindent(`
+        expect(await handler.execute({}, { mutationExpressions })).toEqual(deindent(`
       DELETE DATA {
         <https://example.org/#D0> <https://example.org/p> <https://example.org/#R0>
       }`));
@@ -234,7 +234,7 @@ describe('a SparqlHandler instance', () => {
           },
         ];
 
-        await expect(await handler.execute({}, { mutationExpressions: mutationExpressions })).toEqual(deindent(`
+        expect(await handler.execute({}, { mutationExpressions })).toEqual(deindent(`
       DELETE {
         <https://example.org/#D0> <https://example.org/#Dp1> ?Dp1
       } WHERE {
@@ -274,7 +274,7 @@ describe('a SparqlHandler instance', () => {
           },
         ];
 
-        await expect(await handler.execute({}, { mutationExpressions: mutationExpressions })).toEqual(deindent(`
+        expect(await handler.execute({}, { mutationExpressions })).toEqual(deindent(`
       INSERT {
         ?Dp2 <https://example.org/p> ?Rp2
       } WHERE {

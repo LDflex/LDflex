@@ -50,7 +50,7 @@ describe('a MutationFunctionHandler instance not allowing 0 args', () => {
 
     describe('with the function called without arguments', () => {
       it('errors when the function is invoked without arguments', async () => {
-        await expect(() => result())
+        expect(() => result())
           .toThrow(new Error('Mutation on path can not be invoked without arguments'));
       });
     });

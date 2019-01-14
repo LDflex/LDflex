@@ -13,15 +13,15 @@ describe('a SetFunctionHandler instance', () => {
 
   describe('resolving a property', async () => {
     let result;
-    beforeEach(() => result = handler.execute({}, proxy));
+    beforeEach(async () => result = await handler.execute({}, proxy));
 
     it('returns a function', async () => {
-      expect(typeof await result).toEqual('function');
+      expect(typeof result).toEqual('function');
     });
 
     describe('with the function called', () => {
       let functionResult;
-      beforeEach(async () => functionResult = await result('Arg1', 'Arg2'));
+      beforeEach(() => functionResult = result('Arg1', 'Arg2'));
 
       it('calls delete with 0 args', () => {
         expect(proxy.delete).toBeCalledTimes(1);
