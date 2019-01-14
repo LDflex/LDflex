@@ -91,7 +91,9 @@ export default class SparqlHandler {
 
     if (expression.length === 1) {
       return {
-        queryVar: lastSegment.subject[0] === '"' ? lastSegment.subject : `<${lastSegment.subject}>`,
+        queryVar: lastSegment.subject[0] === '"' ?
+          `"${lastSegment.subject.substr(1, lastSegment.subject.length - 2).replace(/"/g, '\\"')}"` :
+          `<${lastSegment.subject}>`,
         clauses: [],
       };
     }

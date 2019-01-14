@@ -207,6 +207,24 @@ describe('a SparqlHandler instance', () => {
       });
     });
 
+    describe('with one INSERT expression that has a range that should be escaped', () => {
+      it('resolves with domain of length 0 and range of length of 0', async () => {
+        const mutationExpressions = [
+          {
+            mutationType: 'INSERT',
+            domainExpression: [{ subject: 'https://example.org/#D0' }],
+            predicate: 'https://example.org/p',
+            rangeExpression: [{ subject: '"a"b"' }],
+          },
+        ];
+
+        expect(await handler.execute({}, { mutationExpressions })).toEqual(deindent(`
+      INSERT DATA {
+        <https://example.org/#D0> <https://example.org/p> "a\\"b"
+      }`));
+      });
+    });
+
     describe('with one DELETE expression', () => {
       it('resolves with domain of length 0 and range of length of 0', async () => {
         const mutationExpressions = [

@@ -117,25 +117,6 @@ describe('a MutationFunctionHandler instance not allowing 0 args', () => {
         ]);
       });
     });
-
-    describe('with one raw arg containing double quotes', () => {
-      const args = ['some"value"'];
-      it('resolves a path of length 1 and escapes the double quotes', async () => {
-        const pathExpression = [
-          { subject: 'https://example.org/#me' },
-          { predicate: 'https://ex.org/p1' },
-        ];
-
-        expect(await handler.createMutationExpressions(path, { pathExpression }, args)).toEqual([
-          {
-            mutationType,
-            domainExpression: [{ subject: 'https://example.org/#me' }],
-            predicate: 'https://ex.org/p1',
-            rangeExpression: [{ subject: '"some\\"value\\""' }],
-          },
-        ]);
-      });
-    });
   });
 
   describe('with two raw args', () => {
