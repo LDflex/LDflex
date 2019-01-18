@@ -123,7 +123,7 @@
     comma-spacing: error,
     comma-style: error,
     computed-property-spacing: error,
-    consistent-this: [ error, self ],
+    consistent-this: off,
     eol-last: error,
     func-call-spacing: error,
     func-name-matching: error,

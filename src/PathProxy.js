@@ -34,11 +34,22 @@ export default class PathProxy {
     if (data === undefined)
       [data, settings] = [settings, {}];
 
+    // Create the path's internal data object and the proxy that wraps it
     const path = { settings, ...data };
-    path.proxy = new Proxy(path, this);
-    path.extend = newData =>
-      this.createPath(settings, { parent: path, ...newData });
-    return path.proxy;
+    const proxy = path.proxy = new Proxy(path, this);
+
+    // Add an extend method to create child paths
+    if (!path.extend) {
+      const pathProxy = this;
+      path.extend = function (newData) {
+        const parent = this;
+        const { extend } = this;
+        return pathProxy.createPath(settings, { parent, extend, ...newData });
+      };
+    }
+
+    // Return the proxied path
+    return proxy;
   }
 
   /**
