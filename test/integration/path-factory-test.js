@@ -1,9 +1,14 @@
 import PathFactory from '../../src/PathFactory';
 import context from '../context';
 import { createQueryEngine } from '../util';
+import * as dataFactory from '@rdfjs/data-model';
 
-const subject = 'https://example.org/#me';
-const queryEngine = createQueryEngine(['Alice', 'Bob', 'Carol']);
+const subject = dataFactory.namedNode('https://example.org/#me');
+const queryEngine = createQueryEngine([
+  dataFactory.literal('Alice'),
+  dataFactory.literal('Bob'),
+  dataFactory.literal('Carol'),
+]);
 
 describe('a PathFactory instance', () => {
   const factory = new PathFactory({ context, queryEngine });
@@ -32,8 +37,23 @@ describe('a PathFactory instance', () => {
     expect(names.map(n => `${n}`)).toEqual(['Alice', 'Bob', 'Carol']);
   });
 
-  it('returns the first result for a path with 3 links', async () => {
-    const name = await person.friends.firstName;
-    expect(`${name}`).toBe('Alice');
+  describe('the first result for a path with 3 links', () => {
+    let name;
+
+    beforeEach(async () => name = await person.friends.firstName);
+
+    it('has the correct value', async () => {
+      expect(`${name}`).toBe('Alice');
+    });
+
+    it('is an RDFJS term', async () => {
+      expect(name.termType).toBe('Literal');
+      expect(name.value).toBe('Alice');
+      expect(name.equals).toBeInstanceOf(Function);
+      expect(name.equals(dataFactory.literal('Alice'))).toBeTruthy();
+      expect(name.equals(dataFactory.literal('Bob'))).toBeFalsy();
+      expect(name.language).toBe('');
+      expect(name.datatype).toEqual(dataFactory.namedNode('http://www.w3.org/2001/XMLSchema#string'));
+    });
   });
 });
