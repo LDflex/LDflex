@@ -12,7 +12,7 @@ import FallbackHandler from './FallbackHandler';
 import DataHandler from './DataHandler';
 import StringToLDflexHandler from './StringToLDflexHandler';
 import SubjectHandler from './SubjectHandler';
-import { promiseToIterable, getIterator, iterableToThen } from './iterableUtils';
+import { conditionalHandler, promiseToIterable, getIterator, iterableToThen } from './iterableUtils';
 import * as dataFactory from '@rdfjs/data-model';
 
 // Default iterator behavior:
@@ -32,7 +32,7 @@ export const defaultHandlers = {
 
   // Add iterable and thenable behavior
   [Symbol.asyncIterator]: getIterator(iteratorHandler),
-  then: iterableToThen(iteratorHandler),
+  then: conditionalHandler(iterableToThen(iteratorHandler), ({ subject }) => !subject),
 
   // Add path handling
   pathExpression: new PathExpressionHandler(),
