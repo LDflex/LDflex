@@ -9,9 +9,11 @@ import ExecuteQueryHandler from './ExecuteQueryHandler';
 import SparqlHandler from './SparqlHandler';
 import JSONLDResolver from './JSONLDResolver';
 import FallbackHandler from './FallbackHandler';
+import DataHandler from './DataHandler';
 import StringToLDflexHandler from './StringToLDflexHandler';
 import SubjectHandler from './SubjectHandler';
 import { promiseToIterable, getIterator, iterableToThen } from './iterableUtils';
+import * as dataFactory from '@rdfjs/data-model';
 
 // Default iterator behavior:
 // - first try returning the subject (single-segment path)
@@ -41,6 +43,15 @@ export const defaultHandlers = {
   set: new SetFunctionHandler(),
   sparql: new SparqlHandler(),
 
+  // Add RDFJS term handling
+  termType: DataHandler.sync('subject', 'termType'),
+  value: DataHandler.sync('subject', 'value'),
+  equals: DataHandler.sync('subject', 'equals'),
+  language: DataHandler.sync('subject', 'language'),
+  datatype: DataHandler.sync('subject', 'datatype'),
+  toString: DataHandler.syncFunction('subject', 'value'),
+  toPrimitive: DataHandler.syncFunction('subject', 'value'),
+
   // Parse a string into an LDflex object
   resolve: new StringToLDflexHandler(),
 };
@@ -51,7 +62,7 @@ export const defaultHandlers = {
 export default class PathFactory {
   constructor(settings, data) {
     // Store settings and data
-    settings = Object.assign(Object.create(null), settings);
+    settings = { dataFactory, ...settings };
     this._settings = settings;
     this._data = data;
 
