@@ -53,7 +53,7 @@ export default class MutationFunctionHandler {
         let rangeExpression = await argument.pathExpression;
         if (!Array.isArray(rangeExpression))
           // Make sure that double quotes are escaped
-          rangeExpression = [{ subject: `"${argument}"` }];
+          rangeExpression = [{ subject: path.settings.dataFactory.literal(argument) }];
 
         // Store the domain, predicate and range in the insert expression.
         mutationExpressions.push({

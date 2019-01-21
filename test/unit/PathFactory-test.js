@@ -1,5 +1,6 @@
 import PathFactory from '../../src/PathFactory';
 import context from '../context';
+import * as dataFactory from '@rdfjs/data-model';
 
 describe('the PathFactory class', () => {
   it('exposes the defaultHandlers', () => {
@@ -78,7 +79,7 @@ describe('a PathFactory instance with initial settings and data', () => {
     beforeAll(() => (path = factory.create()));
 
     it('passes the settings', () => {
-      expect(path.internal.settings).toEqual({ foo: 'bar' });
+      expect(path.internal.settings).toEqual({ dataFactory, foo: 'bar' });
     });
 
     it('passes the data', () => {
@@ -91,7 +92,7 @@ describe('a PathFactory instance with initial settings and data', () => {
     beforeAll(() => (path = factory.create({ b: 2 })));
 
     it('passes the settings', () => {
-      expect(path.internal.settings).toEqual({ foo: 'bar' });
+      expect(path.internal.settings).toEqual({ dataFactory, foo: 'bar' });
     });
 
     it('extends the data', () => {
@@ -105,7 +106,7 @@ describe('a PathFactory instance with initial settings and data', () => {
     beforeAll(() => (path = factory.create({ other: 'x' }, { b: 2 })));
 
     it('extends the settings', () => {
-      expect(path.internal.settings).toEqual({ foo: 'bar', other: 'x' });
+      expect(path.internal.settings).toEqual({ dataFactory, foo: 'bar', other: 'x' });
     });
 
     it('extends the data', () => {

@@ -1,4 +1,5 @@
 import SubjectHandler from '../../src/SubjectHandler';
+import * as dataFactory from '@rdfjs/data-model';
 
 describe('a SubjectHandler instance', () => {
   let handler;
@@ -8,13 +9,13 @@ describe('a SubjectHandler instance', () => {
     expect(handler.execute({})).toBeUndefined();
   });
 
-  it('returns a subject string as a promise', () => {
-    const subject = 'abc';
-    return expect(handler.execute({ subject })).resolves.toBe('abc');
+  it('returns a subject named node as a promise', () => {
+    const subject = dataFactory.namedNode('abc');
+    return expect(handler.execute({ subject }, subject)).resolves.toEqual(dataFactory.namedNode('abc'));
   });
 
   it('returns a subject promise', () => {
-    const subject = Promise.resolve('abc');
-    return expect(handler.execute({ subject })).resolves.toBe('abc');
+    const subject = Promise.resolve(dataFactory.namedNode('abc'));
+    return expect(handler.execute({ subject }, subject)).resolves.toEqual(dataFactory.namedNode('abc'));
   });
 });

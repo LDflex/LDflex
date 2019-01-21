@@ -1,4 +1,5 @@
 import MutationExpressionsHandler from '../../src/MutationExpressionsHandler';
+import * as dataFactory from '@rdfjs/data-model';
 
 describe('a MutationExpressionsHandler instance', () => {
   let handler;
@@ -12,17 +13,17 @@ describe('a MutationExpressionsHandler instance', () => {
     const mutationExpressions = Promise.resolve([
       {
         mutationType: 'INSERT',
-        domainExpression: [{ subject: 'https://example.org/#me' }],
-        predicate: 'https://ex.org/p1',
-        rangeExpression: [{ subject: '"other"' }],
+        domainExpression: [{ subject: dataFactory.namedNode('https://example.org/#me') }],
+        predicate: dataFactory.namedNode('https://ex.org/p1'),
+        rangeExpression: [{ subject: dataFactory.literal('other') }],
       },
     ]);
     return expect(handler.execute({ mutationExpressions })).resolves.toEqual([
       {
         mutationType: 'INSERT',
-        domainExpression: [{ subject: 'https://example.org/#me' }],
-        predicate: 'https://ex.org/p1',
-        rangeExpression: [{ subject: '"other"' }],
+        domainExpression: [{ subject: dataFactory.namedNode('https://example.org/#me') }],
+        predicate: dataFactory.namedNode('https://ex.org/p1'),
+        rangeExpression: [{ subject: dataFactory.literal('other') }],
       },
     ]);
   });
@@ -31,17 +32,17 @@ describe('a MutationExpressionsHandler instance', () => {
     const mutationExpressions = Promise.resolve([
       {
         mutationType: 'INSERT',
-        domainExpression: [{ subject: 'https://example.org/#me' }],
-        predicate: 'https://ex.org/p1',
-        rangeExpression: [{ subject: '"other"' }],
+        domainExpression: [{ subject: dataFactory.namedNode('https://example.org/#me') }],
+        predicate: dataFactory.namedNode('https://ex.org/p1'),
+        rangeExpression: [{ subject: dataFactory.literal('other') }],
       },
     ]);
     return expect(handler.execute({ mutationExpressions, parent: {} })).resolves.toEqual([
       {
         mutationType: 'INSERT',
-        domainExpression: [{ subject: 'https://example.org/#me' }],
-        predicate: 'https://ex.org/p1',
-        rangeExpression: [{ subject: '"other"' }],
+        domainExpression: [{ subject: dataFactory.namedNode('https://example.org/#me') }],
+        predicate: dataFactory.namedNode('https://ex.org/p1'),
+        rangeExpression: [{ subject: dataFactory.literal('other') }],
       },
     ]);
   });
@@ -50,32 +51,32 @@ describe('a MutationExpressionsHandler instance', () => {
     const mutationExpressions = Promise.resolve([
       {
         mutationType: 'INSERT',
-        domainExpression: [{ subject: 'https://example.org/#me' }],
-        predicate: 'https://ex.org/p1',
-        rangeExpression: [{ subject: '"other"' }],
+        domainExpression: [{ subject: dataFactory.namedNode('https://example.org/#me') }],
+        predicate: dataFactory.namedNode('https://ex.org/p1'),
+        rangeExpression: [{ subject: dataFactory.literal('other') }],
       },
     ]);
     const mutationExpressionsParent = Promise.resolve([
       {
         mutationType: 'DELETE',
-        domainExpression: [{ subject: 'https://example.org/#me' }],
-        predicate: 'https://ex.org/p1',
-        rangeExpression: [{ subject: '"other"' }],
+        domainExpression: [{ subject: dataFactory.namedNode('https://example.org/#me') }],
+        predicate: dataFactory.namedNode('https://ex.org/p1'),
+        rangeExpression: [{ subject: dataFactory.literal('other') }],
       },
     ]);
     const parent = { mutationExpressions: mutationExpressionsParent };
     return expect(handler.execute({ mutationExpressions, parent })).resolves.toEqual([
       {
         mutationType: 'DELETE',
-        domainExpression: [{ subject: 'https://example.org/#me' }],
-        predicate: 'https://ex.org/p1',
-        rangeExpression: [{ subject: '"other"' }],
+        domainExpression: [{ subject: dataFactory.namedNode('https://example.org/#me') }],
+        predicate: dataFactory.namedNode('https://ex.org/p1'),
+        rangeExpression: [{ subject: dataFactory.literal('other') }],
       },
       {
         mutationType: 'INSERT',
-        domainExpression: [{ subject: 'https://example.org/#me' }],
-        predicate: 'https://ex.org/p1',
-        rangeExpression: [{ subject: '"other"' }],
+        domainExpression: [{ subject: dataFactory.namedNode('https://example.org/#me') }],
+        predicate: dataFactory.namedNode('https://ex.org/p1'),
+        rangeExpression: [{ subject: dataFactory.literal('other') }],
       },
     ]);
   });
@@ -84,17 +85,17 @@ describe('a MutationExpressionsHandler instance', () => {
     const mutationExpressions = Promise.resolve([
       {
         mutationType: 'INSERT',
-        domainExpression: [{ subject: 'https://example.org/#me' }],
-        predicate: 'https://ex.org/p1',
-        rangeExpression: [{ subject: '"other"' }],
+        domainExpression: [{ subject: dataFactory.namedNode('https://example.org/#me') }],
+        predicate: dataFactory.namedNode('https://ex.org/p1'),
+        rangeExpression: [{ subject: dataFactory.literal('other') }],
       },
     ]);
     return expect(handler.execute({ parent: { mutationExpressions } })).resolves.toEqual([
       {
         mutationType: 'INSERT',
-        domainExpression: [{ subject: 'https://example.org/#me' }],
-        predicate: 'https://ex.org/p1',
-        rangeExpression: [{ subject: '"other"' }],
+        domainExpression: [{ subject: dataFactory.namedNode('https://example.org/#me') }],
+        predicate: dataFactory.namedNode('https://ex.org/p1'),
+        rangeExpression: [{ subject: dataFactory.literal('other') }],
       },
     ]);
   });

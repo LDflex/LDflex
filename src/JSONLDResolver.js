@@ -23,7 +23,7 @@ export default class JSONLDResolver {
   resolve(property, path) {
     const predicate = {
       then: (resolve, reject) =>
-        this.expandProperty(property).then(resolve, reject),
+        this.expandProperty(property, path.settings.dataFactory).then(resolve, reject),
     };
     return path.extend({ property, predicate });
   }
@@ -31,7 +31,7 @@ export default class JSONLDResolver {
   /**
    * Expands a JSON property key into a full IRI.
    */
-  async expandProperty(property) {
+  async expandProperty(property, dataFactory) {
     // JavaScript requires keys containing colons to be quoted,
     // so prefixed names would need to written as path['foaf:knows'].
     // We thus allow writing path.foaf_knows or path.foaf$knows instead.
@@ -50,6 +50,6 @@ export default class JSONLDResolver {
     assert.equal(expanded.length, 1);
     const propertyIRIs = Object.keys(expanded[0]);
     assert.equal(propertyIRIs.length, 1);
-    return propertyIRIs[0];
+    return dataFactory.namedNode(propertyIRIs[0]);
   }
 }
