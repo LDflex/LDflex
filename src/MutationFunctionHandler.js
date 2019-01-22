@@ -48,12 +48,16 @@ export default class MutationFunctionHandler {
 
       // Determine right variables and patterns
       const mutationExpressions = [];
-      for (const argument of args) {
+      for (let argument of args) {
         // If an argument does not expose a pathExpression, we consider it a raw value.
         let rangeExpression = await argument.pathExpression;
-        if (!Array.isArray(rangeExpression))
-          // Make sure that double quotes are escaped
-          rangeExpression = [{ subject: path.settings.dataFactory.literal(argument) }];
+        if (!Array.isArray(rangeExpression)) {
+          // If the argument is not an RDFJS term, assume it is a literal
+          if (!argument.termType)
+            argument = path.settings.dataFactory.literal(argument);
+
+          rangeExpression = [{ subject: argument }];
+        }
 
         // Store the domain, predicate and range in the insert expression.
         mutationExpressions.push({
