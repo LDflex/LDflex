@@ -16,7 +16,7 @@ describe('a PathProxy without handlers or resolvers', () => {
 
     describe('when accessing a symbol property', () => {
       it('returns undefined', () => {
-        expect(path[Symbol()]).toBeUndefined();
+        expect(path[Symbol('symbol')]).toBeUndefined();
       });
     });
   });

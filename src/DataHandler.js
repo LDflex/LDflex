@@ -36,7 +36,7 @@ export default class DataHandler {
 
   _handlePath(path) {
     if (this._async) {
-      return new Promise(async (resolve) => {
+      return new Promise(async resolve => {
         for (const pathSegment of this._pathSegments)
           path = path && await path[pathSegment];
         return resolve(path);

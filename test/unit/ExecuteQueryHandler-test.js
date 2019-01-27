@@ -24,7 +24,7 @@ describe('a ExecuteQueryHandler instance', () => {
 
     it('errors with multi-variable results', async () => {
       const bindings = new Map([['?a', literal('')], ['?b', literal('')]]);
-      const path = { extend: (args) => args };
+      const path = { extend: args => args };
       await expect(() => handler.extractTerm(bindings, path))
         .toThrow(new Error('Only single-variable queries are supported'));
     });
