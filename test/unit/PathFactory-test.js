@@ -22,6 +22,10 @@ describe('a PathFactory instance without parameters', () => {
     expect(path.__esModule).toBeUndefined();
   });
 
+  it('adds ExecuteQueryHandler', () => {
+    expect(path.results[Symbol.asyncIterator]).toBeInstanceOf(Function);
+  });
+
   it('adds ExecuteQueryHandler for single values', () => {
     expect(path.then).toBeInstanceOf(Function);
   });

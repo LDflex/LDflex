@@ -10,9 +10,6 @@ import DataHandler from './DataHandler';
 import StringToLDflexHandler from './StringToLDflexHandler';
 import { createThen, createIterator } from './iterableUtils';
 
-// Create default query handler
-const queryHandler = new ExecuteQueryHandler();
-
 /**
  * A map with default property handlers.
  */
@@ -35,8 +32,8 @@ export default {
         .then(term => path.extend({ subject: term }, null))
         .then(onResolved, onRejected);
     }
-    // Otherwise, execute the query represented by this path
-    return createThen(queryHandler.execute(path, pathProxy));
+    // Otherwise, return the first result of this path
+    return createThen(pathProxy.results);
   },
 
   // Add async iterable behavior
@@ -48,18 +45,21 @@ export default {
       return () => createIterator(Promise.resolve(subject)
         .then(term => path.extend({ subject: term }, null)));
     }
-    // Otherwise, execute the query represented by this path
-    return () => queryHandler.execute(path, pathProxy)[Symbol.asyncIterator]();
+    // Otherwise, return the results of this path
+    return () => pathProxy.results[Symbol.asyncIterator]();
   },
 
-  // Add path handling
+  // Add query functionality
   pathExpression: new PathExpressionHandler(),
-  add: new InsertFunctionHandler(),
-  delete: new DeleteFunctionHandler(),
-  mutationExpressions: new MutationExpressionsHandler(),
-  replace: new ReplaceFunctionHandler(),
-  set: new SetFunctionHandler(),
   sparql: new SparqlHandler(),
+  results: new ExecuteQueryHandler(),
+
+  // Add write functionality
+  mutationExpressions: new MutationExpressionsHandler(),
+  add: new InsertFunctionHandler(),
+  set: new SetFunctionHandler(),
+  replace: new ReplaceFunctionHandler(),
+  delete: new DeleteFunctionHandler(),
 
   // Add RDFJS term handling
   termType: DataHandler.sync('subject', 'termType'),
