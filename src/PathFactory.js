@@ -11,7 +11,6 @@ import JSONLDResolver from './JSONLDResolver';
 import DataHandler from './DataHandler';
 import StringToLDflexHandler from './StringToLDflexHandler';
 import { createThen, createIterator } from './iterableUtils';
-import * as dataFactory from '@rdfjs/data-model';
 
 // Create default query handler
 const queryHandler = new ExecuteQueryHandler();
@@ -83,9 +82,8 @@ export const defaultHandlers = {
 export default class PathFactory {
   constructor(settings, data) {
     // Store settings and data
-    settings = { dataFactory, ...settings };
-    this._settings = settings;
-    this._data = data;
+    this._settings = settings = { ...settings };
+    this._data = data = { ...data };
 
     // Prepare the handlers
     const handlers = (settings.handlers || PathFactory.defaultHandlers);

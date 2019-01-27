@@ -7,7 +7,7 @@ import MutationExpressionsHandler from '../../src/MutationExpressionsHandler';
 import SetFunctionHandler from '../../src/SetFunctionHandler';
 import ReplaceFunctionHandler from '../../src/ReplaceFunctionHandler';
 import JSONLDResolver from '../../src/JSONLDResolver';
-import * as dataFactory from '@rdfjs/data-model';
+import { namedNode } from '@rdfjs/data-model';
 
 import context from '../context';
 import { deindent } from '../util';
@@ -27,12 +27,12 @@ describe('a query path with a path expression handler', () => {
   const resolvers = [
     new JSONLDResolver(context),
   ];
-  const subject = dataFactory.namedNode('https://example.org/#me');
+  const subject = namedNode('https://example.org/#me');
 
   let person;
   beforeAll(() => {
     const pathProxy = new PathProxy({ handlers, resolvers });
-    person = pathProxy.createPath({ dataFactory }, { subject });
+    person = pathProxy.createPath({ subject });
   });
 
   it('resolves a path with 3 links', async () => {

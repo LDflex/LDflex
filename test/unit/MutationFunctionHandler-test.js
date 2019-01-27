@@ -1,11 +1,10 @@
 import MutationFunctionHandler from '../../src/MutationFunctionHandler';
-import * as dataFactory from '@rdfjs/data-model';
+import { namedNode, literal } from '@rdfjs/data-model';
 
 const mutationType = 'TYPE';
 const extendedPath = {};
 const path = {
   extend: jest.fn(() => extendedPath),
-  settings: { dataFactory },
   toString: () => 'path',
 };
 
@@ -18,8 +17,8 @@ describe('a MutationFunctionHandler instance not allowing 0 args', () => {
     let result;
     beforeEach(() => {
       pathExpression = [
-        { subject: dataFactory.namedNode('https://example.org/#me') },
-        { predicate: dataFactory.namedNode('https://ex.org/p1') },
+        { subject: namedNode('https://example.org/#me') },
+        { predicate: namedNode('https://ex.org/p1') },
       ];
       result = handler.execute(path, { pathExpression });
     });
@@ -44,9 +43,9 @@ describe('a MutationFunctionHandler instance not allowing 0 args', () => {
         expect(await mutationExpressions).toEqual([
           {
             mutationType,
-            domainExpression: [{ subject: dataFactory.namedNode('https://example.org/#me') }],
-            predicate: dataFactory.namedNode('https://ex.org/p1'),
-            rangeExpression: [{ subject: dataFactory.literal('Ruben') }],
+            domainExpression: [{ subject: namedNode('https://example.org/#me') }],
+            predicate: namedNode('https://ex.org/p1'),
+            rangeExpression: [{ subject: literal('Ruben') }],
           },
         ]);
       });
@@ -58,7 +57,7 @@ describe('a MutationFunctionHandler instance not allowing 0 args', () => {
 
     describe('with the function called with one term argument', () => {
       let functionResult;
-      beforeEach(async () => functionResult = await result(dataFactory.namedNode('http://example.org/')));
+      beforeEach(async () => functionResult = await result(namedNode('http://example.org/')));
 
       it('extends the path', () => {
         expect(path.extend).toBeCalledTimes(1);
@@ -72,9 +71,9 @@ describe('a MutationFunctionHandler instance not allowing 0 args', () => {
         expect(await mutationExpressions).toEqual([
           {
             mutationType,
-            domainExpression: [{ subject: dataFactory.namedNode('https://example.org/#me') }],
-            predicate: dataFactory.namedNode('https://ex.org/p1'),
-            rangeExpression: [{ subject: dataFactory.namedNode('http://example.org/') }],
+            domainExpression: [{ subject: namedNode('https://example.org/#me') }],
+            predicate: namedNode('https://ex.org/p1'),
+            rangeExpression: [{ subject: namedNode('http://example.org/') }],
           },
         ]);
       });
@@ -103,7 +102,7 @@ describe('a MutationFunctionHandler instance not allowing 0 args', () => {
 
       it('errors with a pathExpression of length 0', async () => {
         const pathExpression = [
-          { subject: dataFactory.namedNode('https://example.org/#me') },
+          { subject: namedNode('https://example.org/#me') },
         ];
 
         await expect(handler.createMutationExpressions(path, { pathExpression }, args)).rejects
@@ -112,8 +111,8 @@ describe('a MutationFunctionHandler instance not allowing 0 args', () => {
 
       it('errors when the pathExpression does not end with a predicate', async () => {
         const pathExpression = [
-          { subject: dataFactory.namedNode('https://example.org/#me') },
-          { nopredicate: dataFactory.namedNode('https://ex.org/p1') },
+          { subject: namedNode('https://example.org/#me') },
+          { nopredicate: namedNode('https://ex.org/p1') },
         ];
 
         await expect(handler.createMutationExpressions(path, { pathExpression }, args)).rejects
@@ -122,43 +121,43 @@ describe('a MutationFunctionHandler instance not allowing 0 args', () => {
 
       it('resolves a path of length 1', async () => {
         const pathExpression = [
-          { subject: dataFactory.namedNode('https://example.org/#me') },
-          { predicate: dataFactory.namedNode('https://ex.org/p1') },
+          { subject: namedNode('https://example.org/#me') },
+          { predicate: namedNode('https://ex.org/p1') },
         ];
 
         expect(await handler.createMutationExpressions(path, { pathExpression }, args)).toEqual([
           {
             mutationType,
-            domainExpression: [{ subject: dataFactory.namedNode('https://example.org/#me') }],
-            predicate: dataFactory.namedNode('https://ex.org/p1'),
-            rangeExpression: [{ subject: dataFactory.literal('other') }],
+            domainExpression: [{ subject: namedNode('https://example.org/#me') }],
+            predicate: namedNode('https://ex.org/p1'),
+            rangeExpression: [{ subject: literal('other') }],
           },
         ]);
       });
 
       it('resolves a path of length 2', async () => {
         const pathExpression = [
-          { subject: dataFactory.namedNode('https://example.org/#me') },
-          { predicate: dataFactory.namedNode('https://ex.org/p1') },
-          { predicate: dataFactory.namedNode('https://ex.org/p2') },
+          { subject: namedNode('https://example.org/#me') },
+          { predicate: namedNode('https://ex.org/p1') },
+          { predicate: namedNode('https://ex.org/p2') },
         ];
 
         expect(await handler.createMutationExpressions(path, { pathExpression }, args)).toEqual([
           {
             mutationType,
             domainExpression: [
-              { subject: dataFactory.namedNode('https://example.org/#me') },
-              { predicate: dataFactory.namedNode('https://ex.org/p1') },
+              { subject: namedNode('https://example.org/#me') },
+              { predicate: namedNode('https://ex.org/p1') },
             ],
-            predicate: dataFactory.namedNode('https://ex.org/p2'),
-            rangeExpression: [{ subject: dataFactory.literal('other') }],
+            predicate: namedNode('https://ex.org/p2'),
+            rangeExpression: [{ subject: literal('other') }],
           },
         ]);
       });
     });
 
     describe('with one raw term arg', () => {
-      const args = [dataFactory.namedNode('http://example.org/other')];
+      const args = [namedNode('http://example.org/other')];
 
       it('errors when no pathExpression is present', async () => {
         await expect(handler.createMutationExpressions(path, {}, args)).rejects
@@ -167,7 +166,7 @@ describe('a MutationFunctionHandler instance not allowing 0 args', () => {
 
       it('errors with a pathExpression of length 0', async () => {
         const pathExpression = [
-          { subject: dataFactory.namedNode('https://example.org/#me') },
+          { subject: namedNode('https://example.org/#me') },
         ];
 
         await expect(handler.createMutationExpressions(path, { pathExpression }, args)).rejects
@@ -176,8 +175,8 @@ describe('a MutationFunctionHandler instance not allowing 0 args', () => {
 
       it('errors when the pathExpression does not end with a predicate', async () => {
         const pathExpression = [
-          { subject: dataFactory.namedNode('https://example.org/#me') },
-          { nopredicate: dataFactory.namedNode('https://ex.org/p1') },
+          { subject: namedNode('https://example.org/#me') },
+          { nopredicate: namedNode('https://ex.org/p1') },
         ];
 
         await expect(handler.createMutationExpressions(path, { pathExpression }, args)).rejects
@@ -186,36 +185,36 @@ describe('a MutationFunctionHandler instance not allowing 0 args', () => {
 
       it('resolves a path of length 1', async () => {
         const pathExpression = [
-          { subject: dataFactory.namedNode('https://example.org/#me') },
-          { predicate: dataFactory.namedNode('https://ex.org/p1') },
+          { subject: namedNode('https://example.org/#me') },
+          { predicate: namedNode('https://ex.org/p1') },
         ];
 
         expect(await handler.createMutationExpressions(path, { pathExpression }, args)).toEqual([
           {
             mutationType,
-            domainExpression: [{ subject: dataFactory.namedNode('https://example.org/#me') }],
-            predicate: dataFactory.namedNode('https://ex.org/p1'),
-            rangeExpression: [{ subject: dataFactory.namedNode('http://example.org/other') }],
+            domainExpression: [{ subject: namedNode('https://example.org/#me') }],
+            predicate: namedNode('https://ex.org/p1'),
+            rangeExpression: [{ subject: namedNode('http://example.org/other') }],
           },
         ]);
       });
 
       it('resolves a path of length 2', async () => {
         const pathExpression = [
-          { subject: dataFactory.namedNode('https://example.org/#me') },
-          { predicate: dataFactory.namedNode('https://ex.org/p1') },
-          { predicate: dataFactory.namedNode('https://ex.org/p2') },
+          { subject: namedNode('https://example.org/#me') },
+          { predicate: namedNode('https://ex.org/p1') },
+          { predicate: namedNode('https://ex.org/p2') },
         ];
 
         expect(await handler.createMutationExpressions(path, { pathExpression }, args)).toEqual([
           {
             mutationType,
             domainExpression: [
-              { subject: dataFactory.namedNode('https://example.org/#me') },
-              { predicate: dataFactory.namedNode('https://ex.org/p1') },
+              { subject: namedNode('https://example.org/#me') },
+              { predicate: namedNode('https://ex.org/p1') },
             ],
-            predicate: dataFactory.namedNode('https://ex.org/p2'),
-            rangeExpression: [{ subject: dataFactory.namedNode('http://example.org/other') }],
+            predicate: namedNode('https://ex.org/p2'),
+            rangeExpression: [{ subject: namedNode('http://example.org/other') }],
           },
         ]);
       });
@@ -232,7 +231,7 @@ describe('a MutationFunctionHandler instance not allowing 0 args', () => {
 
     it('errors with a pathExpression of length 0', async () => {
       const pathExpression = [
-        { subject: dataFactory.namedNode('https://example.org/#me') },
+        { subject: namedNode('https://example.org/#me') },
       ];
 
       await expect(handler.createMutationExpressions(path, { pathExpression }, args)).rejects
@@ -241,8 +240,8 @@ describe('a MutationFunctionHandler instance not allowing 0 args', () => {
 
     it('errors when the pathExpression does not end with a predicate', async () => {
       const pathExpression = [
-        { subject: dataFactory.namedNode('https://example.org/#me') },
-        { nopredicate: dataFactory.namedNode('https://ex.org/p1') },
+        { subject: namedNode('https://example.org/#me') },
+        { nopredicate: namedNode('https://ex.org/p1') },
       ];
 
       await expect(handler.createMutationExpressions(path, { pathExpression }, args)).rejects
@@ -251,51 +250,51 @@ describe('a MutationFunctionHandler instance not allowing 0 args', () => {
 
     it('resolves a path of length 1', async () => {
       const pathExpression = [
-        { subject: dataFactory.namedNode('https://example.org/#me') },
-        { predicate: dataFactory.namedNode('https://ex.org/p1') },
+        { subject: namedNode('https://example.org/#me') },
+        { predicate: namedNode('https://ex.org/p1') },
       ];
 
       expect(await handler.createMutationExpressions(path, { pathExpression }, args)).toEqual([
         {
           mutationType,
-          domainExpression: [{ subject: dataFactory.namedNode('https://example.org/#me') }],
-          predicate: dataFactory.namedNode('https://ex.org/p1'),
-          rangeExpression: [{ subject: dataFactory.literal('other1') }],
+          domainExpression: [{ subject: namedNode('https://example.org/#me') }],
+          predicate: namedNode('https://ex.org/p1'),
+          rangeExpression: [{ subject: literal('other1') }],
         },
         {
           mutationType,
-          domainExpression: [{ subject: dataFactory.namedNode('https://example.org/#me') }],
-          predicate: dataFactory.namedNode('https://ex.org/p1'),
-          rangeExpression: [{ subject: dataFactory.literal('other2') }],
+          domainExpression: [{ subject: namedNode('https://example.org/#me') }],
+          predicate: namedNode('https://ex.org/p1'),
+          rangeExpression: [{ subject: literal('other2') }],
         },
       ]);
     });
 
     it('resolves a path of length 2', async () => {
       const pathExpression = [
-        { subject: dataFactory.namedNode('https://example.org/#me') },
-        { predicate: dataFactory.namedNode('https://ex.org/p1') },
-        { predicate: dataFactory.namedNode('https://ex.org/p2') },
+        { subject: namedNode('https://example.org/#me') },
+        { predicate: namedNode('https://ex.org/p1') },
+        { predicate: namedNode('https://ex.org/p2') },
       ];
 
       expect(await handler.createMutationExpressions(path, { pathExpression }, args)).toEqual([
         {
           mutationType,
           domainExpression: [
-            { subject: dataFactory.namedNode('https://example.org/#me') },
-            { predicate: dataFactory.namedNode('https://ex.org/p1') },
+            { subject: namedNode('https://example.org/#me') },
+            { predicate: namedNode('https://ex.org/p1') },
           ],
-          predicate: dataFactory.namedNode('https://ex.org/p2'),
-          rangeExpression: [{ subject: dataFactory.literal('other1') }],
+          predicate: namedNode('https://ex.org/p2'),
+          rangeExpression: [{ subject: literal('other1') }],
         },
         {
           mutationType,
           domainExpression: [
-            { subject: dataFactory.namedNode('https://example.org/#me') },
-            { predicate: dataFactory.namedNode('https://ex.org/p1') },
+            { subject: namedNode('https://example.org/#me') },
+            { predicate: namedNode('https://ex.org/p1') },
           ],
-          predicate: dataFactory.namedNode('https://ex.org/p2'),
-          rangeExpression: [{ subject: dataFactory.literal('other2') }],
+          predicate: namedNode('https://ex.org/p2'),
+          rangeExpression: [{ subject: literal('other2') }],
         },
       ]);
     });
@@ -305,43 +304,43 @@ describe('a MutationFunctionHandler instance not allowing 0 args', () => {
     const args = [
       {
         pathExpression: [
-          { subject: dataFactory.namedNode('https://example.org/#arg0me') },
+          { subject: namedNode('https://example.org/#arg0me') },
         ],
       },
     ];
 
     it('resolves a path of length 1', async () => {
       const pathExpression = [
-        { subject: dataFactory.namedNode('https://example.org/#me') },
-        { predicate: dataFactory.namedNode('https://ex.org/p1') },
+        { subject: namedNode('https://example.org/#me') },
+        { predicate: namedNode('https://ex.org/p1') },
       ];
 
       expect(await handler.createMutationExpressions(path, { pathExpression }, args)).toEqual([
         {
           mutationType,
-          domainExpression: [{ subject: dataFactory.namedNode('https://example.org/#me') }],
-          predicate: dataFactory.namedNode('https://ex.org/p1'),
-          rangeExpression: [{ subject: dataFactory.namedNode('https://example.org/#arg0me') }],
+          domainExpression: [{ subject: namedNode('https://example.org/#me') }],
+          predicate: namedNode('https://ex.org/p1'),
+          rangeExpression: [{ subject: namedNode('https://example.org/#arg0me') }],
         },
       ]);
     });
 
     it('resolves a path of length 2', async () => {
       const pathExpression = [
-        { subject: dataFactory.namedNode('https://example.org/#me') },
-        { predicate: dataFactory.namedNode('https://ex.org/p1') },
-        { predicate: dataFactory.namedNode('https://ex.org/p2') },
+        { subject: namedNode('https://example.org/#me') },
+        { predicate: namedNode('https://ex.org/p1') },
+        { predicate: namedNode('https://ex.org/p2') },
       ];
 
       expect(await handler.createMutationExpressions(path, { pathExpression }, args)).toEqual([
         {
           mutationType,
           domainExpression: [
-            { subject: dataFactory.namedNode('https://example.org/#me') },
-            { predicate: dataFactory.namedNode('https://ex.org/p1') },
+            { subject: namedNode('https://example.org/#me') },
+            { predicate: namedNode('https://ex.org/p1') },
           ],
-          predicate: dataFactory.namedNode('https://ex.org/p2'),
-          rangeExpression: [{ subject: dataFactory.namedNode('https://example.org/#arg0me') }],
+          predicate: namedNode('https://ex.org/p2'),
+          rangeExpression: [{ subject: namedNode('https://example.org/#arg0me') }],
         },
       ]);
     });
@@ -351,26 +350,26 @@ describe('a MutationFunctionHandler instance not allowing 0 args', () => {
     const args = [
       {
         pathExpression: [
-          { subject: dataFactory.namedNode('https://example.org/#arg0me') },
-          { predicate: dataFactory.namedNode('https://ex.org/arg0p1') },
+          { subject: namedNode('https://example.org/#arg0me') },
+          { predicate: namedNode('https://ex.org/arg0p1') },
         ],
       },
     ];
 
     it('resolves a path of length 1', async () => {
       const pathExpression = [
-        { subject: dataFactory.namedNode('https://example.org/#me') },
-        { predicate: dataFactory.namedNode('https://ex.org/p1') },
+        { subject: namedNode('https://example.org/#me') },
+        { predicate: namedNode('https://ex.org/p1') },
       ];
 
       expect(await handler.createMutationExpressions(path, { pathExpression }, args)).toEqual([
         {
           mutationType,
-          domainExpression: [{ subject: dataFactory.namedNode('https://example.org/#me') }],
-          predicate: dataFactory.namedNode('https://ex.org/p1'),
+          domainExpression: [{ subject: namedNode('https://example.org/#me') }],
+          predicate: namedNode('https://ex.org/p1'),
           rangeExpression: [
-            { subject: dataFactory.namedNode('https://example.org/#arg0me') },
-            { predicate: dataFactory.namedNode('https://ex.org/arg0p1') },
+            { subject: namedNode('https://example.org/#arg0me') },
+            { predicate: namedNode('https://ex.org/arg0p1') },
           ],
         },
       ]);
@@ -378,22 +377,22 @@ describe('a MutationFunctionHandler instance not allowing 0 args', () => {
 
     it('resolves a path of length 2', async () => {
       const pathExpression = [
-        { subject: dataFactory.namedNode('https://example.org/#me') },
-        { predicate: dataFactory.namedNode('https://ex.org/p1') },
-        { predicate: dataFactory.namedNode('https://ex.org/p2') },
+        { subject: namedNode('https://example.org/#me') },
+        { predicate: namedNode('https://ex.org/p1') },
+        { predicate: namedNode('https://ex.org/p2') },
       ];
 
       expect(await handler.createMutationExpressions(path, { pathExpression }, args)).toEqual([
         {
           mutationType,
           domainExpression: [
-            { subject: dataFactory.namedNode('https://example.org/#me') },
-            { predicate: dataFactory.namedNode('https://ex.org/p1') },
+            { subject: namedNode('https://example.org/#me') },
+            { predicate: namedNode('https://ex.org/p1') },
           ],
-          predicate: dataFactory.namedNode('https://ex.org/p2'),
+          predicate: namedNode('https://ex.org/p2'),
           rangeExpression: [
-            { subject: dataFactory.namedNode('https://example.org/#arg0me') },
-            { predicate: dataFactory.namedNode('https://ex.org/arg0p1') },
+            { subject: namedNode('https://example.org/#arg0me') },
+            { predicate: namedNode('https://ex.org/arg0p1') },
           ],
         },
       ]);
@@ -404,45 +403,45 @@ describe('a MutationFunctionHandler instance not allowing 0 args', () => {
     const args = [
       {
         pathExpression: [
-          { subject: dataFactory.namedNode('https://example.org/#arg0me') },
-          { predicate: dataFactory.namedNode('https://ex.org/arg0p1') },
-          { predicate: dataFactory.namedNode('https://ex.org/arg0p2') },
+          { subject: namedNode('https://example.org/#arg0me') },
+          { predicate: namedNode('https://ex.org/arg0p1') },
+          { predicate: namedNode('https://ex.org/arg0p2') },
         ],
       },
       {
         pathExpression: [
-          { subject: dataFactory.namedNode('https://example.org/#arg1me') },
-          { predicate: dataFactory.namedNode('https://ex.org/arg1p1') },
-          { predicate: dataFactory.namedNode('https://ex.org/arg1p2') },
+          { subject: namedNode('https://example.org/#arg1me') },
+          { predicate: namedNode('https://ex.org/arg1p1') },
+          { predicate: namedNode('https://ex.org/arg1p2') },
         ],
       },
     ];
 
     it('resolves a path of length 1', async () => {
       const pathExpression = [
-        { subject: dataFactory.namedNode('https://example.org/#me') },
-        { predicate: dataFactory.namedNode('https://ex.org/p1') },
+        { subject: namedNode('https://example.org/#me') },
+        { predicate: namedNode('https://ex.org/p1') },
       ];
 
       expect(await handler.createMutationExpressions(path, { pathExpression }, args)).toEqual([
         {
           mutationType,
-          domainExpression: [{ subject: dataFactory.namedNode('https://example.org/#me') }],
-          predicate: dataFactory.namedNode('https://ex.org/p1'),
+          domainExpression: [{ subject: namedNode('https://example.org/#me') }],
+          predicate: namedNode('https://ex.org/p1'),
           rangeExpression: [
-            { subject: dataFactory.namedNode('https://example.org/#arg0me') },
-            { predicate: dataFactory.namedNode('https://ex.org/arg0p1') },
-            { predicate: dataFactory.namedNode('https://ex.org/arg0p2') },
+            { subject: namedNode('https://example.org/#arg0me') },
+            { predicate: namedNode('https://ex.org/arg0p1') },
+            { predicate: namedNode('https://ex.org/arg0p2') },
           ],
         },
         {
           mutationType,
-          domainExpression: [{ subject: dataFactory.namedNode('https://example.org/#me') }],
-          predicate: dataFactory.namedNode('https://ex.org/p1'),
+          domainExpression: [{ subject: namedNode('https://example.org/#me') }],
+          predicate: namedNode('https://ex.org/p1'),
           rangeExpression: [
-            { subject: dataFactory.namedNode('https://example.org/#arg1me') },
-            { predicate: dataFactory.namedNode('https://ex.org/arg1p1') },
-            { predicate: dataFactory.namedNode('https://ex.org/arg1p2') },
+            { subject: namedNode('https://example.org/#arg1me') },
+            { predicate: namedNode('https://ex.org/arg1p1') },
+            { predicate: namedNode('https://ex.org/arg1p2') },
           ],
         },
       ]);
@@ -450,36 +449,36 @@ describe('a MutationFunctionHandler instance not allowing 0 args', () => {
 
     it('resolves a path of length 2', async () => {
       const pathExpression = [
-        { subject: dataFactory.namedNode('https://example.org/#me') },
-        { predicate: dataFactory.namedNode('https://ex.org/p1') },
-        { predicate: dataFactory.namedNode('https://ex.org/p2') },
+        { subject: namedNode('https://example.org/#me') },
+        { predicate: namedNode('https://ex.org/p1') },
+        { predicate: namedNode('https://ex.org/p2') },
       ];
 
       expect(await handler.createMutationExpressions(path, { pathExpression }, args)).toEqual([
         {
           mutationType,
           domainExpression: [
-            { subject: dataFactory.namedNode('https://example.org/#me') },
-            { predicate: dataFactory.namedNode('https://ex.org/p1') },
+            { subject: namedNode('https://example.org/#me') },
+            { predicate: namedNode('https://ex.org/p1') },
           ],
-          predicate: dataFactory.namedNode('https://ex.org/p2'),
+          predicate: namedNode('https://ex.org/p2'),
           rangeExpression: [
-            { subject: dataFactory.namedNode('https://example.org/#arg0me') },
-            { predicate: dataFactory.namedNode('https://ex.org/arg0p1') },
-            { predicate: dataFactory.namedNode('https://ex.org/arg0p2') },
+            { subject: namedNode('https://example.org/#arg0me') },
+            { predicate: namedNode('https://ex.org/arg0p1') },
+            { predicate: namedNode('https://ex.org/arg0p2') },
           ],
         },
         {
           mutationType,
           domainExpression: [
-            { subject: dataFactory.namedNode('https://example.org/#me') },
-            { predicate: dataFactory.namedNode('https://ex.org/p1') },
+            { subject: namedNode('https://example.org/#me') },
+            { predicate: namedNode('https://ex.org/p1') },
           ],
-          predicate: dataFactory.namedNode('https://ex.org/p2'),
+          predicate: namedNode('https://ex.org/p2'),
           rangeExpression: [
-            { subject: dataFactory.namedNode('https://example.org/#arg1me') },
-            { predicate: dataFactory.namedNode('https://ex.org/arg1p1') },
-            { predicate: dataFactory.namedNode('https://ex.org/arg1p2') },
+            { subject: namedNode('https://example.org/#arg1me') },
+            { predicate: namedNode('https://ex.org/arg1p1') },
+            { predicate: namedNode('https://ex.org/arg1p2') },
           ],
         },
       ]);
@@ -495,16 +494,16 @@ describe('a MutationFunctionHandler instance allowing 0 args', () => {
     describe('without args', () => {
       it('resolves a path of length 1', async () => {
         const pathExpression = [
-          { subject: dataFactory.namedNode('https://example.org/#me') },
-          { predicate: dataFactory.namedNode('https://ex.org/p1') },
+          { subject: namedNode('https://example.org/#me') },
+          { predicate: namedNode('https://ex.org/p1') },
         ];
 
         expect(await handler.createMutationExpressions(path, { pathExpression }, [])).toEqual([
           {
             mutationType,
             domainExpression: [
-              { subject: dataFactory.namedNode('https://example.org/#me') },
-              { predicate: dataFactory.namedNode('https://ex.org/p1') },
+              { subject: namedNode('https://example.org/#me') },
+              { predicate: namedNode('https://ex.org/p1') },
             ],
           },
         ]);
@@ -512,20 +511,20 @@ describe('a MutationFunctionHandler instance allowing 0 args', () => {
 
       it('resolves a path of length 3', async () => {
         const pathExpression = [
-          { subject: dataFactory.namedNode('https://example.org/#me') },
-          { predicate: dataFactory.namedNode('https://ex.org/p1') },
-          { predicate: dataFactory.namedNode('https://ex.org/p2') },
-          { predicate: dataFactory.namedNode('https://ex.org/p3') },
+          { subject: namedNode('https://example.org/#me') },
+          { predicate: namedNode('https://ex.org/p1') },
+          { predicate: namedNode('https://ex.org/p2') },
+          { predicate: namedNode('https://ex.org/p3') },
         ];
 
         expect(await handler.createMutationExpressions(path, { pathExpression }, [])).toEqual([
           {
             mutationType,
             domainExpression: [
-              { subject: dataFactory.namedNode('https://example.org/#me') },
-              { predicate: dataFactory.namedNode('https://ex.org/p1') },
-              { predicate: dataFactory.namedNode('https://ex.org/p2') },
-              { predicate: dataFactory.namedNode('https://ex.org/p3') },
+              { subject: namedNode('https://example.org/#me') },
+              { predicate: namedNode('https://ex.org/p1') },
+              { predicate: namedNode('https://ex.org/p2') },
+              { predicate: namedNode('https://ex.org/p3') },
             ],
           },
         ]);

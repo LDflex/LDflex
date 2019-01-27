@@ -11,15 +11,15 @@ import DataHandler from '../../src/DataHandler';
 import JSONLDResolver from '../../src/JSONLDResolver';
 import { getIterator } from '../../src/iterableUtils';
 import { createQueryEngine } from '../util';
-import * as dataFactory from '@rdfjs/data-model';
+import { namedNode, literal } from '@rdfjs/data-model';
 
 import context from '../context';
 
-const subject = dataFactory.namedNode('https://example.org/#me');
+const subject = namedNode('https://example.org/#me');
 const queryEngine = createQueryEngine([
-  dataFactory.literal('Alice'),
-  dataFactory.literal('Bob'),
-  dataFactory.literal('Carol'),
+  literal('Alice'),
+  literal('Bob'),
+  literal('Carol'),
 ]);
 
 const resolvers = [
@@ -49,7 +49,7 @@ describe('a query path with a path expression handler', () => {
   let person;
   beforeAll(() => {
     const pathProxy = new PathProxy({ handlers: handlersPath, resolvers });
-    person = pathProxy.createPath({ queryEngine, dataFactory }, { subject });
+    person = pathProxy.createPath({ queryEngine }, { subject });
   });
 
   it('returns results for a path with 3 links', async () => {
@@ -73,7 +73,7 @@ describe('a query path with a path and mutation expression handler', () => {
   let person;
   beforeAll(() => {
     const pathProxy = new PathProxy({ handlers: handlersMutation, resolvers });
-    person = pathProxy.createPath({ queryEngine, dataFactory }, { subject });
+    person = pathProxy.createPath({ queryEngine }, { subject });
   });
 
   it('returns results for a path with 3 links', async () => {

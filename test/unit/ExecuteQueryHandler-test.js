@@ -1,5 +1,5 @@
 import ExecuteQueryHandler from '../../src/ExecuteQueryHandler';
-import * as dataFactory from '@rdfjs/data-model';
+import { literal } from '@rdfjs/data-model';
 
 describe('a ExecuteQueryHandler instance', () => {
   describe('in multi-element mode', () => {
@@ -23,7 +23,7 @@ describe('a ExecuteQueryHandler instance', () => {
     });
 
     it('errors with multi-variable results', async () => {
-      const bindings = new Map([['?a', dataFactory.literal('')], ['?b', dataFactory.literal('')]]);
+      const bindings = new Map([['?a', literal('')], ['?b', literal('')]]);
       const path = { extend: (args) => args };
       await expect(() => handler.extractTerm(bindings, path))
         .toThrow(new Error('Only single-variable queries are supported'));

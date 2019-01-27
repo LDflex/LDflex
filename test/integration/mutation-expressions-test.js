@@ -5,7 +5,7 @@ import DeleteFunctionHandler from '../../src/DeleteFunctionHandler';
 import MutationExpressionsHandler from '../../src/MutationExpressionsHandler';
 import JSONLDResolver from '../../src/JSONLDResolver';
 import context from '../context';
-import * as dataFactory from '@rdfjs/data-model';
+import { namedNode, literal } from '@rdfjs/data-model';
 
 describe('a query path with a path expression handler', () => {
   const handlers = {
@@ -17,12 +17,12 @@ describe('a query path with a path expression handler', () => {
   const resolvers = [
     new JSONLDResolver(context),
   ];
-  const subject = dataFactory.namedNode('https://example.org/#me');
+  const subject = namedNode('https://example.org/#me');
 
   let person;
   beforeAll(() => {
     const pathProxy = new PathProxy({ handlers, resolvers });
-    person = pathProxy.createPath({ dataFactory }, { subject });
+    person = pathProxy.createPath({ subject });
   });
 
   it('resolves an addition path with 2 links and a raw arg', async () => {
@@ -32,10 +32,10 @@ describe('a query path with a path expression handler', () => {
         mutationType: 'INSERT',
         domainExpression: [
           { subject },
-          { predicate: dataFactory.namedNode('http://xmlns.com/foaf/0.1/knows') },
+          { predicate: namedNode('http://xmlns.com/foaf/0.1/knows') },
         ],
-        predicate: dataFactory.namedNode('http://xmlns.com/foaf/0.1/givenName'),
-        rangeExpression: [{ subject: dataFactory.literal('Ruben') }],
+        predicate: namedNode('http://xmlns.com/foaf/0.1/givenName'),
+        rangeExpression: [{ subject: literal('Ruben') }],
       },
     ]);
   });
@@ -47,9 +47,9 @@ describe('a query path with a path expression handler', () => {
         mutationType: 'INSERT',
         domainExpression: [
           { subject },
-          { predicate: dataFactory.namedNode('http://xmlns.com/foaf/0.1/knows') },
+          { predicate: namedNode('http://xmlns.com/foaf/0.1/knows') },
         ],
-        predicate: dataFactory.namedNode('http://xmlns.com/foaf/0.1/givenName'),
+        predicate: namedNode('http://xmlns.com/foaf/0.1/givenName'),
         rangeExpression: [
           { subject },
         ],
@@ -64,12 +64,12 @@ describe('a query path with a path expression handler', () => {
         mutationType: 'INSERT',
         domainExpression: [
           { subject },
-          { predicate: dataFactory.namedNode('http://xmlns.com/foaf/0.1/knows') },
+          { predicate: namedNode('http://xmlns.com/foaf/0.1/knows') },
         ],
-        predicate: dataFactory.namedNode('http://xmlns.com/foaf/0.1/givenName'),
+        predicate: namedNode('http://xmlns.com/foaf/0.1/givenName'),
         rangeExpression: [
           { subject },
-          { predicate: dataFactory.namedNode('http://xmlns.com/foaf/0.1/givenName') },
+          { predicate: namedNode('http://xmlns.com/foaf/0.1/givenName') },
         ],
       },
     ]);
@@ -82,13 +82,13 @@ describe('a query path with a path expression handler', () => {
         mutationType: 'INSERT',
         domainExpression: [
           { subject },
-          { predicate: dataFactory.namedNode('http://xmlns.com/foaf/0.1/knows') },
+          { predicate: namedNode('http://xmlns.com/foaf/0.1/knows') },
         ],
-        predicate: dataFactory.namedNode('http://xmlns.com/foaf/0.1/givenName'),
+        predicate: namedNode('http://xmlns.com/foaf/0.1/givenName'),
         rangeExpression: [
           { subject },
-          { predicate: dataFactory.namedNode('http://xmlns.com/foaf/0.1/knows') },
-          { predicate: dataFactory.namedNode('http://xmlns.com/foaf/0.1/givenName') },
+          { predicate: namedNode('http://xmlns.com/foaf/0.1/knows') },
+          { predicate: namedNode('http://xmlns.com/foaf/0.1/givenName') },
         ],
       },
     ]);
@@ -101,21 +101,21 @@ describe('a query path with a path expression handler', () => {
         mutationType: 'INSERT',
         domainExpression: [
           { subject },
-          { predicate: dataFactory.namedNode('http://xmlns.com/foaf/0.1/knows') },
+          { predicate: namedNode('http://xmlns.com/foaf/0.1/knows') },
         ],
-        predicate: dataFactory.namedNode('http://xmlns.com/foaf/0.1/givenName'),
-        rangeExpression: [{ subject: dataFactory.literal('Ruben') }],
+        predicate: namedNode('http://xmlns.com/foaf/0.1/givenName'),
+        rangeExpression: [{ subject: literal('Ruben') }],
       },
       {
         mutationType: 'INSERT',
         domainExpression: [
           { subject },
-          { predicate: dataFactory.namedNode('http://xmlns.com/foaf/0.1/knows') },
+          { predicate: namedNode('http://xmlns.com/foaf/0.1/knows') },
         ],
-        predicate: dataFactory.namedNode('http://xmlns.com/foaf/0.1/givenName'),
+        predicate: namedNode('http://xmlns.com/foaf/0.1/givenName'),
         rangeExpression: [
           { subject },
-          { predicate: dataFactory.namedNode('http://xmlns.com/foaf/0.1/givenName') },
+          { predicate: namedNode('http://xmlns.com/foaf/0.1/givenName') },
         ],
       },
     ]);
@@ -128,21 +128,21 @@ describe('a query path with a path expression handler', () => {
         mutationType: 'DELETE',
         domainExpression: [
           { subject },
-          { predicate: dataFactory.namedNode('http://xmlns.com/foaf/0.1/knows') },
+          { predicate: namedNode('http://xmlns.com/foaf/0.1/knows') },
         ],
-        predicate: dataFactory.namedNode('http://xmlns.com/foaf/0.1/givenName'),
-        rangeExpression: [{ subject: dataFactory.literal('Ruben') }],
+        predicate: namedNode('http://xmlns.com/foaf/0.1/givenName'),
+        rangeExpression: [{ subject: literal('Ruben') }],
       },
       {
         mutationType: 'DELETE',
         domainExpression: [
           { subject },
-          { predicate: dataFactory.namedNode('http://xmlns.com/foaf/0.1/knows') },
+          { predicate: namedNode('http://xmlns.com/foaf/0.1/knows') },
         ],
-        predicate: dataFactory.namedNode('http://xmlns.com/foaf/0.1/givenName'),
+        predicate: namedNode('http://xmlns.com/foaf/0.1/givenName'),
         rangeExpression: [
           { subject },
-          { predicate: dataFactory.namedNode('http://xmlns.com/foaf/0.1/givenName') },
+          { predicate: namedNode('http://xmlns.com/foaf/0.1/givenName') },
         ],
       },
     ]);
@@ -155,19 +155,19 @@ describe('a query path with a path expression handler', () => {
         mutationType: 'DELETE',
         domainExpression: [
           { subject },
-          { predicate: dataFactory.namedNode('http://xmlns.com/foaf/0.1/knows') },
+          { predicate: namedNode('http://xmlns.com/foaf/0.1/knows') },
         ],
-        predicate: dataFactory.namedNode('http://xmlns.com/foaf/0.1/givenName'),
-        rangeExpression: [{ subject: dataFactory.literal('ruben') }],
+        predicate: namedNode('http://xmlns.com/foaf/0.1/givenName'),
+        rangeExpression: [{ subject: literal('ruben') }],
       },
       {
         mutationType: 'INSERT',
         domainExpression: [
           { subject },
-          { predicate: dataFactory.namedNode('http://xmlns.com/foaf/0.1/knows') },
+          { predicate: namedNode('http://xmlns.com/foaf/0.1/knows') },
         ],
-        predicate: dataFactory.namedNode('http://xmlns.com/foaf/0.1/givenName'),
-        rangeExpression: [{ subject: dataFactory.literal('Ruben') }],
+        predicate: namedNode('http://xmlns.com/foaf/0.1/givenName'),
+        rangeExpression: [{ subject: literal('Ruben') }],
       },
     ]);
   });
@@ -180,17 +180,17 @@ describe('a query path with a path expression handler', () => {
         domainExpression: [
           { subject },
         ],
-        predicate: dataFactory.namedNode('http://xmlns.com/foaf/0.1/knows'),
+        predicate: namedNode('http://xmlns.com/foaf/0.1/knows'),
         rangeExpression: [{ subject }],
       },
       {
         mutationType: 'INSERT',
         domainExpression: [
           { subject },
-          { predicate: dataFactory.namedNode('http://xmlns.com/foaf/0.1/knows') },
+          { predicate: namedNode('http://xmlns.com/foaf/0.1/knows') },
         ],
-        predicate: dataFactory.namedNode('http://xmlns.com/foaf/0.1/givenName'),
-        rangeExpression: [{ subject: dataFactory.literal('Ruben') }],
+        predicate: namedNode('http://xmlns.com/foaf/0.1/givenName'),
+        rangeExpression: [{ subject: literal('Ruben') }],
       },
     ]);
   });

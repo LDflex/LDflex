@@ -1,3 +1,5 @@
+import { literal } from '@rdfjs/data-model';
+
 /**
  * Returns a function that, when called with arguments,
  * extends the path with mutationExpressions.
@@ -22,8 +24,9 @@ export default class MutationFunctionHandler {
         throw new Error(`Mutation on ${path} can not be invoked without arguments`);
 
       const mutationExpressions = {
-        then: (resolve, reject) =>
-          this.createMutationExpressions(path, proxy, args).then(resolve, reject),
+        then: (onResolved, onRejected) =>
+          this.createMutationExpressions(path, proxy, args)
+            .then(onResolved, onRejected),
       };
       return path.extend({ mutationExpressions });
     };
@@ -54,7 +57,7 @@ export default class MutationFunctionHandler {
         if (!Array.isArray(rangeExpression)) {
           // If the argument is not an RDFJS term, assume it is a literal
           if (!argument.termType)
-            argument = path.settings.dataFactory.literal(argument);
+            argument = literal(argument);
 
           rangeExpression = [{ subject: argument }];
         }

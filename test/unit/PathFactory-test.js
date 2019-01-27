@@ -1,6 +1,6 @@
 import PathFactory from '../../src/PathFactory';
 import context from '../context';
-import * as dataFactory from '@rdfjs/data-model';
+import { namedNode, literal } from '@rdfjs/data-model';
 
 describe('the PathFactory module', () => {
   it('exposes the defaultHandlers', () => {
@@ -74,7 +74,7 @@ describe('a PathFactory instance with an undefined subject', () => {
 describe('a PathFactory instance with a Term as subject', () => {
   let term, factory, path;
   beforeAll(() => {
-    term = dataFactory.literal('foo', 'en-us');
+    term = literal('foo', 'en-us');
     factory = new PathFactory(undefined, { subject: term });
     path = factory.create();
   });
@@ -97,7 +97,7 @@ describe('a PathFactory instance with a Term as subject', () => {
 
   it('exposes its datatype', () => {
     const langString = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#langString';
-    expect(path.datatype).toEqual(dataFactory.namedNode(langString));
+    expect(path.datatype).toEqual(namedNode(langString));
   });
 
   it('exposes its string value', () => {
@@ -138,7 +138,7 @@ describe('a PathFactory instance with a Term as subject', () => {
 describe('a PathFactory instance with a promise to a Term as subject', () => {
   let term, factory, path;
   beforeAll(() => {
-    term = dataFactory.literal('foo', 'en-us');
+    term = literal('foo', 'en-us');
     factory = new PathFactory(undefined, { subject: Promise.resolve(term) });
     path = factory.create();
   });
@@ -175,7 +175,7 @@ describe('a PathFactory instance with a promise to a Term as subject', () => {
 
     it('exposes its datatype', () => {
       const langString = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#langString';
-      expect(value.datatype).toEqual(dataFactory.namedNode(langString));
+      expect(value.datatype).toEqual(namedNode(langString));
     });
 
     it('exposes its string value', () => {
@@ -267,7 +267,7 @@ describe('a PathFactory instance with initial settings and data', () => {
     beforeAll(() => (path = factory.create()));
 
     it('passes the settings', () => {
-      expect(path.internal.settings).toEqual({ dataFactory, foo: 'bar' });
+      expect(path.internal.settings).toEqual({ foo: 'bar' });
     });
 
     it('passes the data', () => {
@@ -280,7 +280,7 @@ describe('a PathFactory instance with initial settings and data', () => {
     beforeAll(() => (path = factory.create({ b: 2 })));
 
     it('passes the settings', () => {
-      expect(path.internal.settings).toEqual({ dataFactory, foo: 'bar' });
+      expect(path.internal.settings).toEqual({ foo: 'bar' });
     });
 
     it('extends the data', () => {
@@ -294,7 +294,7 @@ describe('a PathFactory instance with initial settings and data', () => {
     beforeAll(() => (path = factory.create({ other: 'x' }, { b: 2 })));
 
     it('extends the settings', () => {
-      expect(path.internal.settings).toEqual({ dataFactory, foo: 'bar', other: 'x' });
+      expect(path.internal.settings).toEqual({ foo: 'bar', other: 'x' });
     });
 
     it('extends the data', () => {

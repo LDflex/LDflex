@@ -1,13 +1,13 @@
 import PathFactory from '../../src/PathFactory';
 import context from '../context';
 import { createQueryEngine } from '../util';
-import * as dataFactory from '@rdfjs/data-model';
+import { namedNode, literal } from '@rdfjs/data-model';
 
-const subject = dataFactory.namedNode('https://example.org/#me');
+const subject = namedNode('https://example.org/#me');
 const queryEngine = createQueryEngine([
-  dataFactory.literal('Alice'),
-  dataFactory.literal('Bob'),
-  dataFactory.literal('Carol'),
+  literal('Alice'),
+  literal('Bob'),
+  literal('Carol'),
 ]);
 
 describe('a PathFactory instance', () => {
@@ -50,10 +50,10 @@ describe('a PathFactory instance', () => {
       expect(name.termType).toBe('Literal');
       expect(name.value).toBe('Alice');
       expect(name.equals).toBeInstanceOf(Function);
-      expect(name.equals(dataFactory.literal('Alice'))).toBeTruthy();
-      expect(name.equals(dataFactory.literal('Bob'))).toBeFalsy();
+      expect(name.equals(literal('Alice'))).toBeTruthy();
+      expect(name.equals(literal('Bob'))).toBeFalsy();
       expect(name.language).toBe('');
-      expect(name.datatype).toEqual(dataFactory.namedNode('http://www.w3.org/2001/XMLSchema#string'));
+      expect(name.datatype).toEqual(namedNode('http://www.w3.org/2001/XMLSchema#string'));
     });
   });
 });
