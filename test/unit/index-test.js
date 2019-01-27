@@ -14,7 +14,6 @@ describe('The LDflex module', () => {
     'getIterator',
     'iterablePromise',
     'iterableToThen',
-    'promiseToIterable',
   ];
 
   exports.forEach(name => {

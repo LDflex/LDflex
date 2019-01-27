@@ -1,3 +1,5 @@
+const done = {};
+
 /**
  * Gets the iterator function
  * from an iterable returned by a handler.
@@ -10,12 +12,6 @@ export const getIterator = mapHandler(iterable =>
  * of an iterable returned by a handler.
  */
 export const iterableToThen = mapHandler(createThen);
-
-/**
- * Creates an async iterable
- * from a promise returned by a handler.
- */
-export const promiseToIterable = mapHandler(createIterable);
 
 /**
  * Returns an iterable that is also a promise to the first element.
@@ -102,7 +98,7 @@ export function conditionalHandler(handler, condition) {
 /**
  * Creates a then function to the first element of the iterable.
  */
-function createThen(iterable) {
+export function createThen(iterable) {
   const iterator = iterable[Symbol.asyncIterator]();
   return (onResolved, onRejected) => iterator.next()
     .then(item => item.value)
@@ -110,19 +106,17 @@ function createThen(iterable) {
 }
 
 /**
- * Creates an async iterable with the promise as only element.
+ * Creates an async iterator with the items as only element.
  */
-function createIterable(promise) {
+export function createIterator(item) {
   return {
-    [Symbol.asyncIterator]() {
-      let next = promise.then(value => ({ value }));
-      return {
-        next() {
-          const current = next;
-          next = Promise.resolve({ done: true });
-          return current;
-        },
-      };
+    async next() {
+      if (item !== done) {
+        const value = await item;
+        item = done;
+        return { value };
+      }
+      return { done: true };
     },
   };
 }

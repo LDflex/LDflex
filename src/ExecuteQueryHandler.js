@@ -30,6 +30,6 @@ export default class ExecuteQueryHandler {
     const term = binding.values().next().value;
 
     // Each result is a new path that starts from the given term as subject
-    return path.extend({ parent: null, subject: term });
+    return path.extend({ subject: term }, null);
   }
 }

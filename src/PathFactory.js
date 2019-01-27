@@ -8,24 +8,13 @@ import SetFunctionHandler from './SetFunctionHandler';
 import ExecuteQueryHandler from './ExecuteQueryHandler';
 import SparqlHandler from './SparqlHandler';
 import JSONLDResolver from './JSONLDResolver';
-import FallbackHandler from './FallbackHandler';
 import DataHandler from './DataHandler';
 import StringToLDflexHandler from './StringToLDflexHandler';
-import SubjectHandler from './SubjectHandler';
-import { promiseToIterable, getIterator, iterableToThen } from './iterableUtils';
+import { createThen, createIterator } from './iterableUtils';
 import * as dataFactory from '@rdfjs/data-model';
 
-// Create default query handlers
+// Create default query handler
 const queryHandler = new ExecuteQueryHandler();
-const thenQueryHandler = iterableToThen(queryHandler);
-
-// Default iterator behavior:
-// - first try returning the subject (single-segment path)
-// - then execute a path query (multi-segment path)
-const iteratorHandler = new FallbackHandler([
-  promiseToIterable(new SubjectHandler()),
-  queryHandler,
-]);
 
 /**
  * Collection of default property handlers.
@@ -46,15 +35,25 @@ export const defaultHandlers = {
         return undefined;
       // Return a new path with the resolved subject
       return (onResolved, onRejected) => subject
-        .then(term => path.extend({ subject: term, parent: null }))
+        .then(term => path.extend({ subject: term }, null))
         .then(onResolved, onRejected);
     }
     // Otherwise, execute the query represented by this path
-    return thenQueryHandler.execute(path, pathProxy);
+    return createThen(queryHandler.execute(path, pathProxy));
   },
 
   // Add async iterable behavior
-  [Symbol.asyncIterator]: getIterator(iteratorHandler),
+  [Symbol.asyncIterator]: (path, pathProxy) => {
+    // If a direct subject is set (zero-length path),
+    // return an iterator with the subject as only element
+    const { subject } = path;
+    if (subject) {
+      return () => createIterator(Promise.resolve(subject)
+        .then(term => path.extend({ subject: term }, null)));
+    }
+    // Otherwise, execute the query represented by this path
+    return () => queryHandler.execute(path, pathProxy)[Symbol.asyncIterator]();
+  },
 
   // Add path handling
   pathExpression: new PathExpressionHandler(),
@@ -90,7 +89,9 @@ export default class PathFactory {
 
     // Prepare the handlers
     const handlers = (settings.handlers || PathFactory.defaultHandlers);
-    for (var key in handlers)
+    for (const key in handlers)
+      handlers[key] = toHandler(handlers[key]);
+    for (const key of Object.getOwnPropertySymbols(handlers))
       handlers[key] = toHandler(handlers[key]);
 
     // Prepare the resolvers

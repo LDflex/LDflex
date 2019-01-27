@@ -113,13 +113,25 @@ describe('a PathFactory instance with a Term as subject', () => {
     expect(term.equals(path)).toBe(true);
   });
 
-  it('has an asyncIterator that contains the term', async () => {
+  describe('its asyncIterator', () => {
     const items = [];
-    for await (const item of path)
-      items.push(item);
-    expect(items).toHaveLength(1);
-    expect(term.equals(items[0])).toBe(true);
-    expect(items[0].equals(term)).toBe(true);
+    beforeAll(async () => {
+      for await (const item of path)
+        items.push(item);
+    });
+
+    it('has one element', () => {
+      expect(items).toHaveLength(1);
+    });
+
+    it('exposes the subject', () => {
+      expect(term.equals(items[0])).toBe(true);
+      expect(items[0].equals(term)).toBe(true);
+    });
+
+    it('exposes the subject as a path', async () => {
+      await expect(items[0].sparql).rejects.toThrow(/predicate/);
+    });
   });
 });
 
@@ -179,23 +191,47 @@ describe('a PathFactory instance with a promise to a Term as subject', () => {
       expect(term.equals(value)).toBe(true);
     });
 
-    it('has an asyncIterator that contains the term', async () => {
+    describe('its asyncIterator', () => {
       const items = [];
-      for await (const item of value)
-        items.push(item);
-      expect(items).toHaveLength(1);
-      expect(term.equals(items[0])).toBe(true);
-      expect(items[0].equals(term)).toBe(true);
+      beforeAll(async () => {
+        for await (const item of value)
+          items.push(item);
+      });
+
+      it('has one element', () => {
+        expect(items).toHaveLength(1);
+      });
+
+      it('exposes the subject', () => {
+        expect(term.equals(items[0])).toBe(true);
+        expect(items[0].equals(term)).toBe(true);
+      });
+
+      it('exposes the subject as a path', async () => {
+        await expect(items[0].sparql).rejects.toThrow(/predicate/);
+      });
     });
   });
 
-  it('has an asyncIterator that contains the term', async () => {
+  describe('its asyncIterator', () => {
     const items = [];
-    for await (const item of path)
-      items.push(item);
-    expect(items).toHaveLength(1);
-    expect(term.equals(items[0])).toBe(true);
-    expect(items[0].equals(term)).toBe(true);
+    beforeAll(async () => {
+      for await (const item of path)
+        items.push(item);
+    });
+
+    it('has one element', () => {
+      expect(items).toHaveLength(1);
+    });
+
+    it('exposes the subject', () => {
+      expect(term.equals(items[0])).toBe(true);
+      expect(items[0].equals(term)).toBe(true);
+    });
+
+    it('exposes the subject as a path', async () => {
+      await expect(items[0].sparql).rejects.toThrow(/predicate/);
+    });
   });
 });
 

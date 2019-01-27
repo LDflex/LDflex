@@ -1,6 +1,4 @@
 import PathProxy from '../../src/PathProxy';
-import FallbackHandler from '../../src/FallbackHandler';
-import SubjectHandler from '../../src/SubjectHandler';
 import ExecuteQueryHandler from '../../src/ExecuteQueryHandler';
 import SparqlHandler from '../../src/SparqlHandler';
 import PathExpressionHandler from '../../src/PathExpressionHandler';
@@ -11,7 +9,7 @@ import ReplaceFunctionHandler from '../../src/ReplaceFunctionHandler';
 import SetFunctionHandler from '../../src/SetFunctionHandler';
 import DataHandler from '../../src/DataHandler';
 import JSONLDResolver from '../../src/JSONLDResolver';
-import { conditionalHandler, getIterator, iterableToThen, promiseToIterable } from '../../src/iterableUtils';
+import { getIterator } from '../../src/iterableUtils';
 import { createQueryEngine } from '../util';
 import * as dataFactory from '@rdfjs/data-model';
 
@@ -24,10 +22,6 @@ const queryEngine = createQueryEngine([
   dataFactory.literal('Carol'),
 ]);
 
-const iteratorHandler = new FallbackHandler([
-  promiseToIterable(new SubjectHandler()),
-  new ExecuteQueryHandler(),
-]);
 const resolvers = [
   new JSONLDResolver(context),
 ];
@@ -36,8 +30,7 @@ const handlersPath = {
   pathExpression: new PathExpressionHandler(),
   mutationExpressions: new MutationExpressionsHandler(),
   toString: DataHandler.syncFunction('subject', 'value'),
-  [Symbol.asyncIterator]: getIterator(iteratorHandler),
-  then: conditionalHandler(iterableToThen(iteratorHandler), (path) => !path.subject),
+  [Symbol.asyncIterator]: getIterator(new ExecuteQueryHandler()),
 };
 
 const handlersMutation = {
@@ -49,8 +42,7 @@ const handlersMutation = {
   replace: new ReplaceFunctionHandler(),
   set: new SetFunctionHandler(),
   toString: DataHandler.syncFunction('subject', 'value'),
-  [Symbol.asyncIterator]: getIterator(iteratorHandler),
-  then: conditionalHandler(iterableToThen(iteratorHandler), (path) => !path.subject),
+  [Symbol.asyncIterator]: getIterator(new ExecuteQueryHandler()),
 };
 
 describe('a query path with a path expression handler', () => {

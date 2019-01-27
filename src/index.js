@@ -17,7 +17,6 @@ import {
   getIterator,
   iterablePromise,
   iterableToThen,
-  promiseToIterable,
 } from './iterableUtils';
 
 export {
@@ -39,5 +38,4 @@ export {
   getIterator,
   iterablePromise,
   iterableToThen,
-  promiseToIterable,
 };

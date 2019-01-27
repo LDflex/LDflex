@@ -41,9 +41,7 @@ export default class PathProxy {
     // Add an extend method to create child paths
     if (!path.extend) {
       const pathProxy = this;
-      path.extend = function (newData) {
-        const parent = this;
-        const { extend } = this;
+      path.extend = function extend(newData, parent = this) {
         return pathProxy.createPath(settings, { parent, extend, ...newData });
       };
     }
