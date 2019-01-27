@@ -1,19 +1,6 @@
 const done = {};
 
 /**
- * Gets the iterator function
- * from an iterable returned by a handler.
- */
-export const getIterator = mapHandler(iterable =>
-  () => iterable[Symbol.asyncIterator]());
-
-/**
- * Creates a then function to the first element
- * of an iterable returned by a handler.
- */
-export const iterableToThen = mapHandler(createThen);
-
-/**
  * Returns an iterable that is also a promise to the first element.
  */
 export function iterablePromise(iterable) {
@@ -69,18 +56,6 @@ export function memoizeIterable(iterable) {
       };
     },
   };
-}
-
-/**
- * Creates a handler that maps the result of another handler.
- */
-function mapHandler(mapper) {
-  return handler => ({
-    execute(path, proxy) {
-      const result = handler.execute(path, proxy);
-      return result ? mapper(result) : undefined;
-    },
-  });
 }
 
 /**

@@ -1,23 +1,7 @@
 import {
-  getIterator,
-  iterableToThen,
   iterablePromise,
   memoizeIterable,
 } from '../../src/iterableUtils';
-
-describe('getIterator', () => {
-  it('returns undefined if the handler returns falsy', () => {
-    const handler = { execute: () => false };
-    expect(getIterator(handler).execute()).toBeUndefined();
-  });
-});
-
-describe('iterableToThen', () => {
-  it('returns undefined if the handler returns falsy', () => {
-    const handler = { execute: () => false };
-    expect(iterableToThen(handler).execute()).toBeUndefined();
-  });
-});
 
 describe('iterablePromise', () => {
   it('returns an object that is iterable', async () => {

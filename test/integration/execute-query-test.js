@@ -4,12 +4,10 @@ import SparqlHandler from '../../src/SparqlHandler';
 import PathExpressionHandler from '../../src/PathExpressionHandler';
 import InsertFunctionHandler from '../../src/InsertFunctionHandler';
 import DeleteFunctionHandler from '../../src/DeleteFunctionHandler';
-import MutationExpressionsHandler from '../../src/MutationExpressionsHandler';
 import ReplaceFunctionHandler from '../../src/ReplaceFunctionHandler';
 import SetFunctionHandler from '../../src/SetFunctionHandler';
 import DataHandler from '../../src/DataHandler';
 import JSONLDResolver from '../../src/JSONLDResolver';
-import { getIterator } from '../../src/iterableUtils';
 import { createQueryEngine } from '../util';
 import { namedNode, literal } from '@rdfjs/data-model';
 
@@ -28,21 +26,29 @@ const resolvers = [
 const handlersPath = {
   sparql: new SparqlHandler(),
   pathExpression: new PathExpressionHandler(),
-  mutationExpressions: new MutationExpressionsHandler(),
+  results: new ExecuteQueryHandler(),
+  [Symbol.asyncIterator]: {
+    execute(path, pathProxy) {
+      return () => pathProxy.results[Symbol.asyncIterator]();
+    },
+  },
   toString: DataHandler.syncFunction('subject', 'value'),
-  [Symbol.asyncIterator]: getIterator(new ExecuteQueryHandler()),
 };
 
 const handlersMutation = {
   sparql: new SparqlHandler(),
   pathExpression: new PathExpressionHandler(),
+  results: new ExecuteQueryHandler(),
+  [Symbol.asyncIterator]: {
+    execute(path, pathProxy) {
+      return () => pathProxy.results[Symbol.asyncIterator]();
+    },
+  },
   add: new InsertFunctionHandler(),
   delete: new DeleteFunctionHandler(),
-  mutationExpressions: new MutationExpressionsHandler(),
   replace: new ReplaceFunctionHandler(),
   set: new SetFunctionHandler(),
   toString: DataHandler.syncFunction('subject', 'value'),
-  [Symbol.asyncIterator]: getIterator(new ExecuteQueryHandler()),
 };
 
 describe('a query path with a path expression handler', () => {
