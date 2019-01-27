@@ -37,7 +37,7 @@
     "jest": "jest",
     "lint": "eslint src test",
     "prepublishOnly": "npm run build",
-    "test": "npm run lint && npm run jest",
+    "test": "npm run lint && npm run jest -- --collectCoverage",
     "test:dev": "npm run jest -- --watch"
   }
 }
