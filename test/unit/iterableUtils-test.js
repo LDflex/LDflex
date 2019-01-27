@@ -3,7 +3,6 @@ import {
   iterableToThen,
   iterablePromise,
   memoizeIterable,
-  conditionalHandler,
 } from '../../src/iterableUtils';
 
 describe('getIterator', () => {
@@ -70,25 +69,6 @@ describe('memoizeIterable', () => {
     expect(await iterator.next()).toHaveProperty('done', true);
     expect(await iterator.next()).toHaveProperty('done', true);
     expect(await iterator.next()).toHaveProperty('done', true);
-  });
-});
-
-describe('conditionalHandler', () => {
-  it('returns undefined if the condition returns false', async () => {
-    const handler = { execute: () => 'abc' };
-    expect(conditionalHandler(handler, () => false).execute()).toBeUndefined();
-  });
-
-  it('returns the inner handlers response if the condition returns true', async () => {
-    const handler = { execute: () => 'abc' };
-    expect(conditionalHandler(handler, () => true).execute()).toEqual('abc');
-  });
-
-  it('calls the callback with path and proxy', async () => {
-    const handler = { execute: () => 'abc' };
-    const cb = jest.fn(() => true);
-    expect(conditionalHandler(handler, cb).execute('path', 'proxy')).toEqual('abc');
-    expect(cb).toHaveBeenCalledWith('path', 'proxy');
   });
 });
 

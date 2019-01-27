@@ -84,18 +84,6 @@ function mapHandler(mapper) {
 }
 
 /**
- * Creates a handler that will only execute if a condition is met.
- * The condition parameter is a callback that takes path and proxy arguments, and must return a boolean.
- */
-export function conditionalHandler(handler, condition) {
-  return {
-    execute(path, proxy) {
-      return condition(path, proxy) ? handler.execute(path, proxy) : undefined;
-    },
-  };
-}
-
-/**
  * Creates a then function to the first element of the iterable.
  */
 export function createThen(iterable) {

@@ -12,7 +12,6 @@ import ReplaceFunctionHandler from './ReplaceFunctionHandler';
 import SetFunctionHandler from './SetFunctionHandler';
 import SparqlHandler from './SparqlHandler';
 import StringToLDflexHandler from './StringToLDflexHandler';
-import SubjectHandler from './SubjectHandler';
 import {
   getIterator,
   iterablePromise,
@@ -34,7 +33,6 @@ export {
   SetFunctionHandler,
   SparqlHandler,
   StringToLDflexHandler,
-  SubjectHandler,
   getIterator,
   iterablePromise,
   iterableToThen,
