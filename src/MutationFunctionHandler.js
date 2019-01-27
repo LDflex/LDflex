@@ -26,7 +26,7 @@ export default class MutationFunctionHandler {
 
       // Create a lazy Promise to the mutation expressions
       const then = getThen(() => this.createMutationExpressions(pathData, path, args));
-      return pathData.extend({ mutationExpressions: { then } });
+      return pathData.extendPath({ mutationExpressions: { then } });
     };
   }
 

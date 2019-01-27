@@ -15,6 +15,6 @@ export default class SubjectHandler {
     // Resolve the subject if it exists,
     // and return a path starting from that subject
     return !subject ? undefined : Promise.resolve(subject)
-      .then(value => pathData.extend({ subject: value }, null));
+      .then(value => pathData.extendPath({ subject: value }, null));
   }
 }

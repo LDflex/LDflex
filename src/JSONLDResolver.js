@@ -24,7 +24,7 @@ export default class JSONLDResolver {
    */
   resolve(property, pathData) {
     const predicate = { then: getThen(() => this.expandProperty(property)) };
-    return pathData.extend({ property, predicate });
+    return pathData.extendPath({ property, predicate });
   }
 
   /**

@@ -4,7 +4,7 @@ import { namedNode, literal } from '@rdfjs/data-model';
 const mutationType = 'TYPE';
 const extendedPath = {};
 const pathData = {
-  extend: jest.fn(() => extendedPath),
+  extendPath: jest.fn(() => extendedPath),
   toString: () => 'path',
 };
 
@@ -32,14 +32,14 @@ describe('a MutationFunctionHandler instance not allowing 0 args', () => {
       beforeEach(async () => functionResult = await result('Ruben'));
 
       it('extends the path', () => {
-        expect(pathData.extend).toBeCalledTimes(1);
-        const args = pathData.extend.mock.calls[0];
+        expect(pathData.extendPath).toBeCalledTimes(1);
+        const args = pathData.extendPath.mock.calls[0];
         expect(args).toHaveLength(1);
         expect(args[0]).toBeInstanceOf(Object);
       });
 
       it('sets mutationExpressions to a promise to the expressions', async () => {
-        const { mutationExpressions } = pathData.extend.mock.calls[0][0];
+        const { mutationExpressions } = pathData.extendPath.mock.calls[0][0];
         expect(await mutationExpressions).toEqual([
           {
             mutationType,
@@ -60,14 +60,14 @@ describe('a MutationFunctionHandler instance not allowing 0 args', () => {
       beforeEach(async () => functionResult = await result(namedNode('http://example.org/')));
 
       it('extends the path', () => {
-        expect(pathData.extend).toBeCalledTimes(1);
-        const args = pathData.extend.mock.calls[0];
+        expect(pathData.extendPath).toBeCalledTimes(1);
+        const args = pathData.extendPath.mock.calls[0];
         expect(args).toHaveLength(1);
         expect(args[0]).toBeInstanceOf(Object);
       });
 
       it('sets mutationExpressions to a promise to the expressions', async () => {
-        const { mutationExpressions } = pathData.extend.mock.calls[0][0];
+        const { mutationExpressions } = pathData.extendPath.mock.calls[0][0];
         expect(await mutationExpressions).toEqual([
           {
             mutationType,

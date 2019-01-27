@@ -15,10 +15,10 @@ const EMPTY = Object.create(null);
  * Only handlers and resolvers see the internal data.
  *
  * A path can have arbitrary internal data fields, but these are reserved:
- * - proxy, a reference to the proxied object the user sees
- * - extend, a method to create a child path with this path as parent
  * - settings, an object that is passed on as-is to child paths
+ * - proxy, a reference to the proxied object the user sees
  * - parent, a reference to the parent path
+ * - extendPath, a method to create a child path with this path as parent
  */
 export default class PathProxy {
   constructor({ handlers = EMPTY, resolvers = [] } = {}) {
@@ -38,11 +38,11 @@ export default class PathProxy {
     const path = { settings, ...data };
     const proxy = path.proxy = new Proxy(path, this);
 
-    // Add an extend method to create child paths
-    if (!path.extend) {
+    // Add an extendPath method to create child paths
+    if (!path.extendPath) {
       const pathProxy = this;
-      path.extend = function extend(newData, parent = this) {
-        return pathProxy.createPath(settings, { parent, extend, ...newData });
+      path.extendPath = function extendPath(newData, parent = this) {
+        return pathProxy.createPath(settings, { parent, extendPath, ...newData });
       };
     }
 

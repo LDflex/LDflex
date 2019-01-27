@@ -303,7 +303,7 @@ describe('a PathProxy whose paths are extended', () => {
     const extendedData = { b: 2 };
     let extendedPath;
     beforeAll(() => {
-      extendedPath = path.internal.extend(extendedData);
+      extendedPath = path.internal.extendPath(extendedData);
     });
 
     it('has the same handlers as the original path', () => {
