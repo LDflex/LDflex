@@ -5,7 +5,7 @@ export function deindent(string) {
 export function createQueryEngine(results) {
   return {
     execute: jest.fn(async function*() {
-      for (const term of results.map(value => ({ value })))
+      for (const term of results)
         yield new Map([['?value', term]]);
     }),
   };

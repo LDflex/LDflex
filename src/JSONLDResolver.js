@@ -1,5 +1,6 @@
 import assert from 'assert';
 import { expand } from 'jsonld';
+import { namedNode } from '@rdfjs/data-model';
 
 /**
  * Resolves property names of a path
@@ -22,8 +23,8 @@ export default class JSONLDResolver {
    */
   resolve(property, path) {
     const predicate = {
-      then: (resolve, reject) =>
-        this.expandProperty(property).then(resolve, reject),
+      then: (onResolved, onRejected) =>
+        this.expandProperty(property).then(onResolved, onRejected),
     };
     return path.extend({ property, predicate });
   }
@@ -50,6 +51,6 @@ export default class JSONLDResolver {
     assert.equal(expanded.length, 1);
     const propertyIRIs = Object.keys(expanded[0]);
     assert.equal(propertyIRIs.length, 1);
-    return propertyIRIs[0];
+    return namedNode(propertyIRIs[0]);
   }
 }

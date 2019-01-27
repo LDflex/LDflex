@@ -1,5 +1,6 @@
 import JSONLDResolver from '../../src/JSONLDResolver';
 import context from '../context';
+import { namedNode } from '@rdfjs/data-model';
 
 describe('a JSONLDResolver instance', () => {
   let resolver;
@@ -21,7 +22,7 @@ describe('a JSONLDResolver instance with a context', () => {
   describe('expanding a property', () => {
     it('expands knows to foaf:knows', async () => {
       expect(await resolver.expandProperty('knows'))
-        .toBe('http://xmlns.com/foaf/0.1/knows');
+        .toEqual(namedNode('http://xmlns.com/foaf/0.1/knows'));
     });
 
     it('errors when expanding an unknown property', async () => {
@@ -51,7 +52,7 @@ describe('a JSONLDResolver instance with a context', () => {
 
     it('sets predicate to a promise for foaf:knows', async () => {
       const { predicate } = path.extend.mock.calls[0][0];
-      expect(await predicate).toBe('http://xmlns.com/foaf/0.1/knows');
+      expect(await predicate).toEqual(namedNode('http://xmlns.com/foaf/0.1/knows'));
     });
 
     it('returns the extended path', () => {
@@ -80,7 +81,7 @@ describe('a JSONLDResolver instance with a context', () => {
 
     it('sets predicate to a promise for foaf:knows', async () => {
       const { predicate } = path.extend.mock.calls[0][0];
-      expect(await predicate).toBe('http://xmlns.com/foaf/0.1/knows');
+      expect(await predicate).toEqual(namedNode('http://xmlns.com/foaf/0.1/knows'));
     });
 
     it('returns the extended path', () => {
@@ -109,7 +110,7 @@ describe('a JSONLDResolver instance with a context', () => {
 
     it('sets predicate to a promise for foaf:knows', async () => {
       const { predicate } = path.extend.mock.calls[0][0];
-      expect(await predicate).toBe('http://xmlns.com/foaf/0.1/knows');
+      expect(await predicate).toEqual(namedNode('http://xmlns.com/foaf/0.1/knows'));
     });
 
     it('returns the extended path', () => {
@@ -138,7 +139,7 @@ describe('a JSONLDResolver instance with a context', () => {
 
     it('sets predicate to a promise for foaf:knows', async () => {
       const { predicate } = path.extend.mock.calls[0][0];
-      expect(await predicate).toBe('http://xmlns.com/foaf/0.1/knows');
+      expect(await predicate).toEqual(namedNode('http://xmlns.com/foaf/0.1/knows'));
     });
 
     it('returns the extended path', () => {

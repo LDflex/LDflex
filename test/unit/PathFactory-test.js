@@ -1,7 +1,8 @@
 import PathFactory from '../../src/PathFactory';
 import context from '../context';
+import { namedNode, literal } from '@rdfjs/data-model';
 
-describe('the PathFactory class', () => {
+describe('the PathFactory module', () => {
   it('exposes the defaultHandlers', () => {
     expect(PathFactory.defaultHandlers).toBeInstanceOf(Object);
     expect(PathFactory.defaultHandlers).toHaveProperty('then');
@@ -43,6 +44,194 @@ describe('a PathFactory instance without parameters', () => {
 
   it('does not add a JSONLDResolver', () => {
     expect(path.other).toBeUndefined();
+  });
+});
+
+describe('a PathFactory instance with an undefined subject', () => {
+  let factory, path;
+  beforeAll(() => {
+    factory = new PathFactory(undefined, { subject: undefined });
+    path = factory.create();
+  });
+
+  it('has then set to a function', () => {
+    expect(path.then).toBeInstanceOf(Function);
+  });
+
+  it('has then rejecting with an error', async () => {
+    await expect(path.then()).rejects.toBeInstanceOf(Error);
+  });
+
+  it('has an asyncIterator rejecting with an error', async () => {
+    await expect((async () => {
+      const items = [];
+      for await (const item of path)
+        items.push(item);
+    })()).rejects.toBeInstanceOf(Error);
+  });
+});
+
+describe('a PathFactory instance with a Term as subject', () => {
+  let term, factory, path;
+  beforeAll(() => {
+    term = literal('foo', 'en-us');
+    factory = new PathFactory(undefined, { subject: term });
+    path = factory.create();
+  });
+
+  it('has then set to undefined', () => {
+    expect(path.then).toBeUndefined();
+  });
+
+  it('exposes its termType', () => {
+    expect(path.termType).toBe('Literal');
+  });
+
+  it('exposes its value', () => {
+    expect(path.value).toBe('foo');
+  });
+
+  it('exposes its language', () => {
+    expect(path.language).toBe('en-us');
+  });
+
+  it('exposes its datatype', () => {
+    const langString = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#langString';
+    expect(path.datatype).toEqual(namedNode(langString));
+  });
+
+  it('exposes its string value', () => {
+    expect(path.toString()).toBe('foo');
+  });
+
+  it('exposes its primitive value', () => {
+    expect(path.toPrimitive()).toBe('foo');
+  });
+
+  it('is equal to the term', () => {
+    expect(path.equals(term)).toBe(true);
+    expect(term.equals(path)).toBe(true);
+  });
+
+  describe('its asyncIterator', () => {
+    const items = [];
+    beforeAll(async () => {
+      for await (const item of path)
+        items.push(item);
+    });
+
+    it('has one element', () => {
+      expect(items).toHaveLength(1);
+    });
+
+    it('exposes the subject', () => {
+      expect(term.equals(items[0])).toBe(true);
+      expect(items[0].equals(term)).toBe(true);
+    });
+
+    it('exposes the subject as a path', async () => {
+      await expect(items[0].sparql).rejects.toThrow(/predicate/);
+    });
+  });
+});
+
+describe('a PathFactory instance with a promise to a Term as subject', () => {
+  let term, factory, path;
+  beforeAll(() => {
+    term = literal('foo', 'en-us');
+    factory = new PathFactory(undefined, { subject: Promise.resolve(term) });
+    path = factory.create();
+  });
+
+  it('has then set to a function', () => {
+    expect(path.then).toBeInstanceOf(Function);
+  });
+
+  describe('the value returned by then', () => {
+    let value;
+    beforeAll(async () => {
+      value = await path;
+    });
+
+    it('is a path', async () => {
+      await expect(value.sparql).rejects.toThrow(/predicate/);
+    });
+
+    it('has then set to undefined', () => {
+      expect(value.then).toBeUndefined();
+    });
+
+    it('exposes its termType', () => {
+      expect(value.termType).toBe('Literal');
+    });
+
+    it('exposes its value', () => {
+      expect(value.value).toBe('foo');
+    });
+
+    it('exposes its language', () => {
+      expect(value.language).toBe('en-us');
+    });
+
+    it('exposes its datatype', () => {
+      const langString = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#langString';
+      expect(value.datatype).toEqual(namedNode(langString));
+    });
+
+    it('exposes its string value', () => {
+      expect(value.toString()).toBe('foo');
+    });
+
+    it('exposes its primitive value', () => {
+      expect(value.toPrimitive()).toBe('foo');
+    });
+
+    it('is equal to the term', () => {
+      expect(value.equals(term)).toBe(true);
+      expect(term.equals(value)).toBe(true);
+    });
+
+    describe('its asyncIterator', () => {
+      const items = [];
+      beforeAll(async () => {
+        for await (const item of value)
+          items.push(item);
+      });
+
+      it('has one element', () => {
+        expect(items).toHaveLength(1);
+      });
+
+      it('exposes the subject', () => {
+        expect(term.equals(items[0])).toBe(true);
+        expect(items[0].equals(term)).toBe(true);
+      });
+
+      it('exposes the subject as a path', async () => {
+        await expect(items[0].sparql).rejects.toThrow(/predicate/);
+      });
+    });
+  });
+
+  describe('its asyncIterator', () => {
+    const items = [];
+    beforeAll(async () => {
+      for await (const item of path)
+        items.push(item);
+    });
+
+    it('has one element', () => {
+      expect(items).toHaveLength(1);
+    });
+
+    it('exposes the subject', () => {
+      expect(term.equals(items[0])).toBe(true);
+      expect(items[0].equals(term)).toBe(true);
+    });
+
+    it('exposes the subject as a path', async () => {
+      await expect(items[0].sparql).rejects.toThrow(/predicate/);
+    });
   });
 });
 

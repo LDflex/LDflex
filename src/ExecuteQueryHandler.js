@@ -17,28 +17,19 @@ export default class ExecuteQueryHandler {
 
     // Extract the term from every query result
     for await (const bindings of queryEngine.execute(query))
-      yield this.extractTerm(bindings);
+      yield this.extractTerm(bindings, path);
   }
 
   /**
-   * Extracts the first term from a query result binding.
+   * Extracts the first term from a query result binding as a new path.
    */
-  extractTerm(binding) {
+  extractTerm(binding, path) {
     // Extract the first term from the binding map
     if (binding.size !== 1)
       throw new Error('Only single-variable queries are supported');
     const term = binding.values().next().value;
 
-    // Simplify string conversion of the term
-    term.toString = Term.prototype.getValue;
-    term.toPrimitive = Term.prototype.getValue;
-
-    return term;
-  }
-}
-
-class Term {
-  getValue() {
-    return this.value;
+    // Each result is a new path that starts from the given term as subject
+    return path.extend({ subject: term }, null);
   }
 }

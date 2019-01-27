@@ -1,4 +1,5 @@
 import SparqlHandler from '../../src/SparqlHandler';
+import { namedNode, literal, blankNode, defaultGraph, variable } from '@rdfjs/data-model';
 
 import { deindent } from '../util';
 
@@ -21,10 +22,42 @@ describe('a SparqlHandler instance', () => {
       .toThrow(new Error('path has no pathExpression property'));
   });
 
+  describe('when converting a term to string', () => {
+    it('should convert a NamedNode', async () => {
+      await expect(handler.termToQueryString(namedNode('http://example.org')))
+        .toEqual('<http://example.org>');
+    });
+
+    it('should convert a Literal', async () => {
+      await expect(handler.termToQueryString(literal('abc')))
+        .toEqual('"abc"');
+    });
+
+    it('should convert a Literal that should be escaped', async () => {
+      await expect(handler.termToQueryString(literal('a"bc')))
+        .toEqual('"a\\"bc"');
+    });
+
+    it('should convert a BlankNode', async () => {
+      await expect(handler.termToQueryString(blankNode('abc')))
+        .toEqual('_:abc');
+    });
+
+    it('should error on DefaultGraph', async () => {
+      await expect(() => handler.termToQueryString(defaultGraph()))
+        .toThrow(new Error('Could not convert a term of type DefaultGraph'));
+    });
+
+    it('should error on Variable', async () => {
+      await expect(() => handler.termToQueryString(variable('v')))
+        .toThrow(new Error('Could not convert a term of type Variable'));
+    });
+  });
+
   describe('with a pathExpression', () => {
     it('errors with a path of length 0', async () => {
       const pathExpression = [
-        { subject: 'https://example.org/#me' },
+        { subject: namedNode('https://example.org/#me') },
       ];
       const path = { toString: () => 'path' };
 
@@ -34,8 +67,8 @@ describe('a SparqlHandler instance', () => {
 
     it('resolves a path of length 1', async () => {
       const pathExpression = [
-        { subject: 'https://example.org/#me' },
-        { predicate: 'https://ex.org/p1' },
+        { subject: namedNode('https://example.org/#me') },
+        { predicate: namedNode('https://ex.org/p1') },
       ];
       const path = { property: 'p1' };
 
@@ -47,10 +80,10 @@ describe('a SparqlHandler instance', () => {
 
     it('resolves a path of length 3', async () => {
       const pathExpression = [
-        { subject: 'https://example.org/#me' },
-        { predicate: 'https://ex.org/p1' },
-        { predicate: 'https://ex.org/p2' },
-        { predicate: 'https://ex.org/p3' },
+        { subject: namedNode('https://example.org/#me') },
+        { predicate: namedNode('https://ex.org/p1') },
+        { predicate: namedNode('https://ex.org/p2') },
+        { predicate: namedNode('https://ex.org/p3') },
       ];
       const path = { property: 'p3' };
 
@@ -64,8 +97,8 @@ describe('a SparqlHandler instance', () => {
 
     it('resolves a path with an property name ending in a non-word', async () => {
       const pathExpression = [
-        { subject: 'https://example.org/#me' },
-        { predicate: 'https://ex.org/p1' },
+        { subject: namedNode('https://example.org/#me') },
+        { predicate: namedNode('https://ex.org/p1') },
       ];
       const path = { property: '/x/' };
 
@@ -82,9 +115,9 @@ describe('a SparqlHandler instance', () => {
         const mutationExpressions = [
           {
             mutationType: 'INSERT',
-            domainExpression: [{ subject: 'https://example.org/#D0' }],
-            predicate: 'https://example.org/p',
-            rangeExpression: [{ subject: 'https://example.org/#R0' }],
+            domainExpression: [{ subject: namedNode('https://example.org/#D0') }],
+            predicate: namedNode('https://example.org/p'),
+            rangeExpression: [{ subject: namedNode('https://example.org/#R0') }],
           },
         ];
 
@@ -98,9 +131,9 @@ describe('a SparqlHandler instance', () => {
         const mutationExpressions = [
           {
             mutationType: 'INSERT',
-            domainExpression: [{ subject: 'https://example.org/#D0' }],
-            predicate: 'https://example.org/p',
-            rangeExpression: [{ subject: '"Ruben"' }],
+            domainExpression: [{ subject: namedNode('https://example.org/#D0') }],
+            predicate: namedNode('https://example.org/p'),
+            rangeExpression: [{ subject: literal('Ruben') }],
           },
         ];
 
@@ -115,12 +148,12 @@ describe('a SparqlHandler instance', () => {
           {
             mutationType: 'INSERT',
             domainExpression: [
-              { subject: 'https://example.org/#D0' },
-              { predicate: 'https://example.org/#Dp1' },
-              { predicate: 'https://example.org/#Dp2' },
+              { subject: namedNode('https://example.org/#D0') },
+              { predicate: namedNode('https://example.org/#Dp1') },
+              { predicate: namedNode('https://example.org/#Dp2') },
             ],
-            predicate: 'https://example.org/p',
-            rangeExpression: [{ subject: 'https://example.org/#R0' }],
+            predicate: namedNode('https://example.org/p'),
+            rangeExpression: [{ subject: namedNode('https://example.org/#R0') }],
           },
         ];
 
@@ -138,11 +171,11 @@ describe('a SparqlHandler instance', () => {
           {
             mutationType: 'INSERT',
             domainExpression: [
-              { subject: 'https://example.org/#D0' },
-              { predicate: 'https://example.org/#' },
+              { subject: namedNode('https://example.org/#D0') },
+              { predicate: namedNode('https://example.org/#') },
             ],
-            predicate: 'https://example.org/p',
-            rangeExpression: [{ subject: 'https://example.org/#R0' }],
+            predicate: namedNode('https://example.org/p'),
+            rangeExpression: [{ subject: namedNode('https://example.org/#R0') }],
           },
         ];
 
@@ -158,12 +191,12 @@ describe('a SparqlHandler instance', () => {
         const mutationExpressions = [
           {
             mutationType: 'INSERT',
-            domainExpression: [{ subject: 'https://example.org/#D0' }],
-            predicate: 'https://example.org/p',
+            domainExpression: [{ subject: namedNode('https://example.org/#D0') }],
+            predicate: namedNode('https://example.org/p'),
             rangeExpression: [
-              { subject: 'https://example.org/#R0' },
-              { predicate: 'https://example.org/#Rp1' },
-              { predicate: 'https://example.org/#Rp2' },
+              { subject: namedNode('https://example.org/#R0') },
+              { predicate: namedNode('https://example.org/#Rp1') },
+              { predicate: namedNode('https://example.org/#Rp2') },
             ],
           },
         ];
@@ -182,15 +215,15 @@ describe('a SparqlHandler instance', () => {
           {
             mutationType: 'INSERT',
             domainExpression: [
-              { subject: 'https://example.org/#D0' },
-              { predicate: 'https://example.org/#Dp1' },
-              { predicate: 'https://example.org/#Dp2' },
+              { subject: namedNode('https://example.org/#D0') },
+              { predicate: namedNode('https://example.org/#Dp1') },
+              { predicate: namedNode('https://example.org/#Dp2') },
             ],
-            predicate: 'https://example.org/p',
+            predicate: namedNode('https://example.org/p'),
             rangeExpression: [
-              { subject: 'https://example.org/#R0' },
-              { predicate: 'https://example.org/#Rp1' },
-              { predicate: 'https://example.org/#Rp2' },
+              { subject: namedNode('https://example.org/#R0') },
+              { predicate: namedNode('https://example.org/#Rp1') },
+              { predicate: namedNode('https://example.org/#Rp2') },
             ],
           },
         ];
@@ -212,9 +245,9 @@ describe('a SparqlHandler instance', () => {
         const mutationExpressions = [
           {
             mutationType: 'INSERT',
-            domainExpression: [{ subject: 'https://example.org/#D0' }],
-            predicate: 'https://example.org/p',
-            rangeExpression: [{ subject: '"a"b"' }],
+            domainExpression: [{ subject: namedNode('https://example.org/#D0') }],
+            predicate: namedNode('https://example.org/p'),
+            rangeExpression: [{ subject: literal('a"b') }],
           },
         ];
 
@@ -230,9 +263,9 @@ describe('a SparqlHandler instance', () => {
         const mutationExpressions = [
           {
             mutationType: 'DELETE',
-            domainExpression: [{ subject: 'https://example.org/#D0' }],
-            predicate: 'https://example.org/p',
-            rangeExpression: [{ subject: 'https://example.org/#R0' }],
+            domainExpression: [{ subject: namedNode('https://example.org/#D0') }],
+            predicate: namedNode('https://example.org/p'),
+            rangeExpression: [{ subject: namedNode('https://example.org/#R0') }],
           },
         ];
 
@@ -248,7 +281,10 @@ describe('a SparqlHandler instance', () => {
         const mutationExpressions = [
           {
             mutationType: 'DELETE',
-            domainExpression: [{ subject: 'https://example.org/#D0' }, { predicate: 'https://example.org/#Dp1' }],
+            domainExpression: [
+              { subject: namedNode('https://example.org/#D0') },
+              { predicate: namedNode('https://example.org/#Dp1') },
+            ],
           },
         ];
 
@@ -267,28 +303,28 @@ describe('a SparqlHandler instance', () => {
           {
             mutationType: 'INSERT',
             domainExpression: [
-              { subject: 'https://example.org/#D0' },
-              { predicate: 'https://example.org/#Dp1' },
-              { predicate: 'https://example.org/#Dp2' },
+              { subject: namedNode('https://example.org/#D0') },
+              { predicate: namedNode('https://example.org/#Dp1') },
+              { predicate: namedNode('https://example.org/#Dp2') },
             ],
-            predicate: 'https://example.org/p',
+            predicate: namedNode('https://example.org/p'),
             rangeExpression: [
-              { subject: 'https://example.org/#R0' },
-              { predicate: 'https://example.org/#Rp1' },
-              { predicate: 'https://example.org/#Rp2' },
+              { subject: namedNode('https://example.org/#R0') },
+              { predicate: namedNode('https://example.org/#Rp1') },
+              { predicate: namedNode('https://example.org/#Rp2') },
             ],
           },
           {
             mutationType: 'DELETE',
-            domainExpression: [{ subject: 'https://example.org/#D0' }],
-            predicate: 'https://example.org/p',
-            rangeExpression: [{ subject: 'https://example.org/#R0' }],
+            domainExpression: [{ subject: namedNode('https://example.org/#D0') }],
+            predicate: namedNode('https://example.org/p'),
+            rangeExpression: [{ subject: namedNode('https://example.org/#R0') }],
           },
           {
             mutationType: 'INSERT',
-            domainExpression: [{ subject: 'https://example.org/#D0' }],
-            predicate: 'https://example.org/p',
-            rangeExpression: [{ subject: 'https://example.org/#R0' }],
+            domainExpression: [{ subject: namedNode('https://example.org/#D0') }],
+            predicate: namedNode('https://example.org/p'),
+            rangeExpression: [{ subject: namedNode('https://example.org/#R0') }],
           },
         ];
 

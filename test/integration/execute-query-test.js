@@ -7,16 +7,21 @@ import DeleteFunctionHandler from '../../src/DeleteFunctionHandler';
 import MutationExpressionsHandler from '../../src/MutationExpressionsHandler';
 import ReplaceFunctionHandler from '../../src/ReplaceFunctionHandler';
 import SetFunctionHandler from '../../src/SetFunctionHandler';
+import DataHandler from '../../src/DataHandler';
 import JSONLDResolver from '../../src/JSONLDResolver';
-import { getIterator, iterableToThen } from '../../src/iterableUtils';
+import { getIterator } from '../../src/iterableUtils';
 import { createQueryEngine } from '../util';
+import { namedNode, literal } from '@rdfjs/data-model';
 
 import context from '../context';
 
-const subject = 'https://example.org/#me';
-const queryEngine = createQueryEngine(['Alice', 'Bob', 'Carol']);
+const subject = namedNode('https://example.org/#me');
+const queryEngine = createQueryEngine([
+  literal('Alice'),
+  literal('Bob'),
+  literal('Carol'),
+]);
 
-const executeQueryHandler = new ExecuteQueryHandler();
 const resolvers = [
   new JSONLDResolver(context),
 ];
@@ -24,8 +29,8 @@ const handlersPath = {
   sparql: new SparqlHandler(),
   pathExpression: new PathExpressionHandler(),
   mutationExpressions: new MutationExpressionsHandler(),
-  [Symbol.asyncIterator]: getIterator(executeQueryHandler),
-  then: iterableToThen(executeQueryHandler),
+  toString: DataHandler.syncFunction('subject', 'value'),
+  [Symbol.asyncIterator]: getIterator(new ExecuteQueryHandler()),
 };
 
 const handlersMutation = {
@@ -36,8 +41,8 @@ const handlersMutation = {
   mutationExpressions: new MutationExpressionsHandler(),
   replace: new ReplaceFunctionHandler(),
   set: new SetFunctionHandler(),
-  [Symbol.asyncIterator]: getIterator(executeQueryHandler),
-  then: iterableToThen(executeQueryHandler),
+  toString: DataHandler.syncFunction('subject', 'value'),
+  [Symbol.asyncIterator]: getIterator(new ExecuteQueryHandler()),
 };
 
 describe('a query path with a path expression handler', () => {
@@ -52,6 +57,15 @@ describe('a query path with a path expression handler', () => {
     for await (const firstName of person.friends.firstName)
       names.push(firstName);
     expect(names.map(n => `${n}`)).toEqual(['Alice', 'Bob', 'Carol']);
+  });
+
+  it('returns results for nested expression calls', async () => {
+    const names = [];
+    for await (const friend of person.friends) {
+      for await (const firstName of friend.friends.firstName)
+        names.push(firstName);
+    }
+    expect(names.map(n => `${n}`)).toEqual(['Alice', 'Bob', 'Carol', 'Alice', 'Bob', 'Carol', 'Alice', 'Bob', 'Carol']);
   });
 });
 

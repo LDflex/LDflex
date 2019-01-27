@@ -42,14 +42,14 @@ export default class SparqlHandler {
 
   expressionToTriplePatterns([root, ...pathExpression], queryVar, variableScope = {}) {
     const last = pathExpression.length - 1;
-    let object = `<${root.subject}>`;
+    let object = this.termToQueryString(root.subject);
     return pathExpression.map((segment, index) => {
       // Obtain triple pattern components
       const subject = object;
       const { predicate } = segment;
       object = index !== last ? `?${this.getQueryVar(`v${index}`, variableScope)}` : `?${queryVar}`;
       // Generate triple pattern
-      return `${subject} <${predicate}> ${object}.`;
+      return `${subject} ${this.termToQueryString(predicate)} ${object}.`;
     });
   }
 
@@ -71,7 +71,7 @@ export default class SparqlHandler {
       }
 
       // If we have a range, the mutation is on <domainVar> <predicate> <rangeVar>
-      insertPattern = `${domainQueryVar} <${predicate}> ${rangeQueryVar}`;
+      insertPattern = `${domainQueryVar} ${this.termToQueryString(predicate)} ${rangeQueryVar}`;
     }
     else {
       // If we don't have a range, assume that the mutation is on the last segment of the domain
@@ -91,14 +91,12 @@ export default class SparqlHandler {
 
     if (expression.length === 1) {
       return {
-        queryVar: lastSegment.subject[0] === '"' ?
-          `"${lastSegment.subject.substr(1, lastSegment.subject.length - 2).replace(/"/g, '\\"')}"` :
-          `<${lastSegment.subject}>`,
+        queryVar: this.termToQueryString(lastSegment.subject),
         clauses: [],
       };
     }
 
-    const queryVar = this.getQueryVar(lastSegment.predicate.match(/[a-z0-9]*$/i)[0] || 'result', variableScope);
+    const queryVar = this.getQueryVar(lastSegment.predicate.value.match(/[a-z0-9]*$/i)[0] || 'result', variableScope);
     return {
       queryVar: `?${queryVar}`,
       clauses: this.expressionToTriplePatterns(expression, queryVar, variableScope),
@@ -113,5 +111,19 @@ export default class SparqlHandler {
       label = `${labelSuggestion}_${counter++}`;
     variableScope[label] = true;
     return label;
+  }
+
+  // Converts an RDFJS term to a string that we can use in a query
+  termToQueryString(term) {
+    switch (term.termType) {
+    case 'NamedNode':
+      return `<${term.value}>`;
+    case 'BlankNode':
+      return `_:${term.value}`;
+    case 'Literal':
+      return `"${term.value.replace(/"/g, '\\"')}"`;
+    default:
+      throw new Error(`Could not convert a term of type ${term.termType}`);
+    }
   }
 }
