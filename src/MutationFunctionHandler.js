@@ -18,34 +18,34 @@ export default class MutationFunctionHandler {
     this._allowZeroArgs = allowZeroArgs;
   }
 
-  execute(path, proxy) {
+  execute(pathData, path) {
     return (...args) => {
       // Check if the given arguments are valid
       if (!this._allowZeroArgs && !args.length)
-        throw new Error(`Mutation on ${path} can not be invoked without arguments`);
+        throw new Error(`Mutation on ${pathData} can not be invoked without arguments`);
 
       // Create a lazy Promise to the mutation expressions
-      const then = getThen(() => this.createMutationExpressions(path, proxy, args));
-      return path.extend({ mutationExpressions: { then } });
+      const then = getThen(() => this.createMutationExpressions(pathData, path, args));
+      return pathData.extend({ mutationExpressions: { then } });
     };
   }
 
-  async createMutationExpressions(path, proxy, args) {
+  async createMutationExpressions(pathData, path, args) {
     // Check if we have a valid path
-    const domainExpression = await proxy.pathExpression;
+    const domainExpression = await path.pathExpression;
     if (!Array.isArray(domainExpression))
-      throw new Error(`${path} has no pathExpression property`);
+      throw new Error(`${pathData} has no pathExpression property`);
 
     // Require at least a subject and a link
     if (domainExpression.length < 2)
-      throw new Error(`${path} should at least contain a subject and a predicate`);
+      throw new Error(`${pathData} should at least contain a subject and a predicate`);
 
     // If we have args, each arg defines a mutation expression with a certain range expression.
     if (args.length) {
       // The last path segment represents the predicate of the triple to insert
-      const [{ predicate }] = domainExpression.splice(domainExpression.length - 1);
+      const { predicate } = domainExpression.pop();
       if (!predicate)
-        throw new Error(`Expected predicate in ${path}`);
+        throw new Error(`Expected predicate in ${pathData}`);
 
       // Determine right variables and patterns
       const mutationExpressions = [];

@@ -7,7 +7,7 @@
  * - an add function on the path proxy.
  */
 export default class SetFunctionHandler {
-  execute(path, proxy) {
-    return (...args) => proxy.delete().add(...args);
+  execute(pathData, path) {
+    return (...args) => path.delete().add(...args);
   }
 }

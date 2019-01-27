@@ -3,7 +3,7 @@ import { namedNode, literal } from '@rdfjs/data-model';
 
 const mutationType = 'TYPE';
 const extendedPath = {};
-const path = {
+const pathData = {
   extend: jest.fn(() => extendedPath),
   toString: () => 'path',
 };
@@ -20,7 +20,7 @@ describe('a MutationFunctionHandler instance not allowing 0 args', () => {
         { subject: namedNode('https://example.org/#me') },
         { predicate: namedNode('https://ex.org/p1') },
       ];
-      result = handler.execute(path, { pathExpression });
+      result = handler.execute(pathData, { pathExpression });
     });
 
     it('returns a function', async () => {
@@ -32,14 +32,14 @@ describe('a MutationFunctionHandler instance not allowing 0 args', () => {
       beforeEach(async () => functionResult = await result('Ruben'));
 
       it('extends the path', () => {
-        expect(path.extend).toBeCalledTimes(1);
-        const args = path.extend.mock.calls[0];
+        expect(pathData.extend).toBeCalledTimes(1);
+        const args = pathData.extend.mock.calls[0];
         expect(args).toHaveLength(1);
         expect(args[0]).toBeInstanceOf(Object);
       });
 
       it('sets mutationExpressions to a promise to the expressions', async () => {
-        const { mutationExpressions } = path.extend.mock.calls[0][0];
+        const { mutationExpressions } = pathData.extend.mock.calls[0][0];
         expect(await mutationExpressions).toEqual([
           {
             mutationType,
@@ -60,14 +60,14 @@ describe('a MutationFunctionHandler instance not allowing 0 args', () => {
       beforeEach(async () => functionResult = await result(namedNode('http://example.org/')));
 
       it('extends the path', () => {
-        expect(path.extend).toBeCalledTimes(1);
-        const args = path.extend.mock.calls[0];
+        expect(pathData.extend).toBeCalledTimes(1);
+        const args = pathData.extend.mock.calls[0];
         expect(args).toHaveLength(1);
         expect(args[0]).toBeInstanceOf(Object);
       });
 
       it('sets mutationExpressions to a promise to the expressions', async () => {
-        const { mutationExpressions } = path.extend.mock.calls[0][0];
+        const { mutationExpressions } = pathData.extend.mock.calls[0][0];
         expect(await mutationExpressions).toEqual([
           {
             mutationType,
@@ -96,7 +96,7 @@ describe('a MutationFunctionHandler instance not allowing 0 args', () => {
       const args = ['other'];
 
       it('errors when no pathExpression is present', async () => {
-        await expect(handler.createMutationExpressions(path, {}, args)).rejects
+        await expect(handler.createMutationExpressions(pathData, {}, args)).rejects
           .toThrow(new Error('path has no pathExpression property'));
       });
 
@@ -105,7 +105,7 @@ describe('a MutationFunctionHandler instance not allowing 0 args', () => {
           { subject: namedNode('https://example.org/#me') },
         ];
 
-        await expect(handler.createMutationExpressions(path, { pathExpression }, args)).rejects
+        await expect(handler.createMutationExpressions(pathData, { pathExpression }, args)).rejects
           .toThrow(new Error('path should at least contain a subject and a predicate'));
       });
 
@@ -115,7 +115,7 @@ describe('a MutationFunctionHandler instance not allowing 0 args', () => {
           { nopredicate: namedNode('https://ex.org/p1') },
         ];
 
-        await expect(handler.createMutationExpressions(path, { pathExpression }, args)).rejects
+        await expect(handler.createMutationExpressions(pathData, { pathExpression }, args)).rejects
           .toThrow(new Error('Expected predicate in path'));
       });
 
@@ -125,7 +125,7 @@ describe('a MutationFunctionHandler instance not allowing 0 args', () => {
           { predicate: namedNode('https://ex.org/p1') },
         ];
 
-        expect(await handler.createMutationExpressions(path, { pathExpression }, args)).toEqual([
+        expect(await handler.createMutationExpressions(pathData, { pathExpression }, args)).toEqual([
           {
             mutationType,
             domainExpression: [{ subject: namedNode('https://example.org/#me') }],
@@ -142,7 +142,7 @@ describe('a MutationFunctionHandler instance not allowing 0 args', () => {
           { predicate: namedNode('https://ex.org/p2') },
         ];
 
-        expect(await handler.createMutationExpressions(path, { pathExpression }, args)).toEqual([
+        expect(await handler.createMutationExpressions(pathData, { pathExpression }, args)).toEqual([
           {
             mutationType,
             domainExpression: [
@@ -160,7 +160,7 @@ describe('a MutationFunctionHandler instance not allowing 0 args', () => {
       const args = [namedNode('http://example.org/other')];
 
       it('errors when no pathExpression is present', async () => {
-        await expect(handler.createMutationExpressions(path, {}, args)).rejects
+        await expect(handler.createMutationExpressions(pathData, {}, args)).rejects
           .toThrow(new Error('path has no pathExpression property'));
       });
 
@@ -169,7 +169,7 @@ describe('a MutationFunctionHandler instance not allowing 0 args', () => {
           { subject: namedNode('https://example.org/#me') },
         ];
 
-        await expect(handler.createMutationExpressions(path, { pathExpression }, args)).rejects
+        await expect(handler.createMutationExpressions(pathData, { pathExpression }, args)).rejects
           .toThrow(new Error('path should at least contain a subject and a predicate'));
       });
 
@@ -179,7 +179,7 @@ describe('a MutationFunctionHandler instance not allowing 0 args', () => {
           { nopredicate: namedNode('https://ex.org/p1') },
         ];
 
-        await expect(handler.createMutationExpressions(path, { pathExpression }, args)).rejects
+        await expect(handler.createMutationExpressions(pathData, { pathExpression }, args)).rejects
           .toThrow(new Error('Expected predicate in path'));
       });
 
@@ -189,7 +189,7 @@ describe('a MutationFunctionHandler instance not allowing 0 args', () => {
           { predicate: namedNode('https://ex.org/p1') },
         ];
 
-        expect(await handler.createMutationExpressions(path, { pathExpression }, args)).toEqual([
+        expect(await handler.createMutationExpressions(pathData, { pathExpression }, args)).toEqual([
           {
             mutationType,
             domainExpression: [{ subject: namedNode('https://example.org/#me') }],
@@ -206,7 +206,7 @@ describe('a MutationFunctionHandler instance not allowing 0 args', () => {
           { predicate: namedNode('https://ex.org/p2') },
         ];
 
-        expect(await handler.createMutationExpressions(path, { pathExpression }, args)).toEqual([
+        expect(await handler.createMutationExpressions(pathData, { pathExpression }, args)).toEqual([
           {
             mutationType,
             domainExpression: [
@@ -225,7 +225,7 @@ describe('a MutationFunctionHandler instance not allowing 0 args', () => {
     const args = ['other1', 'other2'];
 
     it('errors when no pathExpression is present', async () => {
-      await expect(handler.createMutationExpressions(path, {}, args)).rejects
+      await expect(handler.createMutationExpressions(pathData, {}, args)).rejects
         .toThrow(new Error('path has no pathExpression property'));
     });
 
@@ -234,7 +234,7 @@ describe('a MutationFunctionHandler instance not allowing 0 args', () => {
         { subject: namedNode('https://example.org/#me') },
       ];
 
-      await expect(handler.createMutationExpressions(path, { pathExpression }, args)).rejects
+      await expect(handler.createMutationExpressions(pathData, { pathExpression }, args)).rejects
         .toThrow(new Error('path should at least contain a subject and a predicate'));
     });
 
@@ -244,7 +244,7 @@ describe('a MutationFunctionHandler instance not allowing 0 args', () => {
         { nopredicate: namedNode('https://ex.org/p1') },
       ];
 
-      await expect(handler.createMutationExpressions(path, { pathExpression }, args)).rejects
+      await expect(handler.createMutationExpressions(pathData, { pathExpression }, args)).rejects
         .toThrow(new Error('Expected predicate in path'));
     });
 
@@ -254,7 +254,7 @@ describe('a MutationFunctionHandler instance not allowing 0 args', () => {
         { predicate: namedNode('https://ex.org/p1') },
       ];
 
-      expect(await handler.createMutationExpressions(path, { pathExpression }, args)).toEqual([
+      expect(await handler.createMutationExpressions(pathData, { pathExpression }, args)).toEqual([
         {
           mutationType,
           domainExpression: [{ subject: namedNode('https://example.org/#me') }],
@@ -277,7 +277,7 @@ describe('a MutationFunctionHandler instance not allowing 0 args', () => {
         { predicate: namedNode('https://ex.org/p2') },
       ];
 
-      expect(await handler.createMutationExpressions(path, { pathExpression }, args)).toEqual([
+      expect(await handler.createMutationExpressions(pathData, { pathExpression }, args)).toEqual([
         {
           mutationType,
           domainExpression: [
@@ -315,7 +315,7 @@ describe('a MutationFunctionHandler instance not allowing 0 args', () => {
         { predicate: namedNode('https://ex.org/p1') },
       ];
 
-      expect(await handler.createMutationExpressions(path, { pathExpression }, args)).toEqual([
+      expect(await handler.createMutationExpressions(pathData, { pathExpression }, args)).toEqual([
         {
           mutationType,
           domainExpression: [{ subject: namedNode('https://example.org/#me') }],
@@ -332,7 +332,7 @@ describe('a MutationFunctionHandler instance not allowing 0 args', () => {
         { predicate: namedNode('https://ex.org/p2') },
       ];
 
-      expect(await handler.createMutationExpressions(path, { pathExpression }, args)).toEqual([
+      expect(await handler.createMutationExpressions(pathData, { pathExpression }, args)).toEqual([
         {
           mutationType,
           domainExpression: [
@@ -362,7 +362,7 @@ describe('a MutationFunctionHandler instance not allowing 0 args', () => {
         { predicate: namedNode('https://ex.org/p1') },
       ];
 
-      expect(await handler.createMutationExpressions(path, { pathExpression }, args)).toEqual([
+      expect(await handler.createMutationExpressions(pathData, { pathExpression }, args)).toEqual([
         {
           mutationType,
           domainExpression: [{ subject: namedNode('https://example.org/#me') }],
@@ -382,7 +382,7 @@ describe('a MutationFunctionHandler instance not allowing 0 args', () => {
         { predicate: namedNode('https://ex.org/p2') },
       ];
 
-      expect(await handler.createMutationExpressions(path, { pathExpression }, args)).toEqual([
+      expect(await handler.createMutationExpressions(pathData, { pathExpression }, args)).toEqual([
         {
           mutationType,
           domainExpression: [
@@ -423,7 +423,7 @@ describe('a MutationFunctionHandler instance not allowing 0 args', () => {
         { predicate: namedNode('https://ex.org/p1') },
       ];
 
-      expect(await handler.createMutationExpressions(path, { pathExpression }, args)).toEqual([
+      expect(await handler.createMutationExpressions(pathData, { pathExpression }, args)).toEqual([
         {
           mutationType,
           domainExpression: [{ subject: namedNode('https://example.org/#me') }],
@@ -454,7 +454,7 @@ describe('a MutationFunctionHandler instance not allowing 0 args', () => {
         { predicate: namedNode('https://ex.org/p2') },
       ];
 
-      expect(await handler.createMutationExpressions(path, { pathExpression }, args)).toEqual([
+      expect(await handler.createMutationExpressions(pathData, { pathExpression }, args)).toEqual([
         {
           mutationType,
           domainExpression: [
@@ -498,7 +498,7 @@ describe('a MutationFunctionHandler instance allowing 0 args', () => {
           { predicate: namedNode('https://ex.org/p1') },
         ];
 
-        expect(await handler.createMutationExpressions(path, { pathExpression }, [])).toEqual([
+        expect(await handler.createMutationExpressions(pathData, { pathExpression }, [])).toEqual([
           {
             mutationType,
             domainExpression: [
@@ -517,7 +517,7 @@ describe('a MutationFunctionHandler instance allowing 0 args', () => {
           { predicate: namedNode('https://ex.org/p3') },
         ];
 
-        expect(await handler.createMutationExpressions(path, { pathExpression }, [])).toEqual([
+        expect(await handler.createMutationExpressions(pathData, { pathExpression }, [])).toEqual([
           {
             mutationType,
             domainExpression: [

@@ -6,15 +6,15 @@
  * - (optional) a parent property on the path proxy
  */
 export default class SubjectHandler {
-  execute(path) {
+  execute(pathData) {
     // Traverse parents until we find a subject
-    let { subject, parent } = path;
+    let { subject, parent } = pathData;
     while (!subject && parent)
       ({ subject, parent } = parent);
 
     // Resolve the subject if it exists,
     // and return a path starting from that subject
     return !subject ? undefined : Promise.resolve(subject)
-      .then(value => path.extend({ subject: value }, null));
+      .then(value => pathData.extend({ subject: value }, null));
   }
 }

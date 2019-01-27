@@ -5,26 +5,26 @@
  * - a mutationExpressions or pathExpression property on the path proxy
  */
 export default class SparqlHandler {
-  async execute(path, proxy) {
+  async execute(pathData, path) {
     // First check if we have a mutation expression
-    const mutationExpressions = await proxy.mutationExpressions;
+    const mutationExpressions = await path.mutationExpressions;
     if (Array.isArray(mutationExpressions) && mutationExpressions.length)
-      return this.evaluateMutationExpression(path, proxy, mutationExpressions);
+      return this.evaluateMutationExpression(pathData, path, mutationExpressions);
 
     // Otherwise, fall back to checking for a path expression
-    const pathExpression = await proxy.pathExpression;
+    const pathExpression = await path.pathExpression;
     if (!Array.isArray(pathExpression))
-      throw new Error(`${path} has no pathExpression property`);
-    return this.evaluatePathExpression(path, proxy, pathExpression);
+      throw new Error(`${pathData} has no pathExpression property`);
+    return this.evaluatePathExpression(pathData, path, pathExpression);
   }
 
-  evaluatePathExpression(path, proxy, pathExpression) {
+  evaluatePathExpression(pathData, path, pathExpression) {
     // Require at least a subject and a link
     if (pathExpression.length < 2)
-      throw new Error(`${path} should at least contain a subject and a predicate`);
+      throw new Error(`${pathData} should at least contain a subject and a predicate`);
 
     // Determine the query variable name
-    const queryVar = path.property.match(/[a-z0-9]*$/i)[0] || 'result';
+    const queryVar = pathData.property.match(/[a-z0-9]*$/i)[0] || 'result';
 
     // Build basic graph pattern
     const clauses = this.expressionToTriplePatterns(pathExpression, queryVar);
@@ -34,7 +34,7 @@ export default class SparqlHandler {
     return `SELECT ?${queryVar} WHERE {\n  ${joinedClauses}\n}`;
   }
 
-  evaluateMutationExpression(path, proxy, mutationExpressions) {
+  evaluateMutationExpression(pathData, path, mutationExpressions) {
     return mutationExpressions
       .map(mutationExpression => this.mutationExpressionToQuery(mutationExpression))
       .join('\n;\n');

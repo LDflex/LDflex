@@ -9,16 +9,16 @@ describe('a SparqlHandler instance', () => {
 
   it('errors with empty mutationExpressions and when no pathExpression is present', async () => {
     const mutationExpressions = [];
-    const path = { toString: () => 'path' };
+    const pathData = { toString: () => 'path' };
 
-    await expect(handler.execute(path, { mutationExpressions })).rejects
+    await expect(handler.execute(pathData, { mutationExpressions })).rejects
       .toThrow(new Error('path has no pathExpression property'));
   });
 
   it('errors when no pathExpression is present', async () => {
-    const path = { toString: () => 'path' };
+    const pathData = { toString: () => 'path' };
 
-    await expect(handler.execute(path, {})).rejects
+    await expect(handler.execute(pathData, {})).rejects
       .toThrow(new Error('path has no pathExpression property'));
   });
 
@@ -59,9 +59,9 @@ describe('a SparqlHandler instance', () => {
       const pathExpression = [
         { subject: namedNode('https://example.org/#me') },
       ];
-      const path = { toString: () => 'path' };
+      const pathData = { toString: () => 'path' };
 
-      await expect(handler.execute(path, { pathExpression })).rejects
+      await expect(handler.execute(pathData, { pathExpression })).rejects
         .toThrow(new Error('path should at least contain a subject and a predicate'));
     });
 
@@ -70,9 +70,9 @@ describe('a SparqlHandler instance', () => {
         { subject: namedNode('https://example.org/#me') },
         { predicate: namedNode('https://ex.org/p1') },
       ];
-      const path = { property: 'p1' };
+      const pathData = { property: 'p1' };
 
-      expect(await handler.execute(path, { pathExpression })).toEqual(deindent(`
+      expect(await handler.execute(pathData, { pathExpression })).toEqual(deindent(`
       SELECT ?p1 WHERE {
         <https://example.org/#me> <https://ex.org/p1> ?p1.
       }`));
@@ -85,9 +85,9 @@ describe('a SparqlHandler instance', () => {
         { predicate: namedNode('https://ex.org/p2') },
         { predicate: namedNode('https://ex.org/p3') },
       ];
-      const path = { property: 'p3' };
+      const pathData = { property: 'p3' };
 
-      expect(await handler.execute(path, { pathExpression })).toEqual(deindent(`
+      expect(await handler.execute(pathData, { pathExpression })).toEqual(deindent(`
       SELECT ?p3 WHERE {
         <https://example.org/#me> <https://ex.org/p1> ?v0.
         ?v0 <https://ex.org/p2> ?v1.
@@ -100,9 +100,9 @@ describe('a SparqlHandler instance', () => {
         { subject: namedNode('https://example.org/#me') },
         { predicate: namedNode('https://ex.org/p1') },
       ];
-      const path = { property: '/x/' };
+      const pathData = { property: '/x/' };
 
-      expect(await handler.execute(path, { pathExpression })).toEqual(deindent(`
+      expect(await handler.execute(pathData, { pathExpression })).toEqual(deindent(`
       SELECT ?result WHERE {
         <https://example.org/#me> <https://ex.org/p1> ?result.
       }`));

@@ -28,8 +28,8 @@ const handlersPath = {
   pathExpression: new PathExpressionHandler(),
   results: new ExecuteQueryHandler(),
   [Symbol.asyncIterator]: {
-    execute(path, pathProxy) {
-      return () => pathProxy.results[Symbol.asyncIterator]();
+    execute(pathData, path) {
+      return () => path.results[Symbol.asyncIterator]();
     },
   },
   toString: DataHandler.syncFunction('subject', 'value'),
@@ -40,8 +40,8 @@ const handlersMutation = {
   pathExpression: new PathExpressionHandler(),
   results: new ExecuteQueryHandler(),
   [Symbol.asyncIterator]: {
-    execute(path, pathProxy) {
-      return () => pathProxy.results[Symbol.asyncIterator]();
+    execute(pathData, path) {
+      return () => path.results[Symbol.asyncIterator]();
     },
   },
   add: new InsertFunctionHandler(),

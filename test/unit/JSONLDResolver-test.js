@@ -33,25 +33,25 @@ describe('a JSONLDResolver instance with a context', () => {
 
   describe('resolving the knows property', () => {
     const extendedPath = {};
-    const path = { extend: jest.fn(() => extendedPath) };
+    const pathData = { extend: jest.fn(() => extendedPath) };
 
     let result;
-    beforeEach(() => result = resolver.resolve('knows', path));
+    beforeEach(() => result = resolver.resolve('knows', pathData));
 
     it('extends the path', () => {
-      expect(path.extend).toBeCalledTimes(1);
-      const args = path.extend.mock.calls[0];
+      expect(pathData.extend).toBeCalledTimes(1);
+      const args = pathData.extend.mock.calls[0];
       expect(args).toHaveLength(1);
       expect(args[0]).toBeInstanceOf(Object);
     });
 
     it('sets property to knows', () => {
-      const { property } = path.extend.mock.calls[0][0];
+      const { property } = pathData.extend.mock.calls[0][0];
       expect(property).toBe('knows');
     });
 
     it('sets predicate to a promise for foaf:knows', async () => {
-      const { predicate } = path.extend.mock.calls[0][0];
+      const { predicate } = pathData.extend.mock.calls[0][0];
       expect(await predicate).toEqual(namedNode('http://xmlns.com/foaf/0.1/knows'));
     });
 
@@ -62,25 +62,25 @@ describe('a JSONLDResolver instance with a context', () => {
 
   describe('resolving the foaf:knows property', () => {
     const extendedPath = {};
-    const path = { extend: jest.fn(() => extendedPath) };
+    const pathData = { extend: jest.fn(() => extendedPath) };
 
     let result;
-    beforeEach(() => result = resolver.resolve('foaf:knows', path));
+    beforeEach(() => result = resolver.resolve('foaf:knows', pathData));
 
     it('extends the path', () => {
-      expect(path.extend).toBeCalledTimes(1);
-      const args = path.extend.mock.calls[0];
+      expect(pathData.extend).toBeCalledTimes(1);
+      const args = pathData.extend.mock.calls[0];
       expect(args).toHaveLength(1);
       expect(args[0]).toBeInstanceOf(Object);
     });
 
     it('sets property to foaf:knows', () => {
-      const { property } = path.extend.mock.calls[0][0];
+      const { property } = pathData.extend.mock.calls[0][0];
       expect(property).toBe('foaf:knows');
     });
 
     it('sets predicate to a promise for foaf:knows', async () => {
-      const { predicate } = path.extend.mock.calls[0][0];
+      const { predicate } = pathData.extend.mock.calls[0][0];
       expect(await predicate).toEqual(namedNode('http://xmlns.com/foaf/0.1/knows'));
     });
 
@@ -91,25 +91,25 @@ describe('a JSONLDResolver instance with a context', () => {
 
   describe('resolving the foaf_knows property', () => {
     const extendedPath = {};
-    const path = { extend: jest.fn(() => extendedPath) };
+    const pathData = { extend: jest.fn(() => extendedPath) };
 
     let result;
-    beforeEach(() => result = resolver.resolve('foaf_knows', path));
+    beforeEach(() => result = resolver.resolve('foaf_knows', pathData));
 
     it('extends the path', () => {
-      expect(path.extend).toBeCalledTimes(1);
-      const args = path.extend.mock.calls[0];
+      expect(pathData.extend).toBeCalledTimes(1);
+      const args = pathData.extend.mock.calls[0];
       expect(args).toHaveLength(1);
       expect(args[0]).toBeInstanceOf(Object);
     });
 
     it('sets property to foaf_knows', () => {
-      const { property } = path.extend.mock.calls[0][0];
+      const { property } = pathData.extend.mock.calls[0][0];
       expect(property).toBe('foaf_knows');
     });
 
     it('sets predicate to a promise for foaf:knows', async () => {
-      const { predicate } = path.extend.mock.calls[0][0];
+      const { predicate } = pathData.extend.mock.calls[0][0];
       expect(await predicate).toEqual(namedNode('http://xmlns.com/foaf/0.1/knows'));
     });
 
@@ -120,25 +120,25 @@ describe('a JSONLDResolver instance with a context', () => {
 
   describe('resolving the foaf$knows property', () => {
     const extendedPath = {};
-    const path = { extend: jest.fn(() => extendedPath) };
+    const pathData = { extend: jest.fn(() => extendedPath) };
 
     let result;
-    beforeEach(() => result = resolver.resolve('foaf$knows', path));
+    beforeEach(() => result = resolver.resolve('foaf$knows', pathData));
 
     it('extends the path', () => {
-      expect(path.extend).toBeCalledTimes(1);
-      const args = path.extend.mock.calls[0];
+      expect(pathData.extend).toBeCalledTimes(1);
+      const args = pathData.extend.mock.calls[0];
       expect(args).toHaveLength(1);
       expect(args[0]).toBeInstanceOf(Object);
     });
 
     it('sets property to foaf$knows', () => {
-      const { property } = path.extend.mock.calls[0][0];
+      const { property } = pathData.extend.mock.calls[0][0];
       expect(property).toBe('foaf$knows');
     });
 
     it('sets predicate to a promise for foaf:knows', async () => {
-      const { predicate } = path.extend.mock.calls[0][0];
+      const { predicate } = pathData.extend.mock.calls[0][0];
       expect(await predicate).toEqual(namedNode('http://xmlns.com/foaf/0.1/knows'));
     });
 

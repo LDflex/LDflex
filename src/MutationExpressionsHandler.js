@@ -6,16 +6,15 @@
  * - a mutationExpressions property on the path proxy
  */
 export default class MutationExpressionsHandler {
-  async execute(path) {
+  async execute(pathData) {
     const mutationExpressions = [];
 
     // Add all mutationExpressions to the path
-    let current = path;
+    let current = pathData;
     while (current) {
       // Obtain and store mutationExpressions
       if (current.mutationExpressions)
         mutationExpressions.unshift(...await current.mutationExpressions);
-
       // Move to parent link
       current = current.parent;
     }

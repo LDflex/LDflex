@@ -7,11 +7,11 @@
  * - an add function on the path proxy.
  */
 export default class ReplaceFunctionHandler {
-  execute(path, proxy) {
+  execute(pathData, path) {
     return function (oldValue, ...newValues) {
       if (!oldValue || !newValues.length)
         throw new Error('Replacing values requires at least two arguments, old value followed by all new values');
-      return proxy.delete(oldValue).add(...newValues);
+      return path.delete(oldValue).add(...newValues);
     };
   }
 }

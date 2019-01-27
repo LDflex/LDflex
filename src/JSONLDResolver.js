@@ -22,9 +22,9 @@ export default class JSONLDResolver {
   /**
    * Resolves the property by extending the query path with it.
    */
-  resolve(property, path) {
+  resolve(property, pathData) {
     const predicate = { then: getThen(() => this.expandProperty(property)) };
-    return path.extend({ property, predicate });
+    return pathData.extend({ property, predicate });
   }
 
   /**

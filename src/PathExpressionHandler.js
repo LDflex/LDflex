@@ -2,9 +2,9 @@
  * Traverses a path to collect links and nodes into an expression.
  */
 export default class PathExpressionHandler {
-  async execute(path) {
+  async execute(pathData) {
     const segments = [];
-    let current = path;
+    let current = pathData;
 
     // Add all predicates to the path
     while (current.parent) {
@@ -13,7 +13,6 @@ export default class PathExpressionHandler {
         const predicate = await current.predicate;
         segments.unshift({ predicate });
       }
-
       // Move to parent link
       current = current.parent;
     }

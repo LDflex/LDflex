@@ -23,16 +23,16 @@ describe('a PathExpressionHandler instance', () => {
   });
 
   it('resolves a path of length 0', async () => {
-    const path = { subject: namedNode('abc') };
+    const pathData = { subject: namedNode('abc') };
 
-    expect(await handler.execute(path)).toEqual([
+    expect(await handler.execute(pathData)).toEqual([
       { subject: namedNode('abc') },
     ]);
   });
 
   it('resolves a path of length 1', async () => {
-    const path = { subject: namedNode('abc') };
-    const first = { parent: path, predicate: namedNode('p1') };
+    const pathData = { subject: namedNode('abc') };
+    const first = { parent: pathData, predicate: namedNode('p1') };
 
     expect(await handler.execute(first)).toEqual([
       { subject: namedNode('abc') },
@@ -41,8 +41,8 @@ describe('a PathExpressionHandler instance', () => {
   });
 
   it('resolves a path of length 2', async () => {
-    const path = { subject: namedNode('abc') };
-    const first = { parent: path, predicate: namedNode('p1') };
+    const pathData = { subject: namedNode('abc') };
+    const first = { parent: pathData, predicate: namedNode('p1') };
     const second = { parent: first, predicate: namedNode('p2') };
 
     expect(await handler.execute(second)).toEqual([
@@ -53,8 +53,8 @@ describe('a PathExpressionHandler instance', () => {
   });
 
   it('resolves a path with promises', async () => {
-    const path = { subject: Promise.resolve(namedNode('abc')) };
-    const first = { parent: path, predicate: Promise.resolve(namedNode('p1')) };
+    const pathData = { subject: Promise.resolve(namedNode('abc')) };
+    const first = { parent: pathData, predicate: Promise.resolve(namedNode('p1')) };
     const second = { parent: first, predicate: Promise.resolve(namedNode('p2')) };
 
     expect(await handler.execute(second)).toEqual([

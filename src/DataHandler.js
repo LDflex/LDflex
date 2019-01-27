@@ -1,5 +1,5 @@
 /**
- * Resolves to the given property path segments inside the path object.
+ * Resolves to the given item in the path data.
  *
  * This resolution can optionally be async,
  * and/or be behind a function call.
@@ -28,23 +28,27 @@ export default class DataHandler {
   }
 
   /**
-   * Resolve the path.
+   * Resolve the data path.
    */
-  execute(path) {
-    return this._function ? () => this._handlePath(path) : this._handlePath(path);
+  execute(pathData) {
+    return !this._function ?
+      this._resolveDataPath(pathData) :
+      () => this._resolveDataPath(pathData);
   }
 
-  _handlePath(path) {
-    if (this._async) {
-      return new Promise(async resolve => {
-        for (const pathSegment of this._pathSegments)
-          path = path && await path[pathSegment];
-        return resolve(path);
-      });
+  _resolveDataPath(data) {
+    // Resolve synchronous property access
+    if (!this._async) {
+      for (const pathSegment of this._pathSegments)
+        data = data && data[pathSegment];
+      return data;
     }
 
-    for (const pathSegment of this._pathSegments)
-      path = path && path[pathSegment];
-    return path;
+    // Resolve asynchronous property access
+    return new Promise(async resolve => {
+      for (const pathSegment of this._pathSegments)
+        data = data && await data[pathSegment];
+      resolve(data);
+    });
   }
 }
