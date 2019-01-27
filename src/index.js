@@ -1,6 +1,5 @@
 import DeleteFunctionHandler from './DeleteFunctionHandler';
 import ExecuteQueryHandler from './ExecuteQueryHandler';
-import FallbackHandler from './FallbackHandler';
 import InsertFunctionHandler from './InsertFunctionHandler';
 import JSONLDResolver from './JSONLDResolver';
 import MutationExpressionsHandler from './MutationExpressionsHandler';
@@ -19,7 +18,6 @@ import { getThen, toIterablePromise } from './promiseUtils';
 export {
   DeleteFunctionHandler,
   ExecuteQueryHandler,
-  FallbackHandler,
   InsertFunctionHandler,
   JSONLDResolver,
   MutationExpressionsHandler,
