@@ -1,26 +1,26 @@
 import {
-  iterablePromise,
+  toIterablePromise,
   memoizeIterable,
-} from '../../src/iterableUtils';
+} from '../../src/promiseUtils';
 
-describe('iterablePromise', () => {
+describe('toIterablePromise', () => {
   it('returns an object that is iterable', async () => {
-    const iterable = iterablePromise(iteratorOf(1, 2, 3));
+    const iterable = toIterablePromise(iteratorOf(1, 2, 3));
     expect(await toArray(iterable)).toEqual([1, 2, 3]);
   });
 
   it('returns an object with a then function that resolves', async () => {
-    const promise = iterablePromise(() => iteratorOf(1, 2, 3));
+    const promise = toIterablePromise(() => iteratorOf(1, 2, 3));
     await expect(promise).resolves.toBe(1);
   });
 
   it('returns an object with a then function that rejects', async () => {
-    const promise = iterablePromise(() => iteratorOf(0));
+    const promise = toIterablePromise(() => iteratorOf(0));
     await expect(promise).rejects.toEqual(new Error('iterator error'));
   });
 
   it('returns an object with a catch function', async () => {
-    const promise = iterablePromise(() => iteratorOf(0));
+    const promise = toIterablePromise(() => iteratorOf(0));
     const result = promise.catch(error => {
       expect(error).toEqual(new Error('iterator error'));
       return 'caught';
@@ -29,7 +29,7 @@ describe('iterablePromise', () => {
   });
 
   it('returns an object with a finally function', done => {
-    const promise = iterablePromise(() => iteratorOf());
+    const promise = toIterablePromise(() => iteratorOf());
     promise.finally(done);
   });
 });

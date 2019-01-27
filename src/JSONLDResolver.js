@@ -1,6 +1,7 @@
 import assert from 'assert';
 import { expand } from 'jsonld';
 import { namedNode } from '@rdfjs/data-model';
+import { getThen } from './promiseUtils';
 
 /**
  * Resolves property names of a path
@@ -22,10 +23,7 @@ export default class JSONLDResolver {
    * Resolves the property by extending the query path with it.
    */
   resolve(property, path) {
-    const predicate = {
-      then: (onResolved, onRejected) =>
-        this.expandProperty(property).then(onResolved, onRejected),
-    };
+    const predicate = { then: getThen(() => this.expandProperty(property)) };
     return path.extend({ property, predicate });
   }
 

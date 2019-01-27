@@ -1,14 +1,15 @@
-import PathExpressionHandler from './PathExpressionHandler';
-import InsertFunctionHandler from './InsertFunctionHandler';
-import DeleteFunctionHandler from './DeleteFunctionHandler';
-import MutationExpressionsHandler from './MutationExpressionsHandler';
-import ReplaceFunctionHandler from './ReplaceFunctionHandler';
-import SetFunctionHandler from './SetFunctionHandler';
-import ExecuteQueryHandler from './ExecuteQueryHandler';
-import SparqlHandler from './SparqlHandler';
 import DataHandler from './DataHandler';
+import PathExpressionHandler from './PathExpressionHandler';
+import SparqlHandler from './SparqlHandler';
+import ExecuteQueryHandler from './ExecuteQueryHandler';
+import MutationExpressionsHandler from './MutationExpressionsHandler';
+import InsertFunctionHandler from './InsertFunctionHandler';
+import SetFunctionHandler from './SetFunctionHandler';
+import ReplaceFunctionHandler from './ReplaceFunctionHandler';
+import DeleteFunctionHandler from './DeleteFunctionHandler';
 import StringToLDflexHandler from './StringToLDflexHandler';
-import { createThen, createIterator } from './iterableUtils';
+import { getFirstItem, iteratorFor } from './iterableUtils';
+import { getThen } from './promiseUtils';
 
 /**
  * A map with default property handlers.
@@ -25,15 +26,13 @@ export default {
       // If the subject is not a promise, it has already been resolved;
       // consumers should not await it, but access its properties directly.
       // This avoids infinite `then` chains when awaiting this path.
-      if (!subject.then)
-        return undefined;
+      return subject.then &&
       // Return a new path with the resolved subject
-      return (onResolved, onRejected) => subject
-        .then(term => path.extend({ subject: term }, null))
-        .then(onResolved, onRejected);
+        getThen(() => subject
+          .then(term => path.extend({ subject: term }, null)));
     }
     // Otherwise, return the first result of this path
-    return createThen(pathProxy.results);
+    return getThen(() => getFirstItem(pathProxy.results));
   },
 
   // Add async iterable behavior
@@ -42,7 +41,7 @@ export default {
     // return an iterator with the subject as only element
     const { subject } = path;
     if (subject) {
-      return () => createIterator(Promise.resolve(subject)
+      return () => iteratorFor(Promise.resolve(subject)
         .then(term => path.extend({ subject: term }, null)));
     }
     // Otherwise, return the results of this path

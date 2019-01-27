@@ -13,7 +13,8 @@ import SetFunctionHandler from './SetFunctionHandler';
 import SparqlHandler from './SparqlHandler';
 import StringToLDflexHandler from './StringToLDflexHandler';
 import defaultHandlers from './defaultHandlers';
-import { iterablePromise } from './iterableUtils';
+import { getFirstItem, iteratorFor } from './iterableUtils';
+import { getThen, toIterablePromise } from './promiseUtils';
 
 export {
   DeleteFunctionHandler,
@@ -31,5 +32,8 @@ export {
   SparqlHandler,
   StringToLDflexHandler,
   defaultHandlers,
-  iterablePromise,
+  getFirstItem,
+  getThen,
+  iteratorFor,
+  toIterablePromise,
 };

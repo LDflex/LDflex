@@ -1,4 +1,5 @@
 import { literal } from '@rdfjs/data-model';
+import { getThen } from './promiseUtils';
 
 /**
  * Returns a function that, when called with arguments,
@@ -23,12 +24,9 @@ export default class MutationFunctionHandler {
       if (!this._allowZeroArgs && !args.length)
         throw new Error(`Mutation on ${path} can not be invoked without arguments`);
 
-      const mutationExpressions = {
-        then: (onResolved, onRejected) =>
-          this.createMutationExpressions(path, proxy, args)
-            .then(onResolved, onRejected),
-      };
-      return path.extend({ mutationExpressions });
+      // Create a lazy Promise to the mutation expressions
+      const then = getThen(() => this.createMutationExpressions(path, proxy, args));
+      return path.extend({ mutationExpressions: { then } });
     };
   }
 
