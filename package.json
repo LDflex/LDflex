@@ -2,8 +2,11 @@
   "name": "ldflex",
   "version": "1.3.1",
   "description": "A JavaScript DSL for querying Linked Data on the Web",
-  "author": "Ruben Verborgh <ruben@verborgh.org> (https://ruben.verborgh.org/)",
   "license": "MIT",
+  "author": "Ruben Verborgh <ruben@verborgh.org> (https://ruben.verborgh.org/)",
+  "contributors": [
+    "Ruben Taelman <ruben.taelman@ugent.be> (https://www.rubensworks.net/)"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/RubenVerborgh/LDflex"

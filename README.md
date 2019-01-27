@@ -96,5 +96,7 @@ async function showPerson(person) {
 ```
 
 ## License
-©2018–present [Ruben Verborgh](https://ruben.verborgh.org/),
+©2018–present
+[Ruben Verborgh](https://ruben.verborgh.org/),
+[Ruben Taelman](https://www.rubensworks.net/).
 [MIT License](https://github.com/RubenVerborgh/LDflex/blob/master/LICENSE.md).
