@@ -10,6 +10,7 @@ describe('The LDflex module', () => {
     'PathFactory',
     'SparqlHandler',
     'StringToLDflexHandler',
+    'defaultHandlers',
     'getIterator',
     'iterablePromise',
     'iterableToThen',
