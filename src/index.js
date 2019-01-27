@@ -10,6 +10,7 @@ import PathFactory from './PathFactory';
 import ReplaceFunctionHandler from './ReplaceFunctionHandler';
 import SetFunctionHandler from './SetFunctionHandler';
 import SparqlHandler from './SparqlHandler';
+import SubjectHandler from './SubjectHandler';
 import StringToLDflexHandler from './StringToLDflexHandler';
 import defaultHandlers from './defaultHandlers';
 import { getFirstItem, iteratorFor } from './iterableUtils';
@@ -28,6 +29,7 @@ export {
   ReplaceFunctionHandler,
   SetFunctionHandler,
   SparqlHandler,
+  SubjectHandler,
   StringToLDflexHandler,
   defaultHandlers,
   getFirstItem,

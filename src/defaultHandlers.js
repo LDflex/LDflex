@@ -1,4 +1,5 @@
 import DataHandler from './DataHandler';
+import SubjectHandler from './SubjectHandler';
 import PathExpressionHandler from './PathExpressionHandler';
 import SparqlHandler from './SparqlHandler';
 import ExecuteQueryHandler from './ExecuteQueryHandler';
@@ -19,36 +20,27 @@ export default {
   __esModule: () => undefined,
 
   // Add Promise behavior
-  then: (path, pathProxy) => {
+  then: ({ subject }, pathProxy) => {
     // If a direct subject is set (zero-length path), resolve it
-    const { subject } = path;
-    if (subject) {
+    if (subject)
       // If the subject is not a promise, it has already been resolved;
       // consumers should not await it, but access its properties directly.
       // This avoids infinite `then` chains when awaiting this path.
-      return subject.then &&
-      // Return a new path with the resolved subject
-        getThen(() => subject
-          .then(term => path.extend({ subject: term }, null)));
-    }
+      return subject.then && getThen(() => pathProxy.subject);
     // Otherwise, return the first result of this path
     return getThen(() => getFirstItem(pathProxy.results));
   },
 
   // Add async iterable behavior
-  [Symbol.asyncIterator]: (path, pathProxy) => {
-    // If a direct subject is set (zero-length path),
-    // return an iterator with the subject as only element
-    const { subject } = path;
-    if (subject) {
-      return () => iteratorFor(Promise.resolve(subject)
-        .then(term => path.extend({ subject: term }, null)));
-    }
-    // Otherwise, return the results of this path
-    return () => pathProxy.results[Symbol.asyncIterator]();
-  },
+  [Symbol.asyncIterator]: ({ subject }, pathProxy) =>
+    // Return a one-item iterator of the subject or,
+    // if no subject is present, all results of this path
+    () => subject ?
+      iteratorFor(pathProxy.subject) :
+      pathProxy.results[Symbol.asyncIterator](),
 
-  // Add query functionality
+  // Add read and query functionality
+  subject: new SubjectHandler(),
   pathExpression: new PathExpressionHandler(),
   sparql: new SparqlHandler(),
   results: new ExecuteQueryHandler(),

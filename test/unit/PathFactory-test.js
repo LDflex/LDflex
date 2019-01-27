@@ -83,6 +83,10 @@ describe('a PathFactory instance with a Term as subject', () => {
     path = factory.create();
   });
 
+  it('exposes the subject', async () => {
+    expect((await path.subject).value).toBe('foo');
+  });
+
   it('has then set to undefined', () => {
     expect(path.then).toBeUndefined();
   });
@@ -145,6 +149,10 @@ describe('a PathFactory instance with a promise to a Term as subject', () => {
     term = literal('foo', 'en-us');
     factory = new PathFactory(undefined, { subject: Promise.resolve(term) });
     path = factory.create();
+  });
+
+  it('exposes the subject', async () => {
+    expect((await path.subject).value).toBe('foo');
   });
 
   it('has then set to a function', () => {
