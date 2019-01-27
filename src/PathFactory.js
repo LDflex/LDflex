@@ -12,15 +12,19 @@ import FallbackHandler from './FallbackHandler';
 import DataHandler from './DataHandler';
 import StringToLDflexHandler from './StringToLDflexHandler';
 import SubjectHandler from './SubjectHandler';
-import { conditionalHandler, promiseToIterable, getIterator, iterableToThen } from './iterableUtils';
+import { promiseToIterable, getIterator, iterableToThen } from './iterableUtils';
 import * as dataFactory from '@rdfjs/data-model';
+
+// Create default query handlers
+const queryHandler = new ExecuteQueryHandler();
+const thenQueryHandler = iterableToThen(queryHandler);
 
 // Default iterator behavior:
 // - first try returning the subject (single-segment path)
 // - then execute a path query (multi-segment path)
 const iteratorHandler = new FallbackHandler([
   promiseToIterable(new SubjectHandler()),
-  new ExecuteQueryHandler(),
+  queryHandler,
 ]);
 
 /**
@@ -30,9 +34,27 @@ export const defaultHandlers = {
   // Flag to loaders that exported paths are not ES6 modules
   __esModule: () => undefined,
 
-  // Add iterable and thenable behavior
+  // Add Promise behavior
+  then: (path, pathProxy) => {
+    // If a direct subject is set (zero-length path), resolve it
+    const { subject } = path;
+    if (subject) {
+      // If the subject is not a promise, it has already been resolved;
+      // consumers should not await it, but access its properties directly.
+      // This avoids infinite `then` chains when awaiting this path.
+      if (!subject.then)
+        return undefined;
+      // Return a new path with the resolved subject
+      return (onResolved, onRejected) => subject
+        .then(term => path.extend({ subject: term, parent: null }))
+        .then(onResolved, onRejected);
+    }
+    // Otherwise, execute the query represented by this path
+    return thenQueryHandler.execute(path, pathProxy);
+  },
+
+  // Add async iterable behavior
   [Symbol.asyncIterator]: getIterator(iteratorHandler),
-  then: conditionalHandler(iterableToThen(iteratorHandler), ({ subject }) => !subject),
 
   // Add path handling
   pathExpression: new PathExpressionHandler(),
