@@ -1,3 +1,4 @@
+import DataHandler from './DataHandler';
 import DeleteFunctionHandler from './DeleteFunctionHandler';
 import ExecuteQueryHandler from './ExecuteQueryHandler';
 import InsertFunctionHandler from './InsertFunctionHandler';
@@ -17,6 +18,7 @@ import { getFirstItem, iteratorFor } from './iterableUtils';
 import { getThen, toIterablePromise } from './promiseUtils';
 
 export {
+  DataHandler,
   DeleteFunctionHandler,
   ExecuteQueryHandler,
   InsertFunctionHandler,

@@ -2,6 +2,7 @@ import * as ldflex from '../../src/index';
 
 describe('The LDflex module', () => {
   const exports = [
+    'DataHandler',
     'ExecuteQueryHandler',
     'JSONLDResolver',
     'PathExpressionHandler',
