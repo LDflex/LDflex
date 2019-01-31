@@ -2,7 +2,7 @@
  * Yields a function that interprets a string expression as an LDflex path.
  */
 export default class StringToLDflexHandler {
-  execute(pathData, path) {
+  handle(pathData, path) {
     // Resolves the given string expression against the LDflex object
     return (expression = '', ldflex = path) => {
       // An expression starts with a property access in dot or bracket notation

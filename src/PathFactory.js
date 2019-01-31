@@ -51,8 +51,8 @@ PathFactory.defaultHandlers = defaultHandlers;
 /**
  * Converts a handler function into a handler object.
  */
-export function toHandler(execute) {
-  return typeof execute.execute === 'function' ? execute : { execute };
+export function toHandler(handle) {
+  return typeof handle.handle === 'function' ? handle : { handle };
 }
 
 /**

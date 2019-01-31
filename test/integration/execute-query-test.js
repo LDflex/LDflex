@@ -28,7 +28,7 @@ const handlersPath = {
   pathExpression: new PathExpressionHandler(),
   results: new ExecuteQueryHandler(),
   [Symbol.asyncIterator]: {
-    execute(pathData, path) {
+    handle(pathData, path) {
       return () => path.results[Symbol.asyncIterator]();
     },
   },
@@ -40,7 +40,7 @@ const handlersMutation = {
   pathExpression: new PathExpressionHandler(),
   results: new ExecuteQueryHandler(),
   [Symbol.asyncIterator]: {
-    execute(pathData, path) {
+    handle(pathData, path) {
       return () => path.results[Symbol.asyncIterator]();
     },
   },

@@ -9,7 +9,7 @@ describe('a PathExpressionHandler instance', () => {
     const parent = { subject: namedNode('abc') };
     const child = { parent, toString: () => 'child' };
 
-    expect(await handler.execute(child)).toEqual([
+    expect(await handler.handle(child)).toEqual([
       { subject: namedNode('abc') },
     ]);
   });
@@ -18,14 +18,14 @@ describe('a PathExpressionHandler instance', () => {
     const parent = { toString: () => 'root' };
     const child = { parent, predicate: namedNode('foo') };
 
-    await expect(handler.execute(child)).rejects
+    await expect(handler.handle(child)).rejects
       .toThrow(new Error('Expected root subject in root'));
   });
 
   it('resolves a path of length 0', async () => {
     const pathData = { subject: namedNode('abc') };
 
-    expect(await handler.execute(pathData)).toEqual([
+    expect(await handler.handle(pathData)).toEqual([
       { subject: namedNode('abc') },
     ]);
   });
@@ -34,7 +34,7 @@ describe('a PathExpressionHandler instance', () => {
     const pathData = { subject: namedNode('abc') };
     const first = { parent: pathData, predicate: namedNode('p1') };
 
-    expect(await handler.execute(first)).toEqual([
+    expect(await handler.handle(first)).toEqual([
       { subject: namedNode('abc') },
       { predicate: namedNode('p1') },
     ]);
@@ -45,7 +45,7 @@ describe('a PathExpressionHandler instance', () => {
     const first = { parent: pathData, predicate: namedNode('p1') };
     const second = { parent: first, predicate: namedNode('p2') };
 
-    expect(await handler.execute(second)).toEqual([
+    expect(await handler.handle(second)).toEqual([
       { subject: namedNode('abc') },
       { predicate: namedNode('p1') },
       { predicate: namedNode('p2') },
@@ -57,7 +57,7 @@ describe('a PathExpressionHandler instance', () => {
     const first = { parent: pathData, predicate: Promise.resolve(namedNode('p1')) };
     const second = { parent: first, predicate: Promise.resolve(namedNode('p2')) };
 
-    expect(await handler.execute(second)).toEqual([
+    expect(await handler.handle(second)).toEqual([
       { subject: namedNode('abc') },
       { predicate: namedNode('p1') },
       { predicate: namedNode('p2') },

@@ -6,7 +6,7 @@
  * - a mutationExpressions property on the path proxy
  */
 export default class MutationExpressionsHandler {
-  async execute(pathData) {
+  async handle(pathData) {
     const mutationExpressions = [];
 
     // Add all mutationExpressions to the path

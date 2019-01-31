@@ -9,7 +9,7 @@ describe('a SubjectHandler instance', () => {
   describe('when no subject or parent property is present', () => {
     const pathData = { extendPath };
     let result;
-    beforeEach(() => (result = handler.execute(pathData)));
+    beforeEach(() => (result = handler.handle(pathData)));
 
     it('returns undefined', () => {
       expect(result).toBeUndefined();
@@ -20,7 +20,7 @@ describe('a SubjectHandler instance', () => {
     const subject = {};
     const pathData = { subject, extendPath };
     let result;
-    beforeEach(() => (result = handler.execute(pathData)));
+    beforeEach(() => (result = handler.handle(pathData)));
 
     it('returns a new path with the subject', async () => {
       expect(pathData.extendPath).toHaveBeenCalledTimes(1);
@@ -33,7 +33,7 @@ describe('a SubjectHandler instance', () => {
     const subject = {};
     const pathData = { subject: Promise.resolve(subject), extendPath };
     let result;
-    beforeEach(() => (result = handler.execute(pathData)));
+    beforeEach(() => (result = handler.handle(pathData)));
 
     it('returns a new path with the resolved subject', async () => {
       expect(pathData.extendPath).toHaveBeenCalledTimes(1);
@@ -53,7 +53,7 @@ describe('a SubjectHandler instance', () => {
       extendPath,
     };
     let result;
-    beforeEach(() => (result = handler.execute(pathData)));
+    beforeEach(() => (result = handler.handle(pathData)));
 
     it('returns a new path with the subject', async () => {
       expect(pathData.extendPath).toHaveBeenCalledTimes(1);

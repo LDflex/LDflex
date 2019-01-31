@@ -30,7 +30,7 @@ export default class DataHandler {
   /**
    * Resolve the data path.
    */
-  execute(pathData) {
+  handle(pathData) {
     return !this._function ?
       this._resolveDataPath(pathData) :
       () => this._resolveDataPath(pathData);

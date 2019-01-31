@@ -5,7 +5,7 @@
  * - a mutationExpressions or pathExpression property on the path proxy
  */
 export default class SparqlHandler {
-  async execute(pathData, path) {
+  async handle(pathData, path) {
     // First check if we have a mutation expression
     const mutationExpressions = await path.mutationExpressions;
     if (Array.isArray(mutationExpressions) && mutationExpressions.length)

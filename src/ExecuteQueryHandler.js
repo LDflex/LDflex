@@ -6,7 +6,7 @@
  * - a sparql property on the path proxy
  */
 export default class ExecuteQueryHandler {
-  async *execute(pathData, path) {
+  async *handle(pathData, path) {
     // Retrieve the query engine and query
     const { queryEngine } = pathData.settings;
     if (!queryEngine)

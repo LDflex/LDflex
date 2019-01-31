@@ -57,8 +57,8 @@ export default class PathProxy {
     // Handlers provide functionality for a specific property,
     // so check if we find a handler first
     const handler = this._handlers[property];
-    if (handler && typeof handler.execute === 'function')
-      return handler.execute(pathData, pathData.proxy);
+    if (handler && typeof handler.handle === 'function')
+      return handler.handle(pathData, pathData.proxy);
 
     // Resolvers provide functionality for arbitrary properties,
     // so find a resolver that can handle this property

@@ -13,7 +13,7 @@ describe('a SetFunctionHandler instance', () => {
 
   describe('resolving a property', async () => {
     let result;
-    beforeEach(async () => result = await handler.execute({}, proxy));
+    beforeEach(async () => result = await handler.handle({}, proxy));
 
     it('returns a function', async () => {
       expect(typeof result).toEqual('function');

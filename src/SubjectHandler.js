@@ -6,7 +6,7 @@
  * - (optional) a parent property on the path proxy
  */
 export default class SubjectHandler {
-  execute(pathData) {
+  handle(pathData) {
     // Traverse parents until we find a subject
     let { subject, parent } = pathData;
     while (!subject && parent)

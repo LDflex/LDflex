@@ -20,7 +20,7 @@ describe('a MutationFunctionHandler instance not allowing 0 args', () => {
         { subject: namedNode('https://example.org/#me') },
         { predicate: namedNode('https://ex.org/p1') },
       ];
-      result = handler.execute(pathData, { pathExpression });
+      result = handler.handle(pathData, { pathExpression });
     });
 
     it('returns a function', async () => {

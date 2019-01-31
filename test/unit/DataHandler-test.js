@@ -22,15 +22,15 @@ describe('a DataHandler instance', () => {
     beforeAll(() => handler = DataHandler.sync('a', 'b', 'c'));
 
     it('returns the existing path value on synchronous data', () => {
-      expect(handler.execute(dataSync)).toEqual('d');
+      expect(handler.handle(dataSync)).toEqual('d');
     });
 
     it('returns undefined on asynchronous data', () => {
-      expect(handler.execute(dataAsync)).toBeUndefined();
+      expect(handler.handle(dataAsync)).toBeUndefined();
     });
 
     it('returns undefined for a non-existing path value', () => {
-      expect(handler.execute(dataEmpty)).toBeUndefined();
+      expect(handler.handle(dataEmpty)).toBeUndefined();
     });
   });
 
@@ -39,15 +39,15 @@ describe('a DataHandler instance', () => {
     beforeAll(() => handler = DataHandler.async('a', 'b', 'c'));
 
     it('returns the existing path value on synchronous data', async () => {
-      await expect(handler.execute(dataSync)).resolves.toEqual('d');
+      await expect(handler.handle(dataSync)).resolves.toEqual('d');
     });
 
     it('returns the existing path value on asynchronous data', async () => {
-      await expect(handler.execute(dataAsync)).resolves.toEqual('d');
+      await expect(handler.handle(dataAsync)).resolves.toEqual('d');
     });
 
     it('returns undefined for a non-existing path value', async () => {
-      await expect(handler.execute(dataEmpty)).resolves.toBeUndefined();
+      await expect(handler.handle(dataEmpty)).resolves.toBeUndefined();
     });
   });
 
@@ -56,15 +56,15 @@ describe('a DataHandler instance', () => {
     beforeAll(() => handler = DataHandler.syncFunction('a', 'b', 'c'));
 
     it('returns the existing path value on synchronous data', () => {
-      expect(handler.execute(dataSync)()).toEqual('d');
+      expect(handler.handle(dataSync)()).toEqual('d');
     });
 
     it('returns undefined on asynchronous data', () => {
-      expect(handler.execute(dataAsync)()).toBeUndefined();
+      expect(handler.handle(dataAsync)()).toBeUndefined();
     });
 
     it('returns undefined for a non-existing path value', () => {
-      expect(handler.execute(dataEmpty)()).toBeUndefined();
+      expect(handler.handle(dataEmpty)()).toBeUndefined();
     });
   });
 
@@ -73,15 +73,15 @@ describe('a DataHandler instance', () => {
     beforeAll(() => handler = DataHandler.asyncFunction('a', 'b', 'c'));
 
     it('returns the existing path value on synchronous data', async () => {
-      await expect(handler.execute(dataSync)()).resolves.toEqual('d');
+      await expect(handler.handle(dataSync)()).resolves.toEqual('d');
     });
 
     it('returns the existing path value on asynchronous data', async () => {
-      await expect(handler.execute(dataAsync)()).resolves.toEqual('d');
+      await expect(handler.handle(dataAsync)()).resolves.toEqual('d');
     });
 
     it('returns undefined for a non-existing path value', async () => {
-      await expect(handler.execute(dataEmpty)()).resolves.toBeUndefined();
+      await expect(handler.handle(dataEmpty)()).resolves.toBeUndefined();
     });
   });
 });

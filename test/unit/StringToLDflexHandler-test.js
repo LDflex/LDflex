@@ -10,7 +10,7 @@ describe('a StringToLDflexHandler instance', () => {
   let handler, parseLDflex;
   beforeEach(() => {
     handler = new StringToLDflexHandler();
-    parseLDflex = handler.execute(null, root);
+    parseLDflex = handler.handle(null, root);
   });
 
   it('resolves dot-based property access without dot', () => {

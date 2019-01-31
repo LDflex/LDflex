@@ -7,7 +7,7 @@
  * - an add function on the path proxy.
  */
 export default class ReplaceFunctionHandler {
-  execute(pathData, path) {
+  handle(pathData, path) {
     return function (oldValue, ...newValues) {
       if (!oldValue || !newValues.length)
         throw new Error('Replacing values requires at least two arguments, old value followed by all new values');

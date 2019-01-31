@@ -13,7 +13,7 @@ describe('a ReplaceFunctionHandler instance', () => {
 
   describe('resolving a property', async () => {
     let result;
-    beforeEach(() => result = handler.execute({}, proxy));
+    beforeEach(() => result = handler.handle({}, proxy));
 
     it('returns a function', async () => {
       expect(typeof await result).toEqual('function');

@@ -268,7 +268,7 @@ describe('a PathFactory instance with initial settings and data', () => {
   beforeAll(() => factory = new PathFactory({
     foo: 'bar',
     handlers: {
-      internal: { execute: pathProxy => pathProxy },
+      internal: { handle: pathProxy => pathProxy },
     },
   }, {
     a: 1,

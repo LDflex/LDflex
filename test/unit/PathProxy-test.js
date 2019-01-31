@@ -25,10 +25,10 @@ describe('a PathProxy without handlers or resolvers', () => {
 describe('a PathProxy with two handlers', () => {
   const handlers = {
     foo: {
-      execute: jest.fn(() => 'foo'),
+      handle: jest.fn(() => 'foo'),
     },
     bar: {
-      execute: jest.fn(() => 'bar'),
+      handle: jest.fn(() => 'bar'),
     },
   };
   let pathProxy;
@@ -43,11 +43,11 @@ describe('a PathProxy with two handlers', () => {
       beforeEach(() => result = path.other);
 
       it('does not execute the first handler', () => {
-        expect(handlers.foo.execute).toBeCalledTimes(0);
+        expect(handlers.foo.handle).toBeCalledTimes(0);
       });
 
       it('does not execute the second handler', () => {
-        expect(handlers.bar.execute).toBeCalledTimes(0);
+        expect(handlers.bar.handle).toBeCalledTimes(0);
       });
 
       it('returns undefined', () => {
@@ -60,14 +60,14 @@ describe('a PathProxy with two handlers', () => {
       beforeEach(() => result = path.foo);
 
       it('executes the first handler', () => {
-        expect(handlers.foo.execute).toBeCalledTimes(1);
-        const [data, proxy] = handlers.foo.execute.mock.calls[0];
+        expect(handlers.foo.handle).toBeCalledTimes(1);
+        const [data, proxy] = handlers.foo.handle.mock.calls[0];
         expect(data).toHaveProperty('settings');
         expect(proxy).toBe(data.proxy);
       });
 
       it('does not execute the second handler', () => {
-        expect(handlers.bar.execute).toBeCalledTimes(0);
+        expect(handlers.bar.handle).toBeCalledTimes(0);
       });
 
       it('returns the result of the first handler', () => {
@@ -80,12 +80,12 @@ describe('a PathProxy with two handlers', () => {
       beforeEach(() => result = path.bar);
 
       it('does not execute the first handler', () => {
-        expect(handlers.foo.execute).toBeCalledTimes(0);
+        expect(handlers.foo.handle).toBeCalledTimes(0);
       });
 
       it('executes the second handler', () => {
-        expect(handlers.bar.execute).toBeCalledTimes(1);
-        const [data, proxy] = handlers.bar.execute.mock.calls[0];
+        expect(handlers.bar.handle).toBeCalledTimes(1);
+        const [data, proxy] = handlers.bar.handle.mock.calls[0];
         expect(data).toHaveProperty('settings');
         expect(proxy).toBe(data.proxy);
       });
@@ -208,7 +208,7 @@ describe('a PathProxy with two resolvers', () => {
 describe('a PathProxy with a handler and a resolver', () => {
   const handlers = {
     foo: {
-      execute: jest.fn(() => 'foo'),
+      handle: jest.fn(() => 'foo'),
     },
   };
   const resolvers = [
@@ -229,7 +229,7 @@ describe('a PathProxy with a handler and a resolver', () => {
       beforeEach(() => result = path.other);
 
       it('does not execute the handler', () => {
-        expect(handlers.foo.execute).toBeCalledTimes(0);
+        expect(handlers.foo.handle).toBeCalledTimes(0);
       });
 
       it('tests the resolver', () => {
@@ -251,7 +251,7 @@ describe('a PathProxy with a handler and a resolver', () => {
       beforeEach(() => result = path.foo);
 
       it('executes the handler', () => {
-        expect(handlers.foo.execute).toBeCalledTimes(1);
+        expect(handlers.foo.handle).toBeCalledTimes(1);
       });
 
       it('does not test the resolver', () => {
@@ -272,7 +272,7 @@ describe('a PathProxy with a handler and a resolver', () => {
 describe('a PathProxy whose paths are extended', () => {
   const handlers = {
     internal: {
-      execute: pathProxy => pathProxy,
+      handle: pathProxy => pathProxy,
     },
   };
   const initialData = { a: 1 };

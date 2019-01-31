@@ -2,7 +2,7 @@
  * Traverses a path to collect links and nodes into an expression.
  */
 export default class PathExpressionHandler {
-  async execute(pathData) {
+  async handle(pathData) {
     const segments = [];
     let current = pathData;
 

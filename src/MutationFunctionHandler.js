@@ -18,7 +18,7 @@ export default class MutationFunctionHandler {
     this._allowZeroArgs = allowZeroArgs;
   }
 
-  execute(pathData, path) {
+  handle(pathData, path) {
     return (...args) => {
       // Check if the given arguments are valid
       if (!this._allowZeroArgs && !args.length)
