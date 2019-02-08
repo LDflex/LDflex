@@ -1,5 +1,4 @@
-import assert from 'assert';
-import { expand } from 'jsonld';
+import { ContextParser } from 'jsonld-context-parser';
 import { namedNode } from '@rdfjs/data-model';
 import { getThen } from './promiseUtils';
 
@@ -9,7 +8,7 @@ import { getThen } from './promiseUtils';
  */
 export default class JSONLDResolver {
   constructor(context) {
-    this._context = context;
+    this._context = new ContextParser().parse(context);
   }
 
   /**
@@ -36,19 +35,10 @@ export default class JSONLDResolver {
     // We thus allow writing path.foaf_knows or path.foaf$knows instead.
     property = property.replace(/[_$]/, ':');
 
-    // Create a JSON-LD document with the given property
-    const document = {
-      '@context': this._context,
-      [property]: '',
-    };
-
-    // Expand the document to obtain the full IRI
-    const expanded = await expand(document);
-    if (expanded.length === 0)
+    // Expand the property to a full IRI
+    const expandedProperty = ContextParser.expandTerm(property, await this._context, true);
+    if (!ContextParser.isValidIri(expandedProperty))
       throw new Error(`The JSON-LD context cannot expand the '${property}' property`);
-    assert.equal(expanded.length, 1);
-    const propertyIRIs = Object.keys(expanded[0]);
-    assert.equal(propertyIRIs.length, 1);
-    return namedNode(propertyIRIs[0]);
+    return namedNode(expandedProperty);
   }
 }
