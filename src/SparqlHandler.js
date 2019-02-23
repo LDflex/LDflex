@@ -26,28 +26,23 @@ export default class SparqlHandler {
     // Determine the query variable name
     const queryVar = pathData.property.match(/[a-z0-9]*$/i)[0] || 'result';
 
-    // Build basic graph pattern
-    const clauses = this.expressionToTriplePatterns(pathExpression, queryVar);
-
     // Embed the basic graph pattern into a SPARQL query
-    const joinedClauses = clauses.join('\n  ');
-    return `SELECT ?${queryVar} WHERE {\n  ${joinedClauses}\n}`;
+    const clauses = this.expressionToTriplePatterns(pathExpression, queryVar);
+    return `SELECT ?${queryVar} WHERE {\n  ${clauses.join('\n  ')}\n}`;
   }
 
   evaluateMutationExpression(pathData, path, mutationExpressions) {
-    return mutationExpressions
-      .map(mutationExpression => this.mutationExpressionToQuery(mutationExpression))
-      .join('\n;\n');
+    return mutationExpressions.map(e => this.mutationExpressionToQuery(e)).join('\n;\n');
   }
 
-  expressionToTriplePatterns([root, ...pathExpression], queryVar, variableScope = {}) {
+  expressionToTriplePatterns([root, ...pathExpression], queryObject, scope = {}) {
     const last = pathExpression.length - 1;
     let object = this.termToQueryString(root.subject);
     return pathExpression.map((segment, index) => {
       // Obtain triple pattern components
       const subject = object;
       const { predicate } = segment;
-      object = index !== last ? `?${this.getQueryVar(`v${index}`, variableScope)}` : `?${queryVar}`;
+      object = index !== last ? `?${this.getQueryVar(`v${index}`, scope)}` : `?${queryObject}`;
       // Generate triple pattern
       return `${subject} ${this.termToQueryString(predicate)} ${object}.`;
     });
@@ -55,61 +50,52 @@ export default class SparqlHandler {
 
   mutationExpressionToQuery({ mutationType, domainExpression, predicate, rangeExpression }) {
     // Determine the patterns that should appear in the WHERE clause
-    const variableScope = {};
+    const scope = {};
     let clauses = [];
-    let insertPattern;
-    const { queryVar: domainQueryVar, clauses: domainClauses } = this.getQueryVarAndClauses(domainExpression, variableScope);
+    let mutationPattern;
+    const [domainObject, domainClauses] = this.getObjectAndClauses(domainExpression, scope);
     if (domainClauses.length)
       clauses = domainClauses;
-    if (rangeExpression) {
-      const { queryVar: rangeQueryVar, clauses: rangeClauses } = this.getQueryVarAndClauses(rangeExpression, variableScope);
-      if (rangeClauses.length) {
-        if (clauses.length)
-          clauses = clauses.concat(rangeClauses);
-        else
-          clauses = rangeClauses;
-      }
 
-      // If we have a range, the mutation is on <domainVar> <predicate> <rangeVar>
-      insertPattern = `${domainQueryVar} ${this.termToQueryString(predicate)} ${rangeQueryVar}`;
+    // If we have a range, the mutation is on <domainVar> <predicate> <rangeVar>
+    if (rangeExpression) {
+      const [rangeObject, rangeClauses] = this.getObjectAndClauses(rangeExpression, scope);
+      clauses = clauses.concat(rangeClauses);
+      mutationPattern = `${domainObject} ${this.termToQueryString(predicate)} ${rangeObject}`;
     }
+    // If we don't have a range, assume that the mutation is on the last segment of the domain
     else {
-      // If we don't have a range, assume that the mutation is on the last segment of the domain
-      insertPattern = domainClauses[domainClauses.length - 1].slice(0, -1);
+      mutationPattern = domainClauses[domainClauses.length - 1].slice(0, -1);
     }
 
     // If we don't have any WHERE clauses, we just insert raw data
     if (!clauses.length)
-      return `${mutationType} DATA {\n  ${insertPattern}\n}`;
-
+      return `${mutationType} DATA {\n  ${mutationPattern}\n}`;
     // Otherwise, return an INSERT ... WHERE ... query
-    return `${mutationType} {\n  ${insertPattern}\n} WHERE {\n  ${clauses.join('\n  ')}\n}`;
+    return `${mutationType} {\n  ${mutationPattern}\n} WHERE {\n  ${clauses.join('\n  ')}\n}`;
   }
 
-  getQueryVarAndClauses(expression, variableScope) {
-    const lastSegment = expression[expression.length - 1];
+  getObjectAndClauses(expression, scope) {
+    // If the expression has one segment, return its subject
+    if (expression.length === 1)
+      return [this.termToQueryString(expression[0].subject), []];
 
-    if (expression.length === 1) {
-      return {
-        queryVar: this.termToQueryString(lastSegment.subject),
-        clauses: [],
-      };
-    }
-
-    const queryVar = this.getQueryVar(lastSegment.predicate.value.match(/[a-z0-9]*$/i)[0] || 'result', variableScope);
-    return {
-      queryVar: `?${queryVar}`,
-      clauses: this.expressionToTriplePatterns(expression, queryVar, variableScope),
-    };
+    // Otherwise, create triples patterns from it
+    const lastPredicate = expression[expression.length - 1].predicate.value;
+    const queryVar = this.getQueryVar(lastPredicate.match(/[a-z0-9]*$/i)[0] || 'result', scope);
+    return [
+      `?${queryVar}`,
+      this.expressionToTriplePatterns(expression, queryVar, scope),
+    ];
   }
 
   // Creates a unique query variable label within the given scope based on the given suggestion
-  getQueryVar(labelSuggestion, variableScope) {
+  getQueryVar(labelSuggestion, scope) {
     let label = labelSuggestion;
     let counter = 0;
-    while (variableScope[label])
+    while (scope[label])
       label = `${labelSuggestion}_${counter++}`;
-    variableScope[label] = true;
+    scope[label] = true;
     return label;
   }
 
