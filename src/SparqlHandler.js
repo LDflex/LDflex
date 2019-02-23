@@ -77,8 +77,14 @@ export default class SparqlHandler {
 
   getObjectAndClauses(expression, scope) {
     // If the expression has one segment, return its subject
-    if (expression.length === 1)
-      return [this.termToQueryString(expression[0].subject), []];
+    if (expression.length === 1) {
+      const { subject } = expression[0];
+      const subjects = Array.isArray(subject) ? subject : [subject];
+      return [
+        subjects.map(this.termToQueryString).join(', '),
+        [],
+      ];
+    }
 
     // Otherwise, create triples patterns from it
     const lastPredicate = expression[expression.length - 1].predicate.value;

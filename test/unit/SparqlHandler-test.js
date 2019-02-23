@@ -143,6 +143,28 @@ describe('a SparqlHandler instance', () => {
       }`));
       });
 
+      it('resolves with domain of length 0 and range of length 0 with multiple terms', async () => {
+        const mutationExpressions = [
+          {
+            mutationType: 'INSERT',
+            domainExpression: [{ subject: namedNode('https://example.org/#D0') }],
+            predicate: namedNode('https://example.org/p'),
+            rangeExpression: [{
+              subject: [
+                namedNode('https://example.org/#R0'),
+                literal('Ruben'),
+                literal('Other'),
+              ],
+            }],
+          },
+        ];
+
+        expect(await handler.handle({}, { mutationExpressions })).toEqual(deindent(`
+      INSERT DATA {
+        <https://example.org/#D0> <https://example.org/p> <https://example.org/#R0>, "Ruben", "Other"
+      }`));
+      });
+
       it('resolves with domain of length 2 and range of length of 0', async () => {
         const mutationExpressions = [
           {
@@ -274,6 +296,28 @@ describe('a SparqlHandler instance', () => {
         <https://example.org/#D0> <https://example.org/p> <https://example.org/#R0>
       }`));
       });
+    });
+
+    it('resolves with domain of length 0 and range of length 0 with multiple terms', async () => {
+      const mutationExpressions = [
+        {
+          mutationType: 'DELETE',
+          domainExpression: [{ subject: namedNode('https://example.org/#D0') }],
+          predicate: namedNode('https://example.org/p'),
+          rangeExpression: [{
+            subject: [
+              namedNode('https://example.org/#R0'),
+              literal('Ruben'),
+              literal('Other'),
+            ],
+          }],
+        },
+      ];
+
+      expect(await handler.handle({}, { mutationExpressions })).toEqual(deindent(`
+    DELETE DATA {
+        <https://example.org/#D0> <https://example.org/p> <https://example.org/#R0>, "Ruben", "Other"
+      }`));
     });
 
     describe('with one DELETE expression without range', () => {
