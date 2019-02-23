@@ -40,43 +40,28 @@ export default class MutationFunctionHandler {
     if (domainExpression.length < 2)
       throw new Error(`${pathData} should at least contain a subject and a predicate`);
 
-    // If we have args, each arg defines a mutation expression with a certain range expression.
-    if (args.length) {
-      // The last path segment represents the predicate of the triple to insert
-      const { predicate } = domainExpression.pop();
-      if (!predicate)
-        throw new Error(`Expected predicate in ${pathData}`);
+    // Create range expressions based on the arguments
+    const rangeExpressions = await this.createRangeExpressions(pathData, path, args);
 
-      // Determine right variables and patterns
-      const mutationExpressions = [];
-      for (let argument of args) {
-        // If an argument does not expose a pathExpression, we consider it a raw value.
-        let rangeExpression = await argument.pathExpression;
-        if (!Array.isArray(rangeExpression)) {
-          // If the argument is not an RDFJS term, assume it is a literal
-          if (!argument.termType)
-            argument = literal(argument);
+    // If there are no expressions, the range simply corresponds to the domain
+    const mutationType = this._mutationType;
+    if (!rangeExpressions)
+      return [{ mutationType, domainExpression }];
 
-          rangeExpression = [{ subject: argument }];
-        }
+    // Otherwise, the expression takes the predicate of the last path segment
+    const { predicate } = domainExpression.pop();
+    if (!predicate)
+      throw new Error(`Expected predicate in ${pathData}`);
+    return rangeExpressions.map(rangeExpression =>
+      ({ mutationType, domainExpression, predicate, rangeExpression }));
+  }
 
-        // Store the domain, predicate and range in the insert expression.
-        mutationExpressions.push({
-          mutationType: this._mutationType,
-          domainExpression,
-          predicate,
-          rangeExpression,
-        });
-      }
-
-      return mutationExpressions;
-    }
-
-    // If we don't have args, the range simply corresponds to the domain,
-    // so we don't store the range and predicate explicitly.
-    return [{
-      mutationType: this._mutationType,
-      domainExpression,
-    }];
+  createRangeExpressions(pathData, path, args) {
+    return args.length === 0 ? null : Promise.all(args.map(async arg => {
+      // If the argument does not have a path expression, it should be an RDF term
+      const rangeExpression = await arg.pathExpression;
+      return Array.isArray(rangeExpression) ? rangeExpression :
+        [{ subject: arg.termType ? arg : literal(arg) }];
+    }));
   }
 }
