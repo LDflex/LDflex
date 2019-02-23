@@ -73,9 +73,9 @@ describe('a SparqlHandler instance', () => {
       const pathData = { property: 'p1' };
 
       expect(await handler.handle(pathData, { pathExpression })).toEqual(deindent(`
-      SELECT ?p1 WHERE {
-        <https://example.org/#me> <https://ex.org/p1> ?p1.
-      }`));
+        SELECT ?p1 WHERE {
+          <https://example.org/#me> <https://ex.org/p1> ?p1.
+        }`));
     });
 
     it('resolves a path of length 3', async () => {
@@ -88,11 +88,11 @@ describe('a SparqlHandler instance', () => {
       const pathData = { property: 'p3' };
 
       expect(await handler.handle(pathData, { pathExpression })).toEqual(deindent(`
-      SELECT ?p3 WHERE {
-        <https://example.org/#me> <https://ex.org/p1> ?v0.
-        ?v0 <https://ex.org/p2> ?v1.
-        ?v1 <https://ex.org/p3> ?p3.
-      }`));
+        SELECT ?p3 WHERE {
+          <https://example.org/#me> <https://ex.org/p1> ?v0.
+          ?v0 <https://ex.org/p2> ?v1.
+          ?v1 <https://ex.org/p3> ?p3.
+        }`));
     });
 
     it('resolves a path with an property name ending in a non-word', async () => {
@@ -103,9 +103,9 @@ describe('a SparqlHandler instance', () => {
       const pathData = { property: '/x/' };
 
       expect(await handler.handle(pathData, { pathExpression })).toEqual(deindent(`
-      SELECT ?result WHERE {
-        <https://example.org/#me> <https://ex.org/p1> ?result.
-      }`));
+        SELECT ?result WHERE {
+          <https://example.org/#me> <https://ex.org/p1> ?result.
+        }`));
     });
   });
 
@@ -122,9 +122,9 @@ describe('a SparqlHandler instance', () => {
         ];
 
         expect(await handler.handle({}, { mutationExpressions })).toEqual(deindent(`
-      INSERT DATA {
-        <https://example.org/#D0> <https://example.org/p> <https://example.org/#R0>
-      }`));
+          INSERT DATA {
+            <https://example.org/#D0> <https://example.org/p> <https://example.org/#R0>
+          }`));
       });
 
       it('resolves with domain of length 0 and range of length of 0 with literal', async () => {
@@ -138,9 +138,9 @@ describe('a SparqlHandler instance', () => {
         ];
 
         expect(await handler.handle({}, { mutationExpressions })).toEqual(deindent(`
-      INSERT DATA {
-        <https://example.org/#D0> <https://example.org/p> "Ruben"
-      }`));
+          INSERT DATA {
+            <https://example.org/#D0> <https://example.org/p> "Ruben"
+          }`));
       });
 
       it('resolves with domain of length 0 and range of length 0 with multiple terms', async () => {
@@ -160,9 +160,9 @@ describe('a SparqlHandler instance', () => {
         ];
 
         expect(await handler.handle({}, { mutationExpressions })).toEqual(deindent(`
-      INSERT DATA {
-        <https://example.org/#D0> <https://example.org/p> <https://example.org/#R0>, "Ruben", "Other"
-      }`));
+          INSERT DATA {
+            <https://example.org/#D0> <https://example.org/p> <https://example.org/#R0>, "Ruben", "Other"
+          }`));
       });
 
       it('resolves with domain of length 2 and range of length of 0', async () => {
@@ -180,12 +180,12 @@ describe('a SparqlHandler instance', () => {
         ];
 
         expect(await handler.handle({}, { mutationExpressions })).toEqual(deindent(`
-      INSERT {
-        ?Dp2 <https://example.org/p> <https://example.org/#R0>
-      } WHERE {
-        <https://example.org/#D0> <https://example.org/#Dp1> ?v0.
-        ?v0 <https://example.org/#Dp2> ?Dp2.
-      }`));
+          INSERT {
+            ?Dp2 <https://example.org/p> <https://example.org/#R0>
+          } WHERE {
+            <https://example.org/#D0> <https://example.org/#Dp1> ?v0.
+            ?v0 <https://example.org/#Dp2> ?Dp2.
+          }`));
       });
 
       it('resolves with domain of length 1 with exotic predicate and range of length of 0', async () => {
@@ -202,11 +202,11 @@ describe('a SparqlHandler instance', () => {
         ];
 
         expect(await handler.handle({}, { mutationExpressions })).toEqual(deindent(`
-      INSERT {
-        ?result <https://example.org/p> <https://example.org/#R0>
-      } WHERE {
-        <https://example.org/#D0> <https://example.org/#> ?result.
-      }`));
+          INSERT {
+            ?result <https://example.org/p> <https://example.org/#R0>
+          } WHERE {
+            <https://example.org/#D0> <https://example.org/#> ?result.
+          }`));
       });
 
       it('resolves with domain of length 0 and range of length of 2', async () => {
@@ -224,12 +224,12 @@ describe('a SparqlHandler instance', () => {
         ];
 
         expect(await handler.handle({}, { mutationExpressions })).toEqual(deindent(`
-      INSERT {
-        <https://example.org/#D0> <https://example.org/p> ?Rp2
-      } WHERE {
-        <https://example.org/#R0> <https://example.org/#Rp1> ?v0.
-        ?v0 <https://example.org/#Rp2> ?Rp2.
-      }`));
+          INSERT {
+            <https://example.org/#D0> <https://example.org/p> ?Rp2
+          } WHERE {
+            <https://example.org/#R0> <https://example.org/#Rp1> ?v0.
+            ?v0 <https://example.org/#Rp2> ?Rp2.
+          }`));
       });
 
       it('resolves with domain of length 2 and range of length of 2', async () => {
@@ -251,14 +251,14 @@ describe('a SparqlHandler instance', () => {
         ];
 
         expect(await handler.handle({}, { mutationExpressions })).toEqual(deindent(`
-      INSERT {
-        ?Dp2 <https://example.org/p> ?Rp2
-      } WHERE {
-        <https://example.org/#D0> <https://example.org/#Dp1> ?v0.
-        ?v0 <https://example.org/#Dp2> ?Dp2.
-        <https://example.org/#R0> <https://example.org/#Rp1> ?v0_0.
-        ?v0_0 <https://example.org/#Rp2> ?Rp2.
-      }`));
+          INSERT {
+            ?Dp2 <https://example.org/p> ?Rp2
+          } WHERE {
+            <https://example.org/#D0> <https://example.org/#Dp1> ?v0.
+            ?v0 <https://example.org/#Dp2> ?Dp2.
+            <https://example.org/#R0> <https://example.org/#Rp1> ?v0_0.
+            ?v0_0 <https://example.org/#Rp2> ?Rp2.
+          }`));
       });
     });
 
@@ -274,9 +274,9 @@ describe('a SparqlHandler instance', () => {
         ];
 
         expect(await handler.handle({}, { mutationExpressions })).toEqual(deindent(`
-      INSERT DATA {
-        <https://example.org/#D0> <https://example.org/p> "a\\"b"
-      }`));
+          INSERT DATA {
+            <https://example.org/#D0> <https://example.org/p> "a\\"b"
+          }`));
       });
     });
 
@@ -292,9 +292,9 @@ describe('a SparqlHandler instance', () => {
         ];
 
         expect(await handler.handle({}, { mutationExpressions })).toEqual(deindent(`
-      DELETE DATA {
-        <https://example.org/#D0> <https://example.org/p> <https://example.org/#R0>
-      }`));
+          DELETE DATA {
+            <https://example.org/#D0> <https://example.org/p> <https://example.org/#R0>
+          }`));
       });
     });
 
@@ -315,9 +315,9 @@ describe('a SparqlHandler instance', () => {
       ];
 
       expect(await handler.handle({}, { mutationExpressions })).toEqual(deindent(`
-    DELETE DATA {
-        <https://example.org/#D0> <https://example.org/p> <https://example.org/#R0>, "Ruben", "Other"
-      }`));
+        DELETE DATA {
+          <https://example.org/#D0> <https://example.org/p> <https://example.org/#R0>, "Ruben", "Other"
+        }`));
     });
 
     describe('with one DELETE expression without range', () => {
@@ -333,11 +333,11 @@ describe('a SparqlHandler instance', () => {
         ];
 
         expect(await handler.handle({}, { mutationExpressions })).toEqual(deindent(`
-      DELETE {
-        <https://example.org/#D0> <https://example.org/#Dp1> ?Dp1
-      } WHERE {
-        <https://example.org/#D0> <https://example.org/#Dp1> ?Dp1.
-      }`));
+          DELETE {
+            <https://example.org/#D0> <https://example.org/#Dp1> ?Dp1
+          } WHERE {
+            <https://example.org/#D0> <https://example.org/#Dp1> ?Dp1.
+          }`));
       });
     });
 
@@ -373,22 +373,22 @@ describe('a SparqlHandler instance', () => {
         ];
 
         expect(await handler.handle({}, { mutationExpressions })).toEqual(deindent(`
-      INSERT {
-        ?Dp2 <https://example.org/p> ?Rp2
-      } WHERE {
-        <https://example.org/#D0> <https://example.org/#Dp1> ?v0.
-        ?v0 <https://example.org/#Dp2> ?Dp2.
-        <https://example.org/#R0> <https://example.org/#Rp1> ?v0_0.
-        ?v0_0 <https://example.org/#Rp2> ?Rp2.
-      }
-      ;
-      DELETE DATA {
-        <https://example.org/#D0> <https://example.org/p> <https://example.org/#R0>
-      }
-      ;
-      INSERT DATA {
-        <https://example.org/#D0> <https://example.org/p> <https://example.org/#R0>
-      }`));
+          INSERT {
+            ?Dp2 <https://example.org/p> ?Rp2
+          } WHERE {
+            <https://example.org/#D0> <https://example.org/#Dp1> ?v0.
+            ?v0 <https://example.org/#Dp2> ?Dp2.
+            <https://example.org/#R0> <https://example.org/#Rp1> ?v0_0.
+            ?v0_0 <https://example.org/#Rp2> ?Rp2.
+          }
+          ;
+          DELETE DATA {
+            <https://example.org/#D0> <https://example.org/p> <https://example.org/#R0>
+          }
+          ;
+          INSERT DATA {
+            <https://example.org/#D0> <https://example.org/p> <https://example.org/#R0>
+          }`));
       });
     });
   });

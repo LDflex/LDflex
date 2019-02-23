@@ -1,5 +1,7 @@
 export function deindent(string) {
-  return string.trim().replace(/^ {6}?/mg, '');
+  const first = (/^ +/m).exec(string)[0];
+  const indent = !first ? /^/ : new RegExp(`^ {${first.length}}?`, 'mg');
+  return string.trim().replace(indent, '');
 }
 
 export function createQueryEngine(results) {
