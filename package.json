@@ -32,7 +32,8 @@
     "jest": "^24.1.0"
   },
   "scripts": {
-    "build": "babel src --out-dir lib",
+    "build": "npm run build:lib",
+    "build:lib": "babel src --out-dir lib",
     "jest": "jest",
     "lint": "eslint src test",
     "prepublishOnly": "npm run build",
