@@ -23,6 +23,15 @@ describe('a query path with a path expression handler', () => {
     mutationExpressions: new MutationExpressionsHandler(),
     replace: new ReplaceFunctionHandler(),
     set: new SetFunctionHandler(),
+    [Symbol.asyncIterator]: {
+      handle() {
+        const iterable = (async function *() {
+          yield namedNode('http://ex.org/#1');
+          yield namedNode('http://ex.org/#2');
+        }());
+        return () => iterable[Symbol.asyncIterator]();
+      },
+    },
   };
   const resolvers = [
     new JSONLDResolver(context),
@@ -95,26 +104,14 @@ describe('a query path with a path expression handler', () => {
       }`));
   });
 
-  it('resolves a path with 3 links and an addition with a path arg with length 0', async () => {
-    const query = await person.friends.friends.firstName.add(person).sparql;
+  it('resolves a path with 3 links and an addition with a path arg', async () => {
+    const query = await person.friends.friends.firstName.add(person.friends).sparql;
     expect(query).toEqual(deindent(`
       INSERT {
-        ?knows <http://xmlns.com/foaf/0.1/givenName> <https://example.org/#me>
+        ?knows <http://xmlns.com/foaf/0.1/givenName> <http://ex.org/#1>, <http://ex.org/#2>
       } WHERE {
         <https://example.org/#me> <http://xmlns.com/foaf/0.1/knows> ?v0.
         ?v0 <http://xmlns.com/foaf/0.1/knows> ?knows.
-      }`));
-  });
-
-  it('resolves a path with 3 links and an addition with a path arg with length 1', async () => {
-    const query = await person.friends.friends.firstName.add(person.firstName).sparql;
-    expect(query).toEqual(deindent(`
-      INSERT {
-        ?knows <http://xmlns.com/foaf/0.1/givenName> ?givenName
-      } WHERE {
-        <https://example.org/#me> <http://xmlns.com/foaf/0.1/knows> ?v0.
-        ?v0 <http://xmlns.com/foaf/0.1/knows> ?knows.
-        <https://example.org/#me> <http://xmlns.com/foaf/0.1/givenName> ?givenName.
       }`));
   });
 
@@ -122,21 +119,7 @@ describe('a query path with a path expression handler', () => {
     const query = await person.friends.friends.firstName.add('Ruben', 'RUBEN', 'ruben').sparql;
     expect(query).toEqual(deindent(`
       INSERT {
-        ?knows <http://xmlns.com/foaf/0.1/givenName> "Ruben"
-      } WHERE {
-        <https://example.org/#me> <http://xmlns.com/foaf/0.1/knows> ?v0.
-        ?v0 <http://xmlns.com/foaf/0.1/knows> ?knows.
-      }
-      ;
-      INSERT {
-        ?knows <http://xmlns.com/foaf/0.1/givenName> "RUBEN"
-      } WHERE {
-        <https://example.org/#me> <http://xmlns.com/foaf/0.1/knows> ?v0.
-        ?v0 <http://xmlns.com/foaf/0.1/knows> ?knows.
-      }
-      ;
-      INSERT {
-        ?knows <http://xmlns.com/foaf/0.1/givenName> "ruben"
+        ?knows <http://xmlns.com/foaf/0.1/givenName> "Ruben", "RUBEN", "ruben"
       } WHERE {
         <https://example.org/#me> <http://xmlns.com/foaf/0.1/knows> ?v0.
         ?v0 <http://xmlns.com/foaf/0.1/knows> ?knows.
@@ -159,22 +142,14 @@ describe('a query path with a path expression handler', () => {
       .toThrow(new Error('Mutation on [object Object] can not be invoked without arguments'));
   });
 
-  it('resolves a path with 3 links and an addition with a raw arg and path arg with length 1', async () => {
-    const query = await person.friends.friends.firstName.add('Ruben', person.firstName).sparql;
+  it('resolves a path with 3 links and an addition with a raw arg and path arg', async () => {
+    const query = await person.friends.friends.firstName.add('Ruben', person.friends).sparql;
     expect(query).toEqual(deindent(`
       INSERT {
-        ?knows <http://xmlns.com/foaf/0.1/givenName> "Ruben"
+        ?knows <http://xmlns.com/foaf/0.1/givenName> "Ruben", <http://ex.org/#1>, <http://ex.org/#2>
       } WHERE {
         <https://example.org/#me> <http://xmlns.com/foaf/0.1/knows> ?v0.
         ?v0 <http://xmlns.com/foaf/0.1/knows> ?knows.
-      }
-      ;
-      INSERT {
-        ?knows <http://xmlns.com/foaf/0.1/givenName> ?givenName
-      } WHERE {
-        <https://example.org/#me> <http://xmlns.com/foaf/0.1/knows> ?v0.
-        ?v0 <http://xmlns.com/foaf/0.1/knows> ?knows.
-        <https://example.org/#me> <http://xmlns.com/foaf/0.1/givenName> ?givenName.
       }`));
   });
 
@@ -238,14 +213,7 @@ describe('a query path with a path expression handler', () => {
       }
       ;
       INSERT {
-        ?knows <http://xmlns.com/foaf/0.1/givenName> "Ruben"
-      } WHERE {
-        <https://example.org/#me> <http://xmlns.com/foaf/0.1/knows> ?v0.
-        ?v0 <http://xmlns.com/foaf/0.1/knows> ?knows.
-      }
-      ;
-      INSERT {
-        ?knows <http://xmlns.com/foaf/0.1/givenName> "ruben"
+        ?knows <http://xmlns.com/foaf/0.1/givenName> "Ruben", "ruben"
       } WHERE {
         <https://example.org/#me> <http://xmlns.com/foaf/0.1/knows> ?v0.
         ?v0 <http://xmlns.com/foaf/0.1/knows> ?knows.

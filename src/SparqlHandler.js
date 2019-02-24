@@ -48,24 +48,20 @@ export default class SparqlHandler {
     });
   }
 
-  mutationExpressionToQuery({ mutationType, domainExpression, predicate, rangeExpression }) {
+  mutationExpressionToQuery({ mutationType, conditions, predicate, objects }) {
     // Determine the patterns that should appear in the WHERE clause
     const scope = {};
-    let clauses = [];
     let mutationPattern;
-    const [domainObject, domainClauses] = this.getObjectAndClauses(domainExpression, scope);
-    if (domainClauses.length)
-      clauses = domainClauses;
+    const [subject, clauses] = this.getSubjectAndClauses(conditions, scope);
 
     // If we have a range, the mutation is on <domainVar> <predicate> <rangeVar>
-    if (rangeExpression) {
-      const [rangeObject, rangeClauses] = this.getObjectAndClauses(rangeExpression, scope);
-      clauses = clauses.concat(rangeClauses);
-      mutationPattern = `${domainObject} ${this.termToQueryString(predicate)} ${rangeObject}`;
+    if (objects) {
+      const objectList = objects.map(o => this.termToQueryString(o)).join(', ');
+      mutationPattern = `${subject} ${this.termToQueryString(predicate)} ${objectList}`;
     }
     // If we don't have a range, assume that the mutation is on the last segment of the domain
     else {
-      mutationPattern = domainClauses[domainClauses.length - 1].slice(0, -1);
+      mutationPattern = clauses[clauses.length - 1].slice(0, -1);
     }
 
     // If we don't have any WHERE clauses, we just insert raw data
@@ -75,15 +71,11 @@ export default class SparqlHandler {
     return `${mutationType} {\n  ${mutationPattern}\n} WHERE {\n  ${clauses.join('\n  ')}\n}`;
   }
 
-  getObjectAndClauses(expression, scope) {
+  getSubjectAndClauses(expression, scope) {
     // If the expression has one segment, return its subject
     if (expression.length === 1) {
       const { subject } = expression[0];
-      const subjects = Array.isArray(subject) ? subject : [subject];
-      return [
-        subjects.map(this.termToQueryString).join(', '),
-        [],
-      ];
+      return [this.termToQueryString(subject), []];
     }
 
     // Otherwise, create triples patterns from it

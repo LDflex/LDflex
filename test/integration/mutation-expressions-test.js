@@ -13,6 +13,15 @@ describe('a query path with a path expression handler', () => {
     add: new InsertFunctionHandler(),
     delete: new DeleteFunctionHandler(),
     mutationExpressions: new MutationExpressionsHandler(),
+    [Symbol.asyncIterator]: {
+      handle() {
+        const iterable = (async function *() {
+          yield namedNode('http://ex.org/#1');
+          yield namedNode('http://ex.org/#2');
+        }());
+        return () => iterable[Symbol.asyncIterator]();
+      },
+    },
   };
   const resolvers = [
     new JSONLDResolver(context),
@@ -30,120 +39,57 @@ describe('a query path with a path expression handler', () => {
     expect(path).toEqual([
       {
         mutationType: 'INSERT',
-        domainExpression: [
+        conditions: [
           { subject },
           { predicate: namedNode('http://xmlns.com/foaf/0.1/knows') },
         ],
         predicate: namedNode('http://xmlns.com/foaf/0.1/givenName'),
-        rangeExpression: [{ subject: literal('Ruben') }],
+        objects: [literal('Ruben')],
       },
     ]);
   });
 
-  it('resolves an addition path with 2 links and a path arg of length 0', async () => {
-    const path = await person.friends.firstName.add(person).mutationExpressions;
+  it('resolves an addition path with 2 links and a path arg', async () => {
+    const path = await person.friends.firstName.add(person.friends).mutationExpressions;
     expect(path).toEqual([
       {
         mutationType: 'INSERT',
-        domainExpression: [
+        conditions: [
           { subject },
           { predicate: namedNode('http://xmlns.com/foaf/0.1/knows') },
         ],
         predicate: namedNode('http://xmlns.com/foaf/0.1/givenName'),
-        rangeExpression: [
-          { subject },
-        ],
-      },
-    ]);
-  });
-
-  it('resolves an addition path with 2 links and a path arg of length 1', async () => {
-    const path = await person.friends.firstName.add(person.firstName).mutationExpressions;
-    expect(path).toEqual([
-      {
-        mutationType: 'INSERT',
-        domainExpression: [
-          { subject },
-          { predicate: namedNode('http://xmlns.com/foaf/0.1/knows') },
-        ],
-        predicate: namedNode('http://xmlns.com/foaf/0.1/givenName'),
-        rangeExpression: [
-          { subject },
-          { predicate: namedNode('http://xmlns.com/foaf/0.1/givenName') },
-        ],
-      },
-    ]);
-  });
-
-  it('resolves an addition path with 2 links and a path arg of length 2', async () => {
-    const path = await person.friends.firstName.add(person.friends.firstName).mutationExpressions;
-    expect(path).toEqual([
-      {
-        mutationType: 'INSERT',
-        domainExpression: [
-          { subject },
-          { predicate: namedNode('http://xmlns.com/foaf/0.1/knows') },
-        ],
-        predicate: namedNode('http://xmlns.com/foaf/0.1/givenName'),
-        rangeExpression: [
-          { subject },
-          { predicate: namedNode('http://xmlns.com/foaf/0.1/knows') },
-          { predicate: namedNode('http://xmlns.com/foaf/0.1/givenName') },
-        ],
+        objects: [namedNode('http://ex.org/#1'), namedNode('http://ex.org/#2')],
       },
     ]);
   });
 
   it('resolves an addition path with 2 links and a raw and path arg', async () => {
-    const path = await person.friends.firstName.add('Ruben', person.firstName).mutationExpressions;
+    const path = await person.friends.firstName.add('Ruben', person.friends).mutationExpressions;
     expect(path).toEqual([
       {
         mutationType: 'INSERT',
-        domainExpression: [
+        conditions: [
           { subject },
           { predicate: namedNode('http://xmlns.com/foaf/0.1/knows') },
         ],
         predicate: namedNode('http://xmlns.com/foaf/0.1/givenName'),
-        rangeExpression: [{ subject: literal('Ruben') }],
-      },
-      {
-        mutationType: 'INSERT',
-        domainExpression: [
-          { subject },
-          { predicate: namedNode('http://xmlns.com/foaf/0.1/knows') },
-        ],
-        predicate: namedNode('http://xmlns.com/foaf/0.1/givenName'),
-        rangeExpression: [
-          { subject },
-          { predicate: namedNode('http://xmlns.com/foaf/0.1/givenName') },
-        ],
+        objects: [literal('Ruben'), namedNode('http://ex.org/#1'), namedNode('http://ex.org/#2')],
       },
     ]);
   });
 
   it('resolves a deletion path with 2 links and a raw and path arg', async () => {
-    const path = await person.friends.firstName.delete('Ruben', person.firstName).mutationExpressions;
+    const path = await person.friends.firstName.delete('Ruben', person.friends).mutationExpressions;
     expect(path).toEqual([
       {
         mutationType: 'DELETE',
-        domainExpression: [
+        conditions: [
           { subject },
           { predicate: namedNode('http://xmlns.com/foaf/0.1/knows') },
         ],
         predicate: namedNode('http://xmlns.com/foaf/0.1/givenName'),
-        rangeExpression: [{ subject: literal('Ruben') }],
-      },
-      {
-        mutationType: 'DELETE',
-        domainExpression: [
-          { subject },
-          { predicate: namedNode('http://xmlns.com/foaf/0.1/knows') },
-        ],
-        predicate: namedNode('http://xmlns.com/foaf/0.1/givenName'),
-        rangeExpression: [
-          { subject },
-          { predicate: namedNode('http://xmlns.com/foaf/0.1/givenName') },
-        ],
+        objects: [literal('Ruben'), namedNode('http://ex.org/#1'), namedNode('http://ex.org/#2')],
       },
     ]);
   });
@@ -153,44 +99,44 @@ describe('a query path with a path expression handler', () => {
     expect(path).toEqual([
       {
         mutationType: 'DELETE',
-        domainExpression: [
+        conditions: [
           { subject },
           { predicate: namedNode('http://xmlns.com/foaf/0.1/knows') },
         ],
         predicate: namedNode('http://xmlns.com/foaf/0.1/givenName'),
-        rangeExpression: [{ subject: literal('ruben') }],
+        objects: [literal('ruben')],
       },
       {
         mutationType: 'INSERT',
-        domainExpression: [
+        conditions: [
           { subject },
           { predicate: namedNode('http://xmlns.com/foaf/0.1/knows') },
         ],
         predicate: namedNode('http://xmlns.com/foaf/0.1/givenName'),
-        rangeExpression: [{ subject: literal('Ruben') }],
+        objects: [literal('Ruben')],
       },
     ]);
   });
 
   it('resolves a path with 2 links and an deletion, a link, and addition', async () => {
-    const path = await person.friends.delete(person).firstName.add('Ruben').mutationExpressions;
+    const path = await person.friends.delete(person.friends).firstName.add('Ruben').mutationExpressions;
     expect(path).toEqual([
       {
         mutationType: 'DELETE',
-        domainExpression: [
+        conditions: [
           { subject },
         ],
         predicate: namedNode('http://xmlns.com/foaf/0.1/knows'),
-        rangeExpression: [{ subject }],
+        objects: [namedNode('http://ex.org/#1'), namedNode('http://ex.org/#2')],
       },
       {
         mutationType: 'INSERT',
-        domainExpression: [
+        conditions: [
           { subject },
           { predicate: namedNode('http://xmlns.com/foaf/0.1/knows') },
         ],
         predicate: namedNode('http://xmlns.com/foaf/0.1/givenName'),
-        rangeExpression: [{ subject: literal('Ruben') }],
+        objects: [literal('Ruben')],
       },
     ]);
   });

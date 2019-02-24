@@ -13,7 +13,7 @@ describe('a MutationExpressionsHandler instance', () => {
     const mutationExpressions = Promise.resolve([
       {
         mutationType: 'INSERT',
-        domainExpression: [{ subject: namedNode('https://example.org/#me') }],
+        conditions: [{ subject: namedNode('https://example.org/#me') }],
         predicate: namedNode('https://ex.org/p1'),
         rangeExpression: [{ subject: literal('other') }],
       },
@@ -21,7 +21,7 @@ describe('a MutationExpressionsHandler instance', () => {
     return expect(handler.handle({ mutationExpressions })).resolves.toEqual([
       {
         mutationType: 'INSERT',
-        domainExpression: [{ subject: namedNode('https://example.org/#me') }],
+        conditions: [{ subject: namedNode('https://example.org/#me') }],
         predicate: namedNode('https://ex.org/p1'),
         rangeExpression: [{ subject: literal('other') }],
       },
@@ -32,7 +32,7 @@ describe('a MutationExpressionsHandler instance', () => {
     const mutationExpressions = Promise.resolve([
       {
         mutationType: 'INSERT',
-        domainExpression: [{ subject: namedNode('https://example.org/#me') }],
+        conditions: [{ subject: namedNode('https://example.org/#me') }],
         predicate: namedNode('https://ex.org/p1'),
         rangeExpression: [{ subject: literal('other') }],
       },
@@ -40,7 +40,7 @@ describe('a MutationExpressionsHandler instance', () => {
     return expect(handler.handle({ mutationExpressions, parent: {} })).resolves.toEqual([
       {
         mutationType: 'INSERT',
-        domainExpression: [{ subject: namedNode('https://example.org/#me') }],
+        conditions: [{ subject: namedNode('https://example.org/#me') }],
         predicate: namedNode('https://ex.org/p1'),
         rangeExpression: [{ subject: literal('other') }],
       },
@@ -51,7 +51,7 @@ describe('a MutationExpressionsHandler instance', () => {
     const mutationExpressions = Promise.resolve([
       {
         mutationType: 'INSERT',
-        domainExpression: [{ subject: namedNode('https://example.org/#me') }],
+        conditions: [{ subject: namedNode('https://example.org/#me') }],
         predicate: namedNode('https://ex.org/p1'),
         rangeExpression: [{ subject: literal('other') }],
       },
@@ -59,7 +59,7 @@ describe('a MutationExpressionsHandler instance', () => {
     const mutationExpressionsParent = Promise.resolve([
       {
         mutationType: 'DELETE',
-        domainExpression: [{ subject: namedNode('https://example.org/#me') }],
+        conditions: [{ subject: namedNode('https://example.org/#me') }],
         predicate: namedNode('https://ex.org/p1'),
         rangeExpression: [{ subject: literal('other') }],
       },
@@ -68,13 +68,13 @@ describe('a MutationExpressionsHandler instance', () => {
     return expect(handler.handle({ mutationExpressions, parent })).resolves.toEqual([
       {
         mutationType: 'DELETE',
-        domainExpression: [{ subject: namedNode('https://example.org/#me') }],
+        conditions: [{ subject: namedNode('https://example.org/#me') }],
         predicate: namedNode('https://ex.org/p1'),
         rangeExpression: [{ subject: literal('other') }],
       },
       {
         mutationType: 'INSERT',
-        domainExpression: [{ subject: namedNode('https://example.org/#me') }],
+        conditions: [{ subject: namedNode('https://example.org/#me') }],
         predicate: namedNode('https://ex.org/p1'),
         rangeExpression: [{ subject: literal('other') }],
       },
@@ -85,7 +85,7 @@ describe('a MutationExpressionsHandler instance', () => {
     const mutationExpressions = Promise.resolve([
       {
         mutationType: 'INSERT',
-        domainExpression: [{ subject: namedNode('https://example.org/#me') }],
+        conditions: [{ subject: namedNode('https://example.org/#me') }],
         predicate: namedNode('https://ex.org/p1'),
         rangeExpression: [{ subject: literal('other') }],
       },
@@ -93,7 +93,7 @@ describe('a MutationExpressionsHandler instance', () => {
     return expect(handler.handle({ parent: { mutationExpressions } })).resolves.toEqual([
       {
         mutationType: 'INSERT',
-        domainExpression: [{ subject: namedNode('https://example.org/#me') }],
+        conditions: [{ subject: namedNode('https://example.org/#me') }],
         predicate: namedNode('https://ex.org/p1'),
         rangeExpression: [{ subject: literal('other') }],
       },

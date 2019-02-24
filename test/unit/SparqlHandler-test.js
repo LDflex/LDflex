@@ -115,9 +115,9 @@ describe('a SparqlHandler instance', () => {
         const mutationExpressions = [
           {
             mutationType: 'INSERT',
-            domainExpression: [{ subject: namedNode('https://example.org/#D0') }],
+            conditions: [{ subject: namedNode('https://example.org/#D0') }],
             predicate: namedNode('https://example.org/p'),
-            rangeExpression: [{ subject: namedNode('https://example.org/#R0') }],
+            objects: [namedNode('https://example.org/#R0')],
           },
         ];
 
@@ -131,9 +131,9 @@ describe('a SparqlHandler instance', () => {
         const mutationExpressions = [
           {
             mutationType: 'INSERT',
-            domainExpression: [{ subject: namedNode('https://example.org/#D0') }],
+            conditions: [{ subject: namedNode('https://example.org/#D0') }],
             predicate: namedNode('https://example.org/p'),
-            rangeExpression: [{ subject: literal('Ruben') }],
+            objects: [literal('Ruben')],
           },
         ];
 
@@ -147,15 +147,13 @@ describe('a SparqlHandler instance', () => {
         const mutationExpressions = [
           {
             mutationType: 'INSERT',
-            domainExpression: [{ subject: namedNode('https://example.org/#D0') }],
+            conditions: [{ subject: namedNode('https://example.org/#D0') }],
             predicate: namedNode('https://example.org/p'),
-            rangeExpression: [{
-              subject: [
-                namedNode('https://example.org/#R0'),
-                literal('Ruben'),
-                literal('Other'),
-              ],
-            }],
+            objects: [
+              namedNode('https://example.org/#R0'),
+              literal('Ruben'),
+              literal('Other'),
+            ],
           },
         ];
 
@@ -169,13 +167,13 @@ describe('a SparqlHandler instance', () => {
         const mutationExpressions = [
           {
             mutationType: 'INSERT',
-            domainExpression: [
+            conditions: [
               { subject: namedNode('https://example.org/#D0') },
               { predicate: namedNode('https://example.org/#Dp1') },
               { predicate: namedNode('https://example.org/#Dp2') },
             ],
             predicate: namedNode('https://example.org/p'),
-            rangeExpression: [{ subject: namedNode('https://example.org/#R0') }],
+            objects: [namedNode('https://example.org/#R0')],
           },
         ];
 
@@ -192,12 +190,12 @@ describe('a SparqlHandler instance', () => {
         const mutationExpressions = [
           {
             mutationType: 'INSERT',
-            domainExpression: [
+            conditions: [
               { subject: namedNode('https://example.org/#D0') },
               { predicate: namedNode('https://example.org/#') },
             ],
             predicate: namedNode('https://example.org/p'),
-            rangeExpression: [{ subject: namedNode('https://example.org/#R0') }],
+            objects: [namedNode('https://example.org/#R0')],
           },
         ];
 
@@ -208,58 +206,6 @@ describe('a SparqlHandler instance', () => {
             <https://example.org/#D0> <https://example.org/#> ?result.
           }`));
       });
-
-      it('resolves with domain of length 0 and range of length of 2', async () => {
-        const mutationExpressions = [
-          {
-            mutationType: 'INSERT',
-            domainExpression: [{ subject: namedNode('https://example.org/#D0') }],
-            predicate: namedNode('https://example.org/p'),
-            rangeExpression: [
-              { subject: namedNode('https://example.org/#R0') },
-              { predicate: namedNode('https://example.org/#Rp1') },
-              { predicate: namedNode('https://example.org/#Rp2') },
-            ],
-          },
-        ];
-
-        expect(await handler.handle({}, { mutationExpressions })).toEqual(deindent(`
-          INSERT {
-            <https://example.org/#D0> <https://example.org/p> ?Rp2
-          } WHERE {
-            <https://example.org/#R0> <https://example.org/#Rp1> ?v0.
-            ?v0 <https://example.org/#Rp2> ?Rp2.
-          }`));
-      });
-
-      it('resolves with domain of length 2 and range of length of 2', async () => {
-        const mutationExpressions = [
-          {
-            mutationType: 'INSERT',
-            domainExpression: [
-              { subject: namedNode('https://example.org/#D0') },
-              { predicate: namedNode('https://example.org/#Dp1') },
-              { predicate: namedNode('https://example.org/#Dp2') },
-            ],
-            predicate: namedNode('https://example.org/p'),
-            rangeExpression: [
-              { subject: namedNode('https://example.org/#R0') },
-              { predicate: namedNode('https://example.org/#Rp1') },
-              { predicate: namedNode('https://example.org/#Rp2') },
-            ],
-          },
-        ];
-
-        expect(await handler.handle({}, { mutationExpressions })).toEqual(deindent(`
-          INSERT {
-            ?Dp2 <https://example.org/p> ?Rp2
-          } WHERE {
-            <https://example.org/#D0> <https://example.org/#Dp1> ?v0.
-            ?v0 <https://example.org/#Dp2> ?Dp2.
-            <https://example.org/#R0> <https://example.org/#Rp1> ?v0_0.
-            ?v0_0 <https://example.org/#Rp2> ?Rp2.
-          }`));
-      });
     });
 
     describe('with one INSERT expression that has a range that should be escaped', () => {
@@ -267,9 +213,9 @@ describe('a SparqlHandler instance', () => {
         const mutationExpressions = [
           {
             mutationType: 'INSERT',
-            domainExpression: [{ subject: namedNode('https://example.org/#D0') }],
+            conditions: [{ subject: namedNode('https://example.org/#D0') }],
             predicate: namedNode('https://example.org/p'),
-            rangeExpression: [{ subject: literal('a"b') }],
+            objects: [literal('a"b')],
           },
         ];
 
@@ -285,9 +231,9 @@ describe('a SparqlHandler instance', () => {
         const mutationExpressions = [
           {
             mutationType: 'DELETE',
-            domainExpression: [{ subject: namedNode('https://example.org/#D0') }],
+            conditions: [{ subject: namedNode('https://example.org/#D0') }],
             predicate: namedNode('https://example.org/p'),
-            rangeExpression: [{ subject: namedNode('https://example.org/#R0') }],
+            objects: [namedNode('https://example.org/#R0')],
           },
         ];
 
@@ -302,15 +248,13 @@ describe('a SparqlHandler instance', () => {
       const mutationExpressions = [
         {
           mutationType: 'DELETE',
-          domainExpression: [{ subject: namedNode('https://example.org/#D0') }],
+          conditions: [{ subject: namedNode('https://example.org/#D0') }],
           predicate: namedNode('https://example.org/p'),
-          rangeExpression: [{
-            subject: [
-              namedNode('https://example.org/#R0'),
-              literal('Ruben'),
-              literal('Other'),
-            ],
-          }],
+          objects: [
+            namedNode('https://example.org/#R0'),
+            literal('Ruben'),
+            literal('Other'),
+          ],
         },
       ];
 
@@ -325,7 +269,7 @@ describe('a SparqlHandler instance', () => {
         const mutationExpressions = [
           {
             mutationType: 'DELETE',
-            domainExpression: [
+            conditions: [
               { subject: namedNode('https://example.org/#D0') },
               { predicate: namedNode('https://example.org/#Dp1') },
             ],
@@ -337,57 +281,6 @@ describe('a SparqlHandler instance', () => {
             <https://example.org/#D0> <https://example.org/#Dp1> ?Dp1
           } WHERE {
             <https://example.org/#D0> <https://example.org/#Dp1> ?Dp1.
-          }`));
-      });
-    });
-
-    describe('with multiple expressions', () => {
-      it('resolves with queries separated by semicolons', async () => {
-        const mutationExpressions = [
-          {
-            mutationType: 'INSERT',
-            domainExpression: [
-              { subject: namedNode('https://example.org/#D0') },
-              { predicate: namedNode('https://example.org/#Dp1') },
-              { predicate: namedNode('https://example.org/#Dp2') },
-            ],
-            predicate: namedNode('https://example.org/p'),
-            rangeExpression: [
-              { subject: namedNode('https://example.org/#R0') },
-              { predicate: namedNode('https://example.org/#Rp1') },
-              { predicate: namedNode('https://example.org/#Rp2') },
-            ],
-          },
-          {
-            mutationType: 'DELETE',
-            domainExpression: [{ subject: namedNode('https://example.org/#D0') }],
-            predicate: namedNode('https://example.org/p'),
-            rangeExpression: [{ subject: namedNode('https://example.org/#R0') }],
-          },
-          {
-            mutationType: 'INSERT',
-            domainExpression: [{ subject: namedNode('https://example.org/#D0') }],
-            predicate: namedNode('https://example.org/p'),
-            rangeExpression: [{ subject: namedNode('https://example.org/#R0') }],
-          },
-        ];
-
-        expect(await handler.handle({}, { mutationExpressions })).toEqual(deindent(`
-          INSERT {
-            ?Dp2 <https://example.org/p> ?Rp2
-          } WHERE {
-            <https://example.org/#D0> <https://example.org/#Dp1> ?v0.
-            ?v0 <https://example.org/#Dp2> ?Dp2.
-            <https://example.org/#R0> <https://example.org/#Rp1> ?v0_0.
-            ?v0_0 <https://example.org/#Rp2> ?Rp2.
-          }
-          ;
-          DELETE DATA {
-            <https://example.org/#D0> <https://example.org/p> <https://example.org/#R0>
-          }
-          ;
-          INSERT DATA {
-            <https://example.org/#D0> <https://example.org/p> <https://example.org/#R0>
           }`));
       });
     });

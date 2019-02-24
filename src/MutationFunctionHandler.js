@@ -32,36 +32,55 @@ export default class MutationFunctionHandler {
 
   async createMutationExpressions(pathData, path, args) {
     // Check if we have a valid path
-    const domainExpression = await path.pathExpression;
-    if (!Array.isArray(domainExpression))
+    const conditions = await path.pathExpression;
+    if (!Array.isArray(conditions))
       throw new Error(`${pathData} has no pathExpression property`);
 
     // Require at least a subject and a link
-    if (domainExpression.length < 2)
+    if (conditions.length < 2)
       throw new Error(`${pathData} should at least contain a subject and a predicate`);
 
-    // Create range expressions based on the arguments
-    const rangeExpressions = await this.createRangeExpressions(pathData, path, args);
+    // The arguments are the triple objects
+    const objects = await this.extractObjects(pathData, path, args);
 
-    // If there are no expressions, the range simply corresponds to the domain
+    // If no objects were specified, the range corresponds to the entire domain
     const mutationType = this._mutationType;
-    if (!rangeExpressions)
-      return [{ mutationType, domainExpression }];
+    if (!objects)
+      return [{ mutationType, conditions }];
+    // If the set of objects is empty, do not perform any mutations
+    if (objects.length === 0)
+      return [];
 
     // Otherwise, the expression takes the predicate of the last path segment
-    const { predicate } = domainExpression.pop();
+    const { predicate } = conditions.pop();
     if (!predicate)
       throw new Error(`Expected predicate in ${pathData}`);
-    return rangeExpressions.map(rangeExpression =>
-      ({ mutationType, domainExpression, predicate, rangeExpression }));
+    return [{ mutationType, conditions, predicate, objects }];
   }
 
-  createRangeExpressions(pathData, path, args) {
-    return args.length === 0 ? null : Promise.all(args.map(async arg => {
-      // If the argument does not have a path expression, it should be an RDF term
-      const rangeExpression = await arg.pathExpression;
-      return Array.isArray(rangeExpression) ? rangeExpression :
-        [{ subject: arg.termType ? arg : literal(arg) }];
-    }));
+  async extractObjects(pathData, path, args) {
+    if (args.length === 0)
+      return null;
+    const objects = [];
+    for (const arg of args) {
+      // Process an asynchronously iterable argument
+      if (arg && arg[Symbol.asyncIterator]) {
+        for await (const item of arg)
+          objects.push(this.extractObject(pathData, path, item));
+      }
+      else {
+        // Process a (promise to) a string or term
+        objects.push(this.extractObject(pathData, path, await arg));
+      }
+    }
+    return objects;
+  }
+
+  extractObject(pathData, path, arg) {
+    if (typeof arg === 'string')
+      return literal(arg);
+    if (arg && arg.termType)
+      return arg;
+    throw new Error(`Invalid object: ${arg}`);
   }
 }
