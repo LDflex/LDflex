@@ -9,96 +9,80 @@ export default class SparqlHandler {
     // First check if we have a mutation expression
     const mutationExpressions = await path.mutationExpressions;
     if (Array.isArray(mutationExpressions) && mutationExpressions.length)
-      return this.evaluateMutationExpression(pathData, path, mutationExpressions);
+      return mutationExpressions.map(e => this.mutationExpressionToQuery(e)).join('\n;\n');
 
     // Otherwise, fall back to checking for a path expression
     const pathExpression = await path.pathExpression;
     if (!Array.isArray(pathExpression))
       throw new Error(`${pathData} has no pathExpression property`);
-    return this.evaluatePathExpression(pathData, path, pathExpression);
+    return this.pathExpressionToQuery(pathData, path, pathExpression);
   }
 
-  evaluatePathExpression(pathData, path, pathExpression) {
-    // Require at least a subject and a link
+  pathExpressionToQuery(pathData, path, pathExpression) {
     if (pathExpression.length < 2)
       throw new Error(`${pathData} should at least contain a subject and a predicate`);
 
-    // Determine the query variable name
-    const queryVar = pathData.property.match(/[a-z0-9]*$/i)[0] || 'result';
-
     // Embed the basic graph pattern into a SPARQL query
+    const queryVar = this.createVar(pathData.property);
     const clauses = this.expressionToTriplePatterns(pathExpression, queryVar);
-    return `SELECT ?${queryVar} WHERE {\n  ${clauses.join('\n  ')}\n}`;
-  }
-
-  evaluateMutationExpression(pathData, path, mutationExpressions) {
-    return mutationExpressions.map(e => this.mutationExpressionToQuery(e)).join('\n;\n');
-  }
-
-  expressionToTriplePatterns([root, ...pathExpression], queryObject, scope = {}) {
-    const last = pathExpression.length - 1;
-    let object = this.termToQueryString(root.subject);
-    return pathExpression.map((segment, index) => {
-      // Obtain triple pattern components
-      const subject = object;
-      const { predicate } = segment;
-      object = index !== last ? `?${this.getQueryVar(`v${index}`, scope)}` : `?${queryObject}`;
-      // Generate triple pattern
-      return `${subject} ${this.termToQueryString(predicate)} ${object}.`;
-    });
+    return `SELECT ${queryVar} WHERE {\n  ${clauses.join('\n  ')}\n}`;
   }
 
   mutationExpressionToQuery({ mutationType, conditions, predicate, objects }) {
-    // Determine the patterns that should appear in the WHERE clause
+    // If the only condition is a subject, we need no WHERE clause
     const scope = {};
-    let mutationPattern;
-    const [subject, clauses] = this.getSubjectAndClauses(conditions, scope);
-
-    // If we have a range, the mutation is on <domainVar> <predicate> <rangeVar>
-    if (objects) {
-      const objectList = objects.map(o => this.termToQueryString(o)).join(', ');
-      mutationPattern = `${subject} ${this.termToQueryString(predicate)} ${objectList}.`;
+    let subject, where;
+    if (conditions.length === 1) {
+      subject = this.termToString(conditions[0].subject);
+      where = [];
     }
-    // If we don't have a range, assume that the mutation is on the last segment of the domain
+    // Otherwise, create a WHERE clause from all conditions
     else {
-      mutationPattern = clauses[clauses.length - 1];
+      const lastPredicate = conditions[conditions.length - 1].predicate;
+      subject = this.createVar(lastPredicate.value, scope);
+      where = this.expressionToTriplePatterns(conditions, subject, scope);
     }
 
-    // If we don't have any WHERE clauses, we just insert raw data
-    if (!clauses.length)
-      return `${mutationType} DATA {\n  ${mutationPattern}\n}`;
-    // Otherwise, return an INSERT ... WHERE ... query
-    return `${mutationType} {\n  ${mutationPattern}\n} WHERE {\n  ${clauses.join('\n  ')}\n}`;
+    // If a list of objects was specified, the mutation is "<s> <p> objects"
+    const objectList = objects && objects.map(o => this.termToString(o)).join(', ');
+    const mutationPattern = objectList ?
+      `${subject} ${this.termToString(predicate)} ${objectList}.` :
+      // Otherwise, the mutation is the unconstrained last segment
+      where[where.length - 1];
+
+    return where.length === 0 ?
+      // If there are no WHERE clauses, just mutate raw data
+      `${mutationType} DATA {\n  ${mutationPattern}\n}` :
+      // Otherwise, return a DELETE/INSERT ... WHERE ... query
+      `${mutationType} {\n  ${mutationPattern}\n} WHERE {\n  ${where.join('\n  ')}\n}`;
   }
 
-  getSubjectAndClauses(expression, scope) {
-    // If the expression has one segment, return its subject
-    if (expression.length === 1) {
-      const { subject } = expression[0];
-      return [this.termToQueryString(subject), []];
-    }
-
-    // Otherwise, create triples patterns from it
-    const lastPredicate = expression[expression.length - 1].predicate.value;
-    const queryVar = this.getQueryVar(lastPredicate.match(/[a-z0-9]*$/i)[0] || 'result', scope);
-    return [
-      `?${queryVar}`,
-      this.expressionToTriplePatterns(expression, queryVar, scope),
-    ];
+  expressionToTriplePatterns([root, ...pathExpression], queryVar, scope = {}) {
+    const last = pathExpression.length - 1;
+    let object = this.termToString(root.subject);
+    return pathExpression.map((segment, index) => {
+      // Obtain components and generate triple pattern
+      const subject = object;
+      const { predicate } = segment;
+      object = index < last ? this.createVar(`v${index}`, scope) : queryVar;
+      return `${subject} ${this.termToString(predicate)} ${object}.`;
+    });
   }
 
-  // Creates a unique query variable label within the given scope based on the given suggestion
-  getQueryVar(labelSuggestion, scope) {
-    let label = labelSuggestion;
+  // Creates a unique query variable within the given scope, based on the suggestion
+  createVar(suggestion, scope) {
     let counter = 0;
-    while (scope[label])
-      label = `${labelSuggestion}_${counter++}`;
-    scope[label] = true;
+    let label = `?${suggestion.match(/[a-z0-9]*$/i)[0] || 'result'}`;
+    if (scope) {
+      while (scope[label])
+        label = `?${suggestion}_${counter++}`;
+      scope[label] = true;
+    }
     return label;
   }
 
   // Converts an RDFJS term to a string that we can use in a query
-  termToQueryString(term) {
+  termToString(term) {
     switch (term.termType) {
     case 'NamedNode':
       return `<${term.value}>`;

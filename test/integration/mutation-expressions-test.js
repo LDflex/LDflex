@@ -94,7 +94,7 @@ describe('a query path with a path expression handler', () => {
     ]);
   });
 
-  it('resolves a path with 2 links and an deletion and addition', async () => {
+  it('resolves a path with 2 links and n deletion and addition', async () => {
     const path = await person.friends.firstName.delete('ruben').add('Ruben').mutationExpressions;
     expect(path).toEqual([
       {
@@ -118,7 +118,7 @@ describe('a query path with a path expression handler', () => {
     ]);
   });
 
-  it('resolves a path with 2 links and an deletion, a link, and addition', async () => {
+  it('resolves a path with 2 links and a deletion, a link, and addition', async () => {
     const path = await person.friends.delete(person.friends).firstName.add('Ruben').mutationExpressions;
     expect(path).toEqual([
       {

@@ -35,23 +35,20 @@ export default class MutationFunctionHandler {
     const conditions = await path.pathExpression;
     if (!Array.isArray(conditions))
       throw new Error(`${pathData} has no pathExpression property`);
-
-    // Require at least a subject and a link
     if (conditions.length < 2)
       throw new Error(`${pathData} should at least contain a subject and a predicate`);
 
-    // The arguments are the triple objects
+    // The arguments are the affected objects
     const objects = await this.extractObjects(pathData, path, args);
-
-    // If no objects were specified, the range corresponds to the entire domain
+    // If no objects were specified, mutate all objects in the domain
     const mutationType = this._mutationType;
     if (!objects)
       return [{ mutationType, conditions }];
-    // If the set of objects is empty, do not perform any mutations
+    // If no objects are affected, do not perform any mutations
     if (objects.length === 0)
       return [];
 
-    // Otherwise, the expression takes the predicate of the last path segment
+    // Otherwise, mutate the affected objects
     const { predicate } = conditions.pop();
     if (!predicate)
       throw new Error(`Expected predicate in ${pathData}`);
@@ -59,8 +56,11 @@ export default class MutationFunctionHandler {
   }
 
   async extractObjects(pathData, path, args) {
+    // No arguments means a wildcard
     if (args.length === 0)
       return null;
+
+    // Expand strings, promises, and paths
     const objects = [];
     for (const arg of args) {
       // Process an asynchronously iterable argument

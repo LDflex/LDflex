@@ -24,32 +24,32 @@ describe('a SparqlHandler instance', () => {
 
   describe('when converting a term to string', () => {
     it('should convert a NamedNode', async () => {
-      await expect(handler.termToQueryString(namedNode('http://example.org')))
+      await expect(handler.termToString(namedNode('http://example.org')))
         .toEqual('<http://example.org>');
     });
 
     it('should convert a Literal', async () => {
-      await expect(handler.termToQueryString(literal('abc')))
+      await expect(handler.termToString(literal('abc')))
         .toEqual('"abc"');
     });
 
     it('should convert a Literal that should be escaped', async () => {
-      await expect(handler.termToQueryString(literal('a"bc')))
+      await expect(handler.termToString(literal('a"bc')))
         .toEqual('"a\\"bc"');
     });
 
     it('should convert a BlankNode', async () => {
-      await expect(handler.termToQueryString(blankNode('abc')))
+      await expect(handler.termToString(blankNode('abc')))
         .toEqual('_:abc');
     });
 
     it('should error on DefaultGraph', async () => {
-      await expect(() => handler.termToQueryString(defaultGraph()))
+      await expect(() => handler.termToString(defaultGraph()))
         .toThrow(new Error('Could not convert a term of type DefaultGraph'));
     });
 
     it('should error on Variable', async () => {
-      await expect(() => handler.termToQueryString(variable('v')))
+      await expect(() => handler.termToString(variable('v')))
         .toThrow(new Error('Could not convert a term of type Variable'));
     });
   });
@@ -111,7 +111,7 @@ describe('a SparqlHandler instance', () => {
 
   describe('with mutationExpressions', () => {
     describe('with one INSERT expression', () => {
-      it('resolves with domain of length 0 and range of length of 0', async () => {
+      it('resolves with domain of length 0 and range of length 0', async () => {
         const mutationExpressions = [
           {
             mutationType: 'INSERT',
@@ -127,7 +127,7 @@ describe('a SparqlHandler instance', () => {
           }`));
       });
 
-      it('resolves with domain of length 0 and range of length of 0 with literal', async () => {
+      it('resolves with domain of length 0 and range of length 0 with literal', async () => {
         const mutationExpressions = [
           {
             mutationType: 'INSERT',
@@ -163,7 +163,7 @@ describe('a SparqlHandler instance', () => {
           }`));
       });
 
-      it('resolves with domain of length 2 and range of length of 0', async () => {
+      it('resolves with domain of length 2 and range of length 0', async () => {
         const mutationExpressions = [
           {
             mutationType: 'INSERT',
@@ -186,7 +186,7 @@ describe('a SparqlHandler instance', () => {
           }`));
       });
 
-      it('resolves with domain of length 1 with exotic predicate and range of length of 0', async () => {
+      it('resolves with domain of length 1 with exotic predicate and range of length 0', async () => {
         const mutationExpressions = [
           {
             mutationType: 'INSERT',
@@ -209,7 +209,7 @@ describe('a SparqlHandler instance', () => {
     });
 
     describe('with one INSERT expression that has a range that should be escaped', () => {
-      it('resolves with domain of length 0 and range of length of 0', async () => {
+      it('resolves with domain of length 0 and range of length 0', async () => {
         const mutationExpressions = [
           {
             mutationType: 'INSERT',
@@ -227,7 +227,7 @@ describe('a SparqlHandler instance', () => {
     });
 
     describe('with one DELETE expression', () => {
-      it('resolves with domain of length 0 and range of length of 0', async () => {
+      it('resolves with domain of length 0 and range of length 0', async () => {
         const mutationExpressions = [
           {
             mutationType: 'DELETE',
@@ -265,7 +265,7 @@ describe('a SparqlHandler instance', () => {
     });
 
     describe('with one DELETE expression without range', () => {
-      it('resolves with domain of length 0 and range of length of 0', async () => {
+      it('resolves with domain of length 0 and range of length 0', async () => {
         const mutationExpressions = [
           {
             mutationType: 'DELETE',
@@ -286,33 +286,33 @@ describe('a SparqlHandler instance', () => {
     });
   });
 
-  describe('#getQueryVar', () => {
+  describe('#createVar', () => {
     it('returns the suggestion for an empty scope', () => {
       const variableScope = {};
-      const queryVar = handler.getQueryVar('a', variableScope);
-      expect(queryVar).toEqual('a');
-      expect(variableScope).toEqual({ a: true });
+      const queryVar = handler.createVar('a', variableScope);
+      expect(queryVar).toEqual('?a');
+      expect(variableScope).toEqual({ '?a': true });
     });
 
     it('returns the suggestion for a scope without matches', () => {
-      const variableScope = { b: true };
-      const queryVar = handler.getQueryVar('a', variableScope);
-      expect(queryVar).toEqual('a');
-      expect(variableScope).toEqual({ b: true, a: true });
+      const variableScope = { '?b': true };
+      const queryVar = handler.createVar('a', variableScope);
+      expect(queryVar).toEqual('?a');
+      expect(variableScope).toEqual({ '?b': true, '?a': true });
     });
 
     it('returns an incremented label for a scope with 1 match', () => {
-      const variableScope = { a: true };
-      const queryVar = handler.getQueryVar('a', variableScope);
-      expect(queryVar).toEqual('a_0');
-      expect(variableScope).toEqual({ 'a': true, 'a_0': true }); // eslint-disable-line quote-props
+      const variableScope = { '?a': true };
+      const queryVar = handler.createVar('a', variableScope);
+      expect(queryVar).toEqual('?a_0');
+      expect(variableScope).toEqual({ '?a': true, '?a_0': true });
     });
 
     it('returns an incremented label for a scope with 3 matches', () => {
-      const variableScope = { 'a': true, 'a_0': true, 'a_1': true, 'a_2': true }; // eslint-disable-line quote-props
-      const queryVar = handler.getQueryVar('a', variableScope);
-      expect(queryVar).toEqual('a_3');
-      expect(variableScope).toEqual({ 'a': true, 'a_0': true, 'a_1': true, 'a_2': true, 'a_3': true }); // eslint-disable-line quote-props
+      const variableScope = { '?a': true, '?a_0': true, '?a_1': true, '?a_2': true };
+      const queryVar = handler.createVar('a', variableScope);
+      expect(queryVar).toEqual('?a_3');
+      expect(variableScope).toEqual({ '?a': true, '?a_0': true, '?a_1': true, '?a_2': true, '?a_3': true });
     });
   });
 });
