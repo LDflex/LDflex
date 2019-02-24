@@ -123,7 +123,7 @@ describe('a SparqlHandler instance', () => {
 
         expect(await handler.handle({}, { mutationExpressions })).toEqual(deindent(`
           INSERT DATA {
-            <https://example.org/#D0> <https://example.org/p> <https://example.org/#R0>
+            <https://example.org/#D0> <https://example.org/p> <https://example.org/#R0>.
           }`));
       });
 
@@ -139,7 +139,7 @@ describe('a SparqlHandler instance', () => {
 
         expect(await handler.handle({}, { mutationExpressions })).toEqual(deindent(`
           INSERT DATA {
-            <https://example.org/#D0> <https://example.org/p> "Ruben"
+            <https://example.org/#D0> <https://example.org/p> "Ruben".
           }`));
       });
 
@@ -159,7 +159,7 @@ describe('a SparqlHandler instance', () => {
 
         expect(await handler.handle({}, { mutationExpressions })).toEqual(deindent(`
           INSERT DATA {
-            <https://example.org/#D0> <https://example.org/p> <https://example.org/#R0>, "Ruben", "Other"
+            <https://example.org/#D0> <https://example.org/p> <https://example.org/#R0>, "Ruben", "Other".
           }`));
       });
 
@@ -179,7 +179,7 @@ describe('a SparqlHandler instance', () => {
 
         expect(await handler.handle({}, { mutationExpressions })).toEqual(deindent(`
           INSERT {
-            ?Dp2 <https://example.org/p> <https://example.org/#R0>
+            ?Dp2 <https://example.org/p> <https://example.org/#R0>.
           } WHERE {
             <https://example.org/#D0> <https://example.org/#Dp1> ?v0.
             ?v0 <https://example.org/#Dp2> ?Dp2.
@@ -201,7 +201,7 @@ describe('a SparqlHandler instance', () => {
 
         expect(await handler.handle({}, { mutationExpressions })).toEqual(deindent(`
           INSERT {
-            ?result <https://example.org/p> <https://example.org/#R0>
+            ?result <https://example.org/p> <https://example.org/#R0>.
           } WHERE {
             <https://example.org/#D0> <https://example.org/#> ?result.
           }`));
@@ -221,7 +221,7 @@ describe('a SparqlHandler instance', () => {
 
         expect(await handler.handle({}, { mutationExpressions })).toEqual(deindent(`
           INSERT DATA {
-            <https://example.org/#D0> <https://example.org/p> "a\\"b"
+            <https://example.org/#D0> <https://example.org/p> "a\\"b".
           }`));
       });
     });
@@ -239,7 +239,7 @@ describe('a SparqlHandler instance', () => {
 
         expect(await handler.handle({}, { mutationExpressions })).toEqual(deindent(`
           DELETE DATA {
-            <https://example.org/#D0> <https://example.org/p> <https://example.org/#R0>
+            <https://example.org/#D0> <https://example.org/p> <https://example.org/#R0>.
           }`));
       });
     });
@@ -260,7 +260,7 @@ describe('a SparqlHandler instance', () => {
 
       expect(await handler.handle({}, { mutationExpressions })).toEqual(deindent(`
         DELETE DATA {
-          <https://example.org/#D0> <https://example.org/p> <https://example.org/#R0>, "Ruben", "Other"
+          <https://example.org/#D0> <https://example.org/p> <https://example.org/#R0>, "Ruben", "Other".
         }`));
     });
 
@@ -278,7 +278,7 @@ describe('a SparqlHandler instance', () => {
 
         expect(await handler.handle({}, { mutationExpressions })).toEqual(deindent(`
           DELETE {
-            <https://example.org/#D0> <https://example.org/#Dp1> ?Dp1
+            <https://example.org/#D0> <https://example.org/#Dp1> ?Dp1.
           } WHERE {
             <https://example.org/#D0> <https://example.org/#Dp1> ?Dp1.
           }`));

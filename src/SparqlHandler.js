@@ -57,11 +57,11 @@ export default class SparqlHandler {
     // If we have a range, the mutation is on <domainVar> <predicate> <rangeVar>
     if (objects) {
       const objectList = objects.map(o => this.termToQueryString(o)).join(', ');
-      mutationPattern = `${subject} ${this.termToQueryString(predicate)} ${objectList}`;
+      mutationPattern = `${subject} ${this.termToQueryString(predicate)} ${objectList}.`;
     }
     // If we don't have a range, assume that the mutation is on the last segment of the domain
     else {
-      mutationPattern = clauses[clauses.length - 1].slice(0, -1);
+      mutationPattern = clauses[clauses.length - 1];
     }
 
     // If we don't have any WHERE clauses, we just insert raw data

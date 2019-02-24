@@ -78,7 +78,7 @@ describe('a query path with a path expression handler', () => {
     const query = await person.firstName.add('Ruben').sparql;
     expect(query).toEqual(deindent(`
       INSERT DATA {
-        <https://example.org/#me> <http://xmlns.com/foaf/0.1/givenName> "Ruben"
+        <https://example.org/#me> <http://xmlns.com/foaf/0.1/givenName> "Ruben".
       }`));
   });
 
@@ -86,7 +86,7 @@ describe('a query path with a path expression handler', () => {
     const query = await person.friends.friends.firstName.add('Ruben').sparql;
     expect(query).toEqual(deindent(`
       INSERT {
-        ?knows <http://xmlns.com/foaf/0.1/givenName> "Ruben"
+        ?knows <http://xmlns.com/foaf/0.1/givenName> "Ruben".
       } WHERE {
         <https://example.org/#me> <http://xmlns.com/foaf/0.1/knows> ?v0.
         ?v0 <http://xmlns.com/foaf/0.1/knows> ?knows.
@@ -97,7 +97,7 @@ describe('a query path with a path expression handler', () => {
     const query = await person.friends.friends[`${FOAF}depiction`].add('Ruben').sparql;
     expect(query).toEqual(deindent(`
       INSERT {
-        ?knows <http://xmlns.com/foaf/0.1/depiction> "Ruben"
+        ?knows <http://xmlns.com/foaf/0.1/depiction> "Ruben".
       } WHERE {
         <https://example.org/#me> <http://xmlns.com/foaf/0.1/knows> ?v0.
         ?v0 <http://xmlns.com/foaf/0.1/knows> ?knows.
@@ -108,7 +108,7 @@ describe('a query path with a path expression handler', () => {
     const query = await person.friends.friends.firstName.add(person.friends).sparql;
     expect(query).toEqual(deindent(`
       INSERT {
-        ?knows <http://xmlns.com/foaf/0.1/givenName> <http://ex.org/#1>, <http://ex.org/#2>
+        ?knows <http://xmlns.com/foaf/0.1/givenName> <http://ex.org/#1>, <http://ex.org/#2>.
       } WHERE {
         <https://example.org/#me> <http://xmlns.com/foaf/0.1/knows> ?v0.
         ?v0 <http://xmlns.com/foaf/0.1/knows> ?knows.
@@ -119,7 +119,7 @@ describe('a query path with a path expression handler', () => {
     const query = await person.friends.friends.firstName.add('Ruben', 'RUBEN', 'ruben').sparql;
     expect(query).toEqual(deindent(`
       INSERT {
-        ?knows <http://xmlns.com/foaf/0.1/givenName> "Ruben", "RUBEN", "ruben"
+        ?knows <http://xmlns.com/foaf/0.1/givenName> "Ruben", "RUBEN", "ruben".
       } WHERE {
         <https://example.org/#me> <http://xmlns.com/foaf/0.1/knows> ?v0.
         ?v0 <http://xmlns.com/foaf/0.1/knows> ?knows.
@@ -130,7 +130,7 @@ describe('a query path with a path expression handler', () => {
     const query = await person.friends.friends.delete().sparql;
     expect(query).toEqual(deindent(`
       DELETE {
-        ?v0 <http://xmlns.com/foaf/0.1/knows> ?knows
+        ?v0 <http://xmlns.com/foaf/0.1/knows> ?knows.
       } WHERE {
         <https://example.org/#me> <http://xmlns.com/foaf/0.1/knows> ?v0.
         ?v0 <http://xmlns.com/foaf/0.1/knows> ?knows.
@@ -146,7 +146,7 @@ describe('a query path with a path expression handler', () => {
     const query = await person.friends.friends.firstName.add('Ruben', person.friends).sparql;
     expect(query).toEqual(deindent(`
       INSERT {
-        ?knows <http://xmlns.com/foaf/0.1/givenName> "Ruben", <http://ex.org/#1>, <http://ex.org/#2>
+        ?knows <http://xmlns.com/foaf/0.1/givenName> "Ruben", <http://ex.org/#1>, <http://ex.org/#2>.
       } WHERE {
         <https://example.org/#me> <http://xmlns.com/foaf/0.1/knows> ?v0.
         ?v0 <http://xmlns.com/foaf/0.1/knows> ?knows.
@@ -157,7 +157,7 @@ describe('a query path with a path expression handler', () => {
     const query = await person.friends.friends.firstName.delete('Ruben').sparql;
     expect(query).toEqual(deindent(`
       DELETE {
-        ?knows <http://xmlns.com/foaf/0.1/givenName> "Ruben"
+        ?knows <http://xmlns.com/foaf/0.1/givenName> "Ruben".
       } WHERE {
         <https://example.org/#me> <http://xmlns.com/foaf/0.1/knows> ?v0.
         ?v0 <http://xmlns.com/foaf/0.1/knows> ?knows.
@@ -168,14 +168,14 @@ describe('a query path with a path expression handler', () => {
     const query = await person.friends.friends.firstName.delete('ruben').add('Ruben').sparql;
     expect(query).toEqual(deindent(`
       DELETE {
-        ?knows <http://xmlns.com/foaf/0.1/givenName> "ruben"
+        ?knows <http://xmlns.com/foaf/0.1/givenName> "ruben".
       } WHERE {
         <https://example.org/#me> <http://xmlns.com/foaf/0.1/knows> ?v0.
         ?v0 <http://xmlns.com/foaf/0.1/knows> ?knows.
       }
       ;
       INSERT {
-        ?knows <http://xmlns.com/foaf/0.1/givenName> "Ruben"
+        ?knows <http://xmlns.com/foaf/0.1/givenName> "Ruben".
       } WHERE {
         <https://example.org/#me> <http://xmlns.com/foaf/0.1/knows> ?v0.
         ?v0 <http://xmlns.com/foaf/0.1/knows> ?knows.
@@ -186,7 +186,7 @@ describe('a query path with a path expression handler', () => {
     const query = await person.friends.friends.firstName.set('Ruben').sparql;
     expect(query).toEqual(deindent(`
       DELETE {
-        ?v1 <http://xmlns.com/foaf/0.1/givenName> ?givenName
+        ?v1 <http://xmlns.com/foaf/0.1/givenName> ?givenName.
       } WHERE {
         <https://example.org/#me> <http://xmlns.com/foaf/0.1/knows> ?v0.
         ?v0 <http://xmlns.com/foaf/0.1/knows> ?v1.
@@ -194,7 +194,7 @@ describe('a query path with a path expression handler', () => {
       }
       ;
       INSERT {
-        ?knows <http://xmlns.com/foaf/0.1/givenName> "Ruben"
+        ?knows <http://xmlns.com/foaf/0.1/givenName> "Ruben".
       } WHERE {
         <https://example.org/#me> <http://xmlns.com/foaf/0.1/knows> ?v0.
         ?v0 <http://xmlns.com/foaf/0.1/knows> ?knows.
@@ -205,7 +205,7 @@ describe('a query path with a path expression handler', () => {
     const query = await person.friends.friends.firstName.set('Ruben', 'ruben').sparql;
     expect(query).toEqual(deindent(`
       DELETE {
-        ?v1 <http://xmlns.com/foaf/0.1/givenName> ?givenName
+        ?v1 <http://xmlns.com/foaf/0.1/givenName> ?givenName.
       } WHERE {
         <https://example.org/#me> <http://xmlns.com/foaf/0.1/knows> ?v0.
         ?v0 <http://xmlns.com/foaf/0.1/knows> ?v1.
@@ -213,7 +213,7 @@ describe('a query path with a path expression handler', () => {
       }
       ;
       INSERT {
-        ?knows <http://xmlns.com/foaf/0.1/givenName> "Ruben", "ruben"
+        ?knows <http://xmlns.com/foaf/0.1/givenName> "Ruben", "ruben".
       } WHERE {
         <https://example.org/#me> <http://xmlns.com/foaf/0.1/knows> ?v0.
         ?v0 <http://xmlns.com/foaf/0.1/knows> ?knows.
@@ -224,14 +224,14 @@ describe('a query path with a path expression handler', () => {
     const query = await person.friends.friends.firstName.replace('ruben', 'Ruben').sparql;
     expect(query).toEqual(deindent(`
       DELETE {
-        ?knows <http://xmlns.com/foaf/0.1/givenName> "ruben"
+        ?knows <http://xmlns.com/foaf/0.1/givenName> "ruben".
       } WHERE {
         <https://example.org/#me> <http://xmlns.com/foaf/0.1/knows> ?v0.
         ?v0 <http://xmlns.com/foaf/0.1/knows> ?knows.
       }
       ;
       INSERT {
-        ?knows <http://xmlns.com/foaf/0.1/givenName> "Ruben"
+        ?knows <http://xmlns.com/foaf/0.1/givenName> "Ruben".
       } WHERE {
         <https://example.org/#me> <http://xmlns.com/foaf/0.1/knows> ?v0.
         ?v0 <http://xmlns.com/foaf/0.1/knows> ?knows.
