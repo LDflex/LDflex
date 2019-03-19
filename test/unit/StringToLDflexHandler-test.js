@@ -4,7 +4,10 @@ describe('a StringToLDflexHandler instance', () => {
   const baz = {};
   const bar = { baz };
   const foo = { bar };
-  const root = { foo };
+  const root = {
+    foo,
+    'http://example.org/#this': 'this',
+  };
   global.globalVar = 'foo';
 
   let handler, parseLDflex;
@@ -48,6 +51,10 @@ describe('a StringToLDflexHandler instance', () => {
 
   it('resolves to the root when no expression is passed', () => {
     expect(parseLDflex()).toBe(root);
+  });
+
+  it('resolves a bracketless URL to a bracketed property', () => {
+    expect(parseLDflex('http://example.org/#this')).toBe('this');
   });
 
   it('errors on invalid expressions', () => {

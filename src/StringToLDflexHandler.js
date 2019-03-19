@@ -7,6 +7,8 @@ export default class StringToLDflexHandler {
     return (expression = '', ldflex = path) => {
       // An expression starts with a property access in dot or bracket notation
       const propertyPath = expression
+        // Add brackets around a single URL
+        .replace(/^(https?:\/\/[^()[\]'"]+)$/, '["$1"]')
         // Add the starting dot if omitted
         .replace(/^(?=[a-z$_])/i, '.')
         // Add quotes inside of brackets if omitted
