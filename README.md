@@ -46,6 +46,7 @@ or `for await` to iterate over all values.
 ```JavaScript
 const { PathFactory } = require('ldflex');
 const { default: ComunicaEngine } = require('ldflex-comunica');
+const { namedNode } = require('@rdfjs/data-model');
 
 // The JSON-LD context for resolving properties
 const context = {
@@ -63,7 +64,7 @@ const path = new PathFactory({ context, queryEngine });
 
 ### Looking up data on the Web
 ```JavaScript
-const ruben = path.create({ subject: 'https://ruben.verborgh.org/profile/#me' });
+const ruben = path.create({ subject: namedNode('https://ruben.verborgh.org/profile/#me') });
 showPerson(ruben);
 
 async function showPerson(person) {
