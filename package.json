@@ -1,6 +1,6 @@
 {
   "name": "ldflex",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "description": "A JavaScript DSL for querying Linked Data on the Web",
   "license": "MIT",
   "author": "Ruben Verborgh <ruben@verborgh.org> (https://ruben.verborgh.org/)",
