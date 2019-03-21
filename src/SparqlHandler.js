@@ -89,7 +89,12 @@ export default class SparqlHandler {
     case 'BlankNode':
       return `_:${term.value}`;
     case 'Literal':
-      return `"${term.value.replace(/"/g, '\\"')}"`;
+      let suffix = '';
+      if (term.language)
+        suffix = `@${term.language}`;
+      else if (term.datatype.value !== 'http://www.w3.org/2001/XMLSchema#string')
+        suffix = `^^<${term.datatype.value}>`;
+      return `"${term.value.replace(/"/g, '\\"')}"${suffix}`;
     default:
       throw new Error(`Could not convert a term of type ${term.termType}`);
     }

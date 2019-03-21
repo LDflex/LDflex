@@ -38,6 +38,16 @@ describe('a SparqlHandler instance', () => {
         .toEqual('"a\\"bc"');
     });
 
+    it('should convert a Literal with a type', async () => {
+      await expect(handler.termToString(literal('abc', namedNode('http://example.org/#type'))))
+        .toEqual('"abc"^^<http://example.org/#type>');
+    });
+
+    it('should convert a Literal with a language', async () => {
+      await expect(handler.termToString(literal('abc', 'en-us')))
+        .toEqual('"abc"@en-us');
+    });
+
     it('should convert a BlankNode', async () => {
       await expect(handler.termToString(blankNode('abc')))
         .toEqual('_:abc');
