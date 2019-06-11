@@ -5,6 +5,7 @@ import PathExpressionHandler from '../../src/PathExpressionHandler';
 import InsertFunctionHandler from '../../src/InsertFunctionHandler';
 import DeleteFunctionHandler from '../../src/DeleteFunctionHandler';
 import ReplaceFunctionHandler from '../../src/ReplaceFunctionHandler';
+import SubjectsHandler, { SELECT_ALL_SUBJECTS } from '../../src/SubjectsHandler';
 import SetFunctionHandler from '../../src/SetFunctionHandler';
 import DataHandler from '../../src/DataHandler';
 import JSONLDResolver from '../../src/JSONLDResolver';
@@ -72,6 +73,22 @@ describe('a query path with a path expression handler', () => {
         names.push(firstName);
     }
     expect(names.map(n => `${n}`)).toEqual(['Alice', 'Bob', 'Carol', 'Alice', 'Bob', 'Carol', 'Alice', 'Bob', 'Carol']);
+  });
+});
+
+describe('a query path with a subjects handler', () => {
+  let person;
+  beforeAll(() => {
+    const pathProxy = new PathProxy({ handlers: { ...handlersPath, subjects: new SubjectsHandler() }, resolvers });
+    person = pathProxy.createPath({ queryEngine }, { subject });
+  });
+
+  it('returns results, with executeQuery being called with the right query', async () => {
+    const subjects = [];
+    for await (const subj of person.subjects)
+      subjects.push(subj);
+    expect(queryEngine.execute).toBeCalledWith(SELECT_ALL_SUBJECTS);
+    expect(subjects.map(s => `${s}`)).toEqual(['Alice', 'Bob', 'Carol']);
   });
 });
 
