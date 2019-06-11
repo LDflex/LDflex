@@ -80,6 +80,21 @@ async function showPerson(person) {
 }
 ```
 
+
+### Get all subjects from a document
+```javascript
+const typeIndex = path.create({ subject: namedNode('https://jshurmer.inrupt.net/settings/publicTypeIndex.ttl') });
+showTypes(typeIndex);
+
+async function showTypes(typeIndex) {
+  console.log('The types');
+  for await (const type of typeIndex.subjects) {
+    console.log(` - ${type}`);
+    console.log(` - ofClass: ${await type['solid:ofClass']}`);
+  }
+}
+```
+
 ### Inspecting the generated path expression
 ```JavaScript
 (async person => {
