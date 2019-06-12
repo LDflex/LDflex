@@ -83,14 +83,15 @@ async function showPerson(person) {
 
 ### Get all subjects from a document
 ```javascript
-const typeIndex = path.create({ subject: namedNode('https://jshurmer.inrupt.net/settings/publicTypeIndex.ttl') });
-showTypes(typeIndex);
+const bookmarks = path.create({ subject: namedNode('https://example.com/bookmarks.ttl') });
+showBookmarks(bookmarks);
 
-async function showTypes(typeIndex) {
-  console.log('The types');
-  for await (const type of typeIndex.subjects) {
-    console.log(` - ${type}`);
-    console.log(` - ofClass: ${await type['solid:ofClass']}`);
+async function showBookmarks(bookmarks) {
+  console.log('The bookmarks');
+  for await (const bookmark of bookmarks.subjects) {
+    console.log(` - ${bookmark}`);
+    console.log(` - title: ${await bookmark['http://purl.org/dc/terms/title']}`);
+    console.log(` - recalls: ${await bookmark['http://www.w3.org/2002/01/bookmark#recalls']}`);
   }
 }
 ```
