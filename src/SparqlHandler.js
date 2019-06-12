@@ -19,13 +19,21 @@ export default class SparqlHandler {
   }
 
   pathExpressionToQuery(pathData, path, pathExpression) {
-    if (pathExpression.length < 2)
+    if (pathExpression.length < 2 && !pathData.finalClause)
       throw new Error(`${pathData} should at least contain a subject and a predicate`);
 
+    let queryVar = '?s';
+    let clauses = [];
     // Embed the basic graph pattern into a SPARQL query
-    const queryVar = this.createVar(pathData.property);
-    const clauses = this.expressionToTriplePatterns(pathExpression, queryVar);
-    return `SELECT ${queryVar} WHERE {\n  ${clauses.join('\n  ')}\n}`;
+    if (pathExpression.length > 1) {
+      queryVar = this.createVar(pathData.property);
+      const expressions = this.expressionToTriplePatterns(pathExpression, queryVar);
+      clauses = `\n  ${expressions.join('\n  ')}`;
+    }
+
+    const select = `SELECT ${pathData.distinct ? 'DISTINCT ' : ''}${pathData.select ? pathData.select : queryVar}`;
+    const where = `WHERE {${clauses}${pathData.finalClause ? pathData.finalClause(queryVar) : ''}\n}`;
+    return `${select} ${where}`;
   }
 
   mutationExpressionToQuery({ mutationType, conditions, predicate, objects }) {
