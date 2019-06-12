@@ -5,7 +5,7 @@ import PathExpressionHandler from '../../src/PathExpressionHandler';
 import InsertFunctionHandler from '../../src/InsertFunctionHandler';
 import DeleteFunctionHandler from '../../src/DeleteFunctionHandler';
 import ReplaceFunctionHandler from '../../src/ReplaceFunctionHandler';
-import SubjectsHandler, { SELECT_ALL_SUBJECTS } from '../../src/SubjectsHandler';
+import SubjectsHandler from '../../src/SubjectsHandler';
 import SetFunctionHandler from '../../src/SetFunctionHandler';
 import DataHandler from '../../src/DataHandler';
 import JSONLDResolver from '../../src/JSONLDResolver';
@@ -87,7 +87,7 @@ describe('a query path with a subjects handler', () => {
     const subjects = [];
     for await (const subj of person.subjects)
       subjects.push(subj);
-    expect(queryEngine.execute).toBeCalledWith(SELECT_ALL_SUBJECTS);
+    expect(queryEngine.execute).toBeCalledWith('SELECT distinct ?s WHERE { ?s ?p ?o }');
     expect(subjects.map(s => `${s}`)).toEqual(['Alice', 'Bob', 'Carol']);
   });
 });
