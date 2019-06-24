@@ -22,7 +22,7 @@ export default class SparqlHandler {
     if (pathExpression.length < 2 && !pathData.finalClause)
       throw new Error(`${pathData} should at least contain a subject and a predicate`);
 
-    let queryVar = '?s';
+    let queryVar = '?subject';
     let clauses = [];
     // Embed the basic graph pattern into a SPARQL query
     if (pathExpression.length > 1) {

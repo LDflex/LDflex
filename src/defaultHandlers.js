@@ -1,6 +1,6 @@
 import DataHandler from './DataHandler';
 import SubjectHandler from './SubjectHandler';
-import PropertiesHandler from './PropertiesHandler';
+import PredicatesHandler from './PredicatesHandler';
 import PathExpressionHandler from './PathExpressionHandler';
 import SparqlHandler from './SparqlHandler';
 import ExecuteQueryHandler from './ExecuteQueryHandler';
@@ -42,7 +42,8 @@ export default {
 
   // Add read and query functionality
   subject: new SubjectHandler(),
-  properties: new PropertiesHandler(),
+  properties: new PredicatesHandler(),
+  predicates: new PredicatesHandler(),
   pathExpression: new PathExpressionHandler(),
   sparql: new SparqlHandler(),
   results: new ExecuteQueryHandler(),
