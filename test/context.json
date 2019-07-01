@@ -3,6 +3,8 @@
     "foaf": "http://xmlns.com/foaf/0.1/",
     "knows": "foaf:knows",
     "friends": "foaf:knows",
-    "firstName": "foaf:givenName"
+    "firstName": "foaf:givenName",
+    "name": "http://xmlns.com/foaf/0.1/name",
+    "label": "http://www.w3.org/2000/01/rdf-schema#label"
   }
 }

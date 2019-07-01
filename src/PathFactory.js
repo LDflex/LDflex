@@ -20,11 +20,13 @@ export default class PathFactory {
 
     // Prepare the resolvers
     const resolvers = (settings.resolvers || []).map(toResolver);
-    if (settings.context)
+    if (settings.context) {
       resolvers.push(new JSONLDResolver(settings.context));
-
-    // Instantiate PathProxy that will create the paths
-    this._pathProxy = new PathProxy({ handlers, resolvers });
+      this._pathProxy = new PathProxy({ handlers, resolvers, context: settings.context });
+    }
+    else {
+      this._pathProxy = new PathProxy({ handlers, resolvers });
+    }
 
     // Remove PathProxy settings from the settings object
     delete settings.handlers;
