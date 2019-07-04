@@ -11,7 +11,7 @@ describe('a ReplaceFunctionHandler instance', () => {
     };
   });
 
-  describe('resolving a property', async () => {
+  describe('resolving a property', () => {
     let result;
     beforeEach(() => result = handler.handle({}, proxy));
 

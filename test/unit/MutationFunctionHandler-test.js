@@ -12,7 +12,7 @@ describe('a MutationFunctionHandler instance not allowing 0 args', () => {
   let handler;
   beforeAll(() => handler = new MutationFunctionHandler(mutationType, false));
 
-  describe('resolving a property', async () => {
+  describe('resolving a property', () => {
     let pathExpression;
     let result;
     beforeEach(() => {
