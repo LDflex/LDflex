@@ -297,6 +297,13 @@ describe('a SparqlHandler instance', () => {
   });
 
   describe('#createVar', () => {
+    it('returns a default value when no suggestion is given', () => {
+      const variableScope = {};
+      const queryVar = handler.createVar(undefined, variableScope);
+      expect(queryVar).toEqual('?result');
+      expect(variableScope).toEqual({ '?result': true });
+    });
+
     it('returns the suggestion for an empty scope', () => {
       const variableScope = {};
       const queryVar = handler.createVar('a', variableScope);

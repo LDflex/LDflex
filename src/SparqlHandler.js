@@ -70,7 +70,7 @@ export default class SparqlHandler {
   }
 
   // Creates a unique query variable within the given scope, based on the suggestion
-  createVar(suggestion, scope) {
+  createVar(suggestion = '', scope) {
     let counter = 0;
     let label = `?${suggestion.match(/[a-z0-9]*$/i)[0] || 'result'}`;
     if (scope) {
