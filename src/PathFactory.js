@@ -1,6 +1,7 @@
 import PathProxy from './PathProxy';
 import JSONLDResolver from './JSONLDResolver';
 import defaultHandlers from './defaultHandlers';
+import { ContextParser } from 'jsonld-context-parser';
 
 /**
  * A PathFactory creates paths with default settings.
@@ -22,16 +23,18 @@ export default class PathFactory {
     const resolvers = (settings.resolvers || []).map(toResolver);
     if (settings.context) {
       resolvers.push(new JSONLDResolver(settings.context));
-      this._pathProxy = new PathProxy({ handlers, resolvers, context: settings.context });
+      settings.parsedContext = new ContextParser().parse(settings.context);
     }
     else {
-      this._pathProxy = new PathProxy({ handlers, resolvers });
+      settings.context = settings.parsedContext = {};
     }
+
+    // Instantiate PathProxy that will create the paths
+    this._pathProxy = new PathProxy({ handlers, resolvers });
 
     // Remove PathProxy settings from the settings object
     delete settings.handlers;
     delete settings.resolvers;
-    delete settings.context;
   }
 
   /**

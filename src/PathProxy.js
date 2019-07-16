@@ -1,5 +1,3 @@
-import { ContextParser } from 'jsonld-context-parser';
-
 const EMPTY = Object.create(null);
 
 /**
@@ -23,10 +21,9 @@ const EMPTY = Object.create(null);
  * - extendPath, a method to create a child path with this path as parent
  */
 export default class PathProxy {
-  constructor({ handlers = EMPTY, resolvers = [], context = EMPTY } = {}) {
+  constructor({ handlers = EMPTY, resolvers = [] } = {}) {
     this._handlers = handlers;
     this._resolvers = resolvers;
-    this._context = new ContextParser().parse(context);
   }
 
   /**
@@ -61,7 +58,7 @@ export default class PathProxy {
     // so check if we find a handler first
     const handler = this._handlers[property];
     if (handler && typeof handler.handle === 'function')
-      return handler.handle(pathData, pathData.proxy, this._context);
+      return handler.handle(pathData, pathData.proxy);
 
     // Resolvers provide functionality for arbitrary properties,
     // so find a resolver that can handle this property
