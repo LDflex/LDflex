@@ -57,6 +57,14 @@ describe('a query path with a path expression handler', () => {
       }`));
   });
 
+  it('resolves a path with 1 link and a predicates call', async () => {
+    const query = await person.predicates.sparql;
+    expect(query).toEqual(deindent(`
+      SELECT DISTINCT ?predicate WHERE {
+        ?subject ?predicate ?object.
+      }`));
+  });
+
   it('resolves a path with 3 links and a predicates call', async () => {
     const query = await person.friends.friends.predicates.sparql;
     expect(query).toEqual(deindent(`
@@ -64,14 +72,6 @@ describe('a query path with a path expression handler', () => {
         <https://example.org/#me> <${FOAF}knows> ?v0.
         ?v0 <${FOAF}knows> ?friends.
         ?friends ?predicate ?object.
-      }`));
-  });
-
-  it('resolves a path with 1 links and a predicates call', async () => {
-    const query = await person.predicates.sparql;
-    expect(query).toEqual(deindent(`
-      SELECT DISTINCT ?predicate WHERE {
-        ?subject ?predicate ?object.
       }`));
   });
 
