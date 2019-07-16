@@ -1,3 +1,10 @@
+const NEEDS_ESCAPE = /["\\\t\n\r\b\f\u0000-\u0019\ud800-\udbff]/,
+      ESCAPE_ALL = /["\\\t\n\r\b\f\u0000-\u0019]|[\ud800-\udbff][\udc00-\udfff]/g,
+      ESCAPED_CHARS = {
+        '\\': '\\\\', '"': '\\"', '\t': '\\t',
+        '\n': '\\n', '\r': '\\r', '\b': '\\b', '\f': '\\f',
+      };
+
 /**
  * Expresses a path or mutation as a SPARQL query.
  *
@@ -78,7 +85,7 @@ export default class SparqlHandler {
   }
 
   // Creates a unique query variable within the given scope, based on the suggestion
-  createVar(suggestion, scope) {
+  createVar(suggestion = '', scope) {
     let counter = 0;
     let label = `?${suggestion.match(/[a-z0-9]*$/i)[0] || 'result'}`;
     if (scope) {
@@ -91,20 +98,50 @@ export default class SparqlHandler {
 
   // Converts an RDFJS term to a string that we can use in a query
   termToString(term) {
+    // Determine escaped value
+    let { value } = term;
+    if (NEEDS_ESCAPE.test(value))
+      value = value.replace(ESCAPE_ALL, escapeCharacter);
+
     switch (term.termType) {
     case 'NamedNode':
-      return `<${term.value}>`;
+      return `<${value}>`;
+
     case 'BlankNode':
-      return `_:${term.value}`;
+      return `_:${value}`;
+
     case 'Literal':
+      // Determine optional language or datatype
       let suffix = '';
       if (term.language)
         suffix = `@${term.language}`;
       else if (term.datatype.value !== 'http://www.w3.org/2001/XMLSchema#string')
         suffix = `^^<${term.datatype.value}>`;
-      return `"${term.value.replace(/"/g, '\\"')}"${suffix}`;
+      return `"${value}"${suffix}`;
+
     default:
       throw new Error(`Could not convert a term of type ${term.termType}`);
     }
   }
+}
+
+// Replaces a character by its escaped version
+// (borrowed from https://www.npmjs.com/package/n3)
+function escapeCharacter(character) {
+  // Replace a single character by its escaped version
+  let result = ESCAPED_CHARS[character];
+  if (result === undefined) {
+    // Replace a single character with its 4-bit unicode escape sequence
+    if (character.length === 1) {
+      result = character.charCodeAt(0).toString(16);
+      result = '\\u0000'.substr(0, 6 - result.length) + result;
+    }
+    // Replace a surrogate pair with its 8-bit unicode escape sequence
+    else {
+      result = ((character.charCodeAt(0) - 0xD800) * 0x400 +
+                 character.charCodeAt(1) + 0x2400).toString(16);
+      result = '\\U00000000'.substr(0, 10 - result.length) + result;
+    }
+  }
+  return result;
 }
