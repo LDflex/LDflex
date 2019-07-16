@@ -4,6 +4,7 @@ import PathExpressionHandler from '../../src/PathExpressionHandler';
 import InsertFunctionHandler from '../../src/InsertFunctionHandler';
 import DeleteFunctionHandler from '../../src/DeleteFunctionHandler';
 import MutationExpressionsHandler from '../../src/MutationExpressionsHandler';
+import PredicatesHandler from '../../src/PredicatesHandler';
 import SetFunctionHandler from '../../src/SetFunctionHandler';
 import ReplaceFunctionHandler from '../../src/ReplaceFunctionHandler';
 import JSONLDResolver from '../../src/JSONLDResolver';
@@ -20,6 +21,8 @@ describe('a query path with a path expression handler', () => {
     pathExpression: new PathExpressionHandler(),
     add: new InsertFunctionHandler(),
     delete: new DeleteFunctionHandler(),
+    properties: new PredicatesHandler(),
+    predicates: new PredicatesHandler(),
     mutationExpressions: new MutationExpressionsHandler(),
     replace: new ReplaceFunctionHandler(),
     set: new SetFunctionHandler(),
@@ -51,6 +54,24 @@ describe('a query path with a path expression handler', () => {
         <https://example.org/#me> <${FOAF}knows> ?v0.
         ?v0 <${FOAF}knows> ?v1.
         ?v1 <${FOAF}givenName> ?firstName.
+      }`));
+  });
+
+  it('resolves a path with 1 link and a predicates call', async () => {
+    const query = await person.predicates.sparql;
+    expect(query).toEqual(deindent(`
+      SELECT DISTINCT ?predicate WHERE {
+        ?subject ?predicate ?object.
+      }`));
+  });
+
+  it('resolves a path with 3 links and a predicates call', async () => {
+    const query = await person.friends.friends.predicates.sparql;
+    expect(query).toEqual(deindent(`
+      SELECT DISTINCT ?predicate WHERE {
+        <https://example.org/#me> <${FOAF}knows> ?v0.
+        ?v0 <${FOAF}knows> ?friends.
+        ?friends ?predicate ?object.
       }`));
   });
 

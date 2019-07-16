@@ -19,7 +19,7 @@
   "dependencies": {
     "@babel/runtime": "^7.1.5",
     "@rdfjs/data-model": "^1.1.1",
-    "jsonld-context-parser": "^1.1.1"
+    "jsonld-context-parser": "^1.2.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.0.0",
