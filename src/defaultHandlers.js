@@ -9,6 +9,7 @@ import MutationExpressionsHandler from './MutationExpressionsHandler';
 import InsertFunctionHandler from './InsertFunctionHandler';
 import SetFunctionHandler from './SetFunctionHandler';
 import ReplaceFunctionHandler from './ReplaceFunctionHandler';
+import SubjectsHandler from './SubjectsHandler';
 import DeleteFunctionHandler from './DeleteFunctionHandler';
 import StringToLDflexHandler from './StringToLDflexHandler';
 import { getFirstItem, iteratorFor } from './iterableUtils';
@@ -47,6 +48,7 @@ export default {
   predicates: new PredicatesHandler(),
   pathExpression: new PathExpressionHandler(),
   sparql: new SparqlHandler(),
+  subjects: new SubjectsHandler(),
   results: new ExecuteQueryHandler(),
 
   // Add write functionality

@@ -5,10 +5,11 @@ import PathExpressionHandler from '../../src/PathExpressionHandler';
 import InsertFunctionHandler from '../../src/InsertFunctionHandler';
 import DeleteFunctionHandler from '../../src/DeleteFunctionHandler';
 import ReplaceFunctionHandler from '../../src/ReplaceFunctionHandler';
+import SubjectsHandler from '../../src/SubjectsHandler';
 import SetFunctionHandler from '../../src/SetFunctionHandler';
 import DataHandler from '../../src/DataHandler';
 import JSONLDResolver from '../../src/JSONLDResolver';
-import { createQueryEngine } from '../util';
+import { createQueryEngine, deindent } from '../util';
 import { namedNode, literal } from '@rdfjs/data-model';
 
 import context from '../context';
@@ -72,6 +73,25 @@ describe('a query path with a path expression handler', () => {
         names.push(firstName);
     }
     expect(names.map(n => `${n}`)).toEqual(['Alice', 'Bob', 'Carol', 'Alice', 'Bob', 'Carol', 'Alice', 'Bob', 'Carol']);
+  });
+});
+
+describe('a query path with a subjects handler', () => {
+  let person;
+  beforeAll(() => {
+    const pathProxy = new PathProxy({ handlers: { ...handlersPath, subjects: new SubjectsHandler() }, resolvers });
+    person = pathProxy.createPath({ queryEngine }, { subject });
+  });
+
+  it('returns results, with executeQuery being called with the right query', async () => {
+    const subjects = [];
+    for await (const subj of person.subjects)
+      subjects.push(subj);
+    expect(queryEngine.execute).toBeCalledWith(deindent(`
+      SELECT DISTINCT ?subject WHERE {
+        ?subject ?predicate ?object.
+      }`));
+    expect(subjects.map(s => `${s}`)).toEqual(['Alice', 'Bob', 'Carol']);
   });
 });
 

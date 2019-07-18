@@ -88,15 +88,24 @@ async function showPerson(person) {
 
 ```
 
-### Getting properties 
+### Getting all subjects of a document
+```javascript
+(async document => {
+  for await (const subject of document.subjects)
+    console.log(`${subject}`);
+})(ruben);
+```
+
+### Getting all properties of a subject
 ```JavaScript
-(async person => {
-  console.log(await person.interest.properties);
+(async subject => {
+  for await (const property of subject.properties)
+    console.log(`${property}`);
 })(ruben);
 
 ```
 
-### Converting into a SPARQL query
+### Converting an LDflex expression into a SPARQL query
 ```JavaScript
 (async person => {
   console.log(await person.friends.givenName.sparql);
