@@ -80,22 +80,6 @@ async function showPerson(person) {
 }
 ```
 
-
-### Get all subjects from a document
-```javascript
-const bookmarks = path.create({ subject: namedNode('https://example.com/bookmarks.ttl') });
-showBookmarks(bookmarks);
-
-async function showBookmarks(bookmarks) {
-  console.log('The bookmarks');
-  for await (const bookmark of bookmarks.subjects) {
-    console.log(` - ${bookmark}`);
-    console.log(` - title: ${await bookmark['http://purl.org/dc/terms/title']}`);
-    console.log(` - recalls: ${await bookmark['http://www.w3.org/2002/01/bookmark#recalls']}`);
-  }
-}
-```
-
 ### Inspecting the generated path expression
 ```JavaScript
 (async person => {
@@ -104,15 +88,24 @@ async function showBookmarks(bookmarks) {
 
 ```
 
-### Getting properties 
+### Getting all subjects of a document
+```javascript
+(async document => {
+  for await (const subject of document.subjects)
+    console.log(`${subject}`);
+})(ruben);
+```
+
+### Getting all properties of a subject
 ```JavaScript
-(async person => {
-  console.log(await person.interest.properties);
+(async subject => {
+  for await (const property of subject.properties)
+    console.log(`${property}`);
 })(ruben);
 
 ```
 
-### Converting into a SPARQL query
+### Converting an LDflex expression into a SPARQL query
 ```JavaScript
 (async person => {
   console.log(await person.friends.givenName.sparql);
