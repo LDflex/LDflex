@@ -29,17 +29,20 @@ export default class SparqlHandler {
     if (pathExpression.length < 2 && !pathData.finalClause)
       throw new Error(`${pathData} should at least contain a subject and a predicate`);
 
+    // Create triple patterns
     let queryVar = '?subject';
-    let clauses = [];
-    // Embed the basic graph pattern into a SPARQL query
+    const clauses = [];
     if (pathExpression.length > 1) {
       queryVar = this.createVar(pathData.property);
-      const expressions = this.expressionToTriplePatterns(pathExpression, queryVar);
-      clauses = `\n  ${expressions.join('\n  ')}`;
+      clauses.push(...this.expressionToTriplePatterns(pathExpression, queryVar));
     }
+    if (pathData.finalClause)
+      clauses.push(pathData.finalClause(queryVar));
 
-    const select = `SELECT ${pathData.distinct ? 'DISTINCT ' : ''}${pathData.select ? pathData.select : queryVar}`;
-    const where = `WHERE {${clauses}${pathData.finalClause ? pathData.finalClause(queryVar) : ''}\n}`;
+    // Create SPARQL query body
+    const distinct = pathData.distinct ? 'DISTINCT ' : '';
+    const select = `SELECT ${distinct}${pathData.select ? pathData.select : queryVar}`;
+    const where = `WHERE {\n  ${clauses.join('\n  ')}\n}`;
     return `${select} ${where}`;
   }
 

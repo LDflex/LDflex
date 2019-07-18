@@ -9,7 +9,7 @@ import SubjectsHandler from '../../src/SubjectsHandler';
 import SetFunctionHandler from '../../src/SetFunctionHandler';
 import DataHandler from '../../src/DataHandler';
 import JSONLDResolver from '../../src/JSONLDResolver';
-import { createQueryEngine } from '../util';
+import { createQueryEngine, deindent } from '../util';
 import { namedNode, literal } from '@rdfjs/data-model';
 
 import context from '../context';
@@ -87,7 +87,10 @@ describe('a query path with a subjects handler', () => {
     const subjects = [];
     for await (const subj of person.subjects)
       subjects.push(subj);
-    expect(queryEngine.execute).toBeCalledWith('SELECT distinct ?s WHERE { ?s ?p ?o }');
+    expect(queryEngine.execute).toBeCalledWith(deindent(`
+      SELECT DISTINCT ?subject WHERE {
+        ?subject ?predicate ?object.
+      }`));
     expect(subjects.map(s => `${s}`)).toEqual(['Alice', 'Bob', 'Carol']);
   });
 });

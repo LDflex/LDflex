@@ -3,10 +3,11 @@
  */
 export default class PredicatesHandler {
   handle(pathData) {
-    return pathData.extendPath({ finalClause: this.finalClause, select: '?predicate', distinct: true, property: pathData.property });
-  }
-
-  finalClause(queryVar) {
-    return `\n  ${queryVar} ?predicate ?object.`;
+    return pathData.extendPath({
+      distinct: true,
+      select: '?predicate',
+      finalClause: queryVar => `${queryVar} ?predicate ?object.`,
+      property: pathData.property,
+    });
   }
 }
