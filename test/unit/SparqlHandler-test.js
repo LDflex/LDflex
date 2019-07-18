@@ -28,14 +28,19 @@ describe('a SparqlHandler instance', () => {
         .toEqual('<http://example.org>');
     });
 
+    it('should convert a NamedNode with special characters', async () => {
+      await expect(handler.termToString(namedNode('urn:ab:c\u0000\u0001\ud835\udc00')))
+        .toEqual('<urn:ab:c\\u0000\\u0001\\U0001d400>');
+    });
+
     it('should convert a Literal', async () => {
       await expect(handler.termToString(literal('abc')))
         .toEqual('"abc"');
     });
 
     it('should convert a Literal that should be escaped', async () => {
-      await expect(handler.termToString(literal('a"bc')))
-        .toEqual('"a\\"bc"');
+      await expect(handler.termToString(literal('a\'\\"\n\r\t\f\bbc')))
+        .toEqual('"a\'\\\\\\"\\n\\r\\t\\f\\bbc"');
     });
 
     it('should convert a Literal with a type', async () => {
@@ -297,6 +302,13 @@ describe('a SparqlHandler instance', () => {
   });
 
   describe('#createVar', () => {
+    it('returns a default value when no suggestion is given', () => {
+      const variableScope = {};
+      const queryVar = handler.createVar(undefined, variableScope);
+      expect(queryVar).toEqual('?result');
+      expect(variableScope).toEqual({ '?result': true });
+    });
+
     it('returns the suggestion for an empty scope', () => {
       const variableScope = {};
       const queryVar = handler.createVar('a', variableScope);

@@ -11,7 +11,7 @@ describe('a SetFunctionHandler instance', () => {
     };
   });
 
-  describe('resolving a property', async () => {
+  describe('resolving a property', () => {
     let result;
     beforeEach(async () => result = await handler.handle({}, proxy));
 

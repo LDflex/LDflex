@@ -279,11 +279,19 @@ describe('a PathFactory instance with initial settings and data', () => {
     beforeAll(() => (path = factory.create()));
 
     it('passes the settings', () => {
-      expect(path.internal.settings).toEqual({ foo: 'bar' });
+      expect(path.internal.settings).toHaveProperty('foo', 'bar');
     });
 
     it('passes the data', () => {
       expect(path.internal).toHaveProperty('a', 1);
+    });
+
+    it('sets an empty context on the settings', () => {
+      expect(path.internal.settings).toHaveProperty('context', {});
+    });
+
+    it('sets an empty parsedContext on the settings', () => {
+      expect(path.internal.settings).toHaveProperty('parsedContext', {});
     });
   });
 
@@ -292,12 +300,20 @@ describe('a PathFactory instance with initial settings and data', () => {
     beforeAll(() => (path = factory.create({ b: 2 })));
 
     it('passes the settings', () => {
-      expect(path.internal.settings).toEqual({ foo: 'bar' });
+      expect(path.internal.settings).toHaveProperty('foo', 'bar');
     });
 
     it('extends the data', () => {
       expect(path.internal).toHaveProperty('a', 1);
       expect(path.internal).toHaveProperty('b', 2);
+    });
+
+    it('sets an empty context on the settings', () => {
+      expect(path.internal.settings).toHaveProperty('context', {});
+    });
+
+    it('sets an empty parsedContext on the settings', () => {
+      expect(path.internal.settings).toHaveProperty('parsedContext', {});
     });
   });
 
@@ -306,7 +322,8 @@ describe('a PathFactory instance with initial settings and data', () => {
     beforeAll(() => (path = factory.create({ other: 'x' }, { b: 2 })));
 
     it('extends the settings', () => {
-      expect(path.internal.settings).toEqual({ foo: 'bar', other: 'x' });
+      expect(path.internal.settings).toHaveProperty('foo', 'bar');
+      expect(path.internal.settings).toHaveProperty('other', 'x');
     });
 
     it('extends the data', () => {
@@ -340,15 +357,31 @@ describe('a PathFactory instance with functions as handlers and resolvers', () =
 describe('a PathFactory instance with a context parameter', () => {
   let factory, path;
   beforeAll(() => {
-    factory = new PathFactory({ context });
+    factory = new PathFactory({
+      context,
+      handlers: {
+        internal: { handle: pathProxy => pathProxy },
+      },
+    });
     path = factory.create();
   });
 
   it('adds __esModule', () => {
-    expect(path.__esModule).toBeUndefined();
+    const emptyPath = new PathFactory({ context }).create();
+    expect(emptyPath.__esModule).toBeUndefined();
   });
 
   it('adds a JSONLDResolver', () => {
     expect(path.knows).toBeInstanceOf(Object);
+  });
+
+  it('sets the context on the settings', () => {
+    expect(path.internal.settings).toHaveProperty('context', context);
+  });
+
+  it('sets the parsedContext on the settings', async () => {
+    const parsedContext = await path.internal.settings.parsedContext;
+    expect(context['@context']).toHaveProperty('friends', 'foaf:knows');
+    expect(parsedContext).toHaveProperty('friends', 'http://xmlns.com/foaf/0.1/knows');
   });
 });

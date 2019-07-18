@@ -1,6 +1,6 @@
 {
   "name": "ldflex",
-  "version": "2.2.1",
+  "version": "2.3.0",
   "description": "A JavaScript DSL for querying Linked Data on the Web",
   "license": "MIT",
   "author": "Ruben Verborgh <ruben@verborgh.org> (https://ruben.verborgh.org/)",
@@ -19,7 +19,7 @@
   "dependencies": {
     "@babel/runtime": "^7.1.5",
     "@rdfjs/data-model": "^1.1.1",
-    "jsonld-context-parser": "^1.1.1"
+    "jsonld-context-parser": "^1.2.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.0.0",

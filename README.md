@@ -104,6 +104,14 @@ async function showBookmarks(bookmarks) {
 
 ```
 
+### Getting properties 
+```JavaScript
+(async person => {
+  console.log(await person.interest.properties);
+})(ruben);
+
+```
+
 ### Converting into a SPARQL query
 ```JavaScript
 (async person => {
