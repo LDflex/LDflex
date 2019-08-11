@@ -7,8 +7,13 @@ import { getThen } from './promiseUtils';
  * to their corresponding IRIs through a JSON-LD context.
  */
 export default class JSONLDResolver {
-  constructor(context) {
-    this._context = new ContextParser().parse(context);
+  _context = Promise.resolve({});
+
+  /**
+   * Creates a new resolver for the given context(s).
+   */
+  constructor(...contexts) {
+    this.extendContext(...contexts);
   }
 
   /**
@@ -40,5 +45,13 @@ export default class JSONLDResolver {
     if (!ContextParser.isValidIri(expandedProperty))
       throw new Error(`The JSON-LD context cannot expand the '${property}' property`);
     return namedNode(expandedProperty);
+  }
+
+  /**
+   * Extends the current JSON-LD context with the given context(s).
+   */
+  async extendContext(...contexts) {
+    await (this._context = this._context.then(currentContext =>
+      new ContextParser().parse([currentContext, ...contexts])));
   }
 }

@@ -146,4 +146,33 @@ describe('a JSONLDResolver instance with a context', () => {
       expect(result).toEqual(extendedPath);
     });
   });
+
+  describe('when the context is extended', () => {
+    describe('before extending', () => {
+      it('does not resolve sameAs', async () => {
+        await expect(resolver.expandProperty('sameAs')).rejects
+          .toThrow(new Error("The JSON-LD context cannot expand the 'sameAs' property"));
+      });
+    });
+
+    describe('after extending', () => {
+      beforeAll(async () => {
+        await resolver.extendContext({
+          '@context': {
+            owl: 'http://www.w3.org/2002/07/owl#',
+          },
+        }, {
+          sameAs: 'owl:sameAs',
+        });
+      });
+
+      const pathData = { extendPath: jest.fn() };
+      beforeEach(() => resolver.resolve('sameAs', pathData));
+
+      it('sets predicate to a promise for sameAs', async () => {
+        const { predicate } = pathData.extendPath.mock.calls[0][0];
+        expect(await predicate).toEqual(namedNode('http://www.w3.org/2002/07/owl#sameAs'));
+      });
+    });
+  });
 });
