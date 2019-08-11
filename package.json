@@ -24,9 +24,11 @@
   "devDependencies": {
     "@babel/cli": "^7.0.0",
     "@babel/core": "^7.0.1",
+    "@babel/plugin-proposal-class-properties": "^7.5.5",
     "@babel/plugin-transform-runtime": "^7.1.0",
     "@babel/preset-env": "^7.0.0",
-    "eslint": "^5.6.0",
+    "babel-eslint": "^10.0.2",
+    "eslint": "^5.16.0",
     "eslint-plugin-jest": "^21.22.0",
     "husky": "^1.1.2",
     "jest": "^24.1.0"
