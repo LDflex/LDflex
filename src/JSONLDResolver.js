@@ -38,7 +38,7 @@ export default class JSONLDResolver {
     // JavaScript requires keys containing colons to be quoted,
     // so prefixed names would need to written as path['foaf:knows'].
     // We thus allow writing path.foaf_knows or path.foaf$knows instead.
-    property = property.replace(/[_$]/, ':');
+    property = property.replace(/^([a-z][a-z0-9]*)[_$]/i, '$1:');
 
     // Expand the property to a full IRI
     const expandedProperty = ContextParser.expandTerm(property, await this._context, true);

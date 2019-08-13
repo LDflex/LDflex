@@ -147,6 +147,35 @@ describe('a JSONLDResolver instance with a context', () => {
     });
   });
 
+  describe('resolving the foaf:topic_interest property', () => {
+    const extendedPath = {};
+    const pathData = { extendPath: jest.fn(() => extendedPath) };
+
+    let result;
+    beforeEach(() => result = resolver.resolve('foaf:topic_interest', pathData));
+
+    it('extends the path', () => {
+      expect(pathData.extendPath).toBeCalledTimes(1);
+      const args = pathData.extendPath.mock.calls[0];
+      expect(args).toHaveLength(1);
+      expect(args[0]).toBeInstanceOf(Object);
+    });
+
+    it('sets property to foaf:topic_interest', () => {
+      const { property } = pathData.extendPath.mock.calls[0][0];
+      expect(property).toBe('foaf:topic_interest');
+    });
+
+    it('sets predicate to a promise for foaf:topic_interest', async () => {
+      const { predicate } = pathData.extendPath.mock.calls[0][0];
+      expect(await predicate).toEqual(namedNode('http://xmlns.com/foaf/0.1/topic_interest'));
+    });
+
+    it('returns the extended path', () => {
+      expect(result).toEqual(extendedPath);
+    });
+  });
+
   describe('when the context is extended', () => {
     describe('before extending', () => {
       it('does not resolve sameAs', async () => {
