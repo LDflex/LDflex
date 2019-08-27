@@ -48,6 +48,10 @@ describe('a query path with a properties handler with parsed context', () => {
       names.push(p);
     expect(names.map(n => `${n}`)).toEqual(['foaf:knows', 'foaf:name', 'label']);
   });
+
+  it('expands the first property on a path', async () => {
+    expect(`${await person.properties}`).toEqual('foaf:knows');
+  });
 });
 
 describe('a query path with a properties handler without parsed context', () => {
