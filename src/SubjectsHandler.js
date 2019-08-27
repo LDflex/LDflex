@@ -1,5 +1,5 @@
 /**
- * Queries for all predicates of a path subject
+ * Queries for all subjects of a document
  */
 export default class SubjectsHandler {
   handle(pathData) {

@@ -6,12 +6,15 @@ import JSONLDResolver from './JSONLDResolver';
 import MutationExpressionsHandler from './MutationExpressionsHandler';
 import MutationFunctionHandler from './MutationFunctionHandler';
 import PathExpressionHandler from './PathExpressionHandler';
-import PathProxy from './PathProxy';
 import PathFactory from './PathFactory';
+import PathProxy from './PathProxy';
+import PredicatesHandler from './PredicatesHandler';
+import PropertiesHandler from './PropertiesHandler';
 import ReplaceFunctionHandler from './ReplaceFunctionHandler';
 import SetFunctionHandler from './SetFunctionHandler';
 import SparqlHandler from './SparqlHandler';
 import SubjectHandler from './SubjectHandler';
+import SubjectsHandler from './SubjectsHandler';
 import StringToLDflexHandler from './StringToLDflexHandler';
 import defaultHandlers from './defaultHandlers';
 import { getFirstItem, iteratorFor } from './iterableUtils';
@@ -26,13 +29,16 @@ export {
   MutationExpressionsHandler,
   MutationFunctionHandler,
   PathExpressionHandler,
-  PathProxy,
   PathFactory,
+  PathProxy,
+  PredicatesHandler,
+  PropertiesHandler,
   ReplaceFunctionHandler,
   SetFunctionHandler,
   SparqlHandler,
-  SubjectHandler,
   StringToLDflexHandler,
+  SubjectHandler,
+  SubjectsHandler,
   defaultHandlers,
   getFirstItem,
   getThen,
