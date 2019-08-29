@@ -122,6 +122,19 @@ describe('a SparqlHandler instance', () => {
           <https://example.org/#me> <https://ex.org/p1> ?result.
         }`));
     });
+
+    it('skolemizes blank-node subjects', async () => {
+      const pathExpression = [
+        { subject: blankNode('b1') },
+        { predicate: namedNode('https://ex.org/p1') },
+      ];
+      const pathData = { property: 'p1' };
+
+      expect(await handler.handle(pathData, { pathExpression })).toMatch(
+        /<urn:ldflex:sk\d+> <https:\/\/ex.org\/p1> \?p1\./);
+      expect(await handler.handle(pathData, { pathExpression })).toMatch(
+        /<urn:ldflex:sk\d+> <https:\/\/ex.org\/p1> \?p1\./);
+    });
   });
 
   describe('with mutationExpressions', () => {

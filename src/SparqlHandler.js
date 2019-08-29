@@ -1,3 +1,5 @@
+import { namedNode } from '@rdfjs/data-model';
+
 const NEEDS_ESCAPE = /["\\\t\n\r\b\f\u0000-\u0019\ud800-\udbff]/,
       ESCAPE_ALL = /["\\\t\n\r\b\f\u0000-\u0019]|[\ud800-\udbff][\udc00-\udfff]/g,
       ESCAPED_CHARS = {
@@ -77,7 +79,7 @@ export default class SparqlHandler {
 
   expressionToTriplePatterns([root, ...pathExpression], queryVar, scope = {}) {
     const last = pathExpression.length - 1;
-    let object = this.termToString(root.subject);
+    let object = this.termToString(skolemize(root.subject));
     return pathExpression.map((segment, index) => {
       // Obtain components and generate triple pattern
       const subject = object;
@@ -147,4 +149,14 @@ function escapeCharacter(character) {
     }
   }
   return result;
+}
+
+// Skolemizes the given term if it is a blank node
+let skolemId = 0;
+function skolemize(term) {
+  if (term.termType !== 'BlankNode')
+    return term;
+  if (!term.skolemized)
+    term.skolemized = namedNode(`urn:ldflex:sk${skolemId++}`);
+  return term.skolemized;
 }
