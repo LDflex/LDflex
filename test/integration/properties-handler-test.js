@@ -42,15 +42,15 @@ describe('a query path with a properties handler with parsed context', () => {
     }, { subject });
   });
 
-  it('expands properties on a path', async () => {
+  it('compacts properties on a path', async () => {
     const names = [];
     for await (const p of person.properties)
       names.push(p);
-    expect(names.map(n => `${n}`)).toEqual(['foaf:knows', 'foaf:name', 'label']);
+    expect(names.map(n => `${n}`)).toEqual(['knows', 'name', 'label']);
   });
 
-  it('expands the first property on a path', async () => {
-    expect(`${await person.properties}`).toEqual('foaf:knows');
+  it('compacts the first property on a path', async () => {
+    expect(`${await person.properties}`).toEqual('knows');
   });
 });
 
@@ -61,7 +61,7 @@ describe('a query path with a properties handler without parsed context', () => 
     person = pathProxy.createPath({ queryEngine }, { subject });
   });
 
-  it('does not expand properties on a path', async () => {
+  it('does not compact properties on a path', async () => {
     const names = [];
     for await (const p of person.properties)
       names.push(p);
