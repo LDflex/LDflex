@@ -135,6 +135,22 @@ describe('a SparqlHandler instance', () => {
       expect(await handler.handle(pathData, { pathExpression })).toMatch(
         /<urn:ldflex:sk\d+> <https:\/\/ex.org\/p1> \?p1\./);
     });
+
+    it('adds ORDER BY when required', async () => {
+      const pathExpression = [
+        { subject: namedNode('https://example.org/#me') },
+        { predicate: namedNode('https://ex.org/p1') },
+        { predicate: namedNode('https://ex.org/p2'), sort: 'ASC' },
+      ];
+
+      const pathData = { property: 'p2' };
+      expect(await handler.handle(pathData, { pathExpression })).toEqual(deindent(`
+        SELECT ?v0 WHERE {
+          <https://example.org/#me> <https://ex.org/p1> ?v0.
+          ?v0 <https://ex.org/p2> ?p2.
+        } 
+        ORDER BY ASC(?p2)`));
+    });
   });
 
   describe('with mutationExpressions', () => {

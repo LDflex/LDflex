@@ -12,6 +12,7 @@ import PredicatesHandler from './PredicatesHandler';
 import PropertiesHandler from './PropertiesHandler';
 import ReplaceFunctionHandler from './ReplaceFunctionHandler';
 import SetFunctionHandler from './SetFunctionHandler';
+import SortHandler from './SortHandler';
 import SparqlHandler from './SparqlHandler';
 import SubjectHandler from './SubjectHandler';
 import SubjectsHandler from './SubjectsHandler';
@@ -35,6 +36,7 @@ export {
   PropertiesHandler,
   ReplaceFunctionHandler,
   SetFunctionHandler,
+  SortHandler,
   SparqlHandler,
   StringToLDflexHandler,
   SubjectHandler,

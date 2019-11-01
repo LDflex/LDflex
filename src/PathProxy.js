@@ -42,6 +42,11 @@ export default class PathProxy {
     if (!path.extendPath) {
       const pathProxy = this;
       path.extendPath = function extendPath(newData, parent = this) {
+        // Data that needs to be given to followup proxies in the path
+        if (parent && parent.childData && parent.childData.count > 0) {
+          const { count: cCount, data: cData } = parent.childData;
+          newData = Object.assign(cCount > 1 ? { childData: { count: cCount - 1, data: cData } } : {}, cData, newData);
+        }
         return pathProxy.createPath(settings, { parent, extendPath, ...newData });
       };
     }

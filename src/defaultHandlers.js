@@ -12,6 +12,7 @@ import ReplaceFunctionHandler from './ReplaceFunctionHandler';
 import SubjectsHandler from './SubjectsHandler';
 import DeleteFunctionHandler from './DeleteFunctionHandler';
 import StringToLDflexHandler from './StringToLDflexHandler';
+import SortHandler from './SortHandler';
 import { getFirstItem, iteratorFor } from './iterableUtils';
 import { getThen } from './promiseUtils';
 
@@ -50,6 +51,8 @@ export default {
   sparql: new SparqlHandler(),
   subjects: new SubjectsHandler(),
   results: new ExecuteQueryHandler(),
+  sort: new SortHandler('ASC'),
+  sortDesc: new SortHandler('DESC'),
 
   // Add write functionality
   mutationExpressions: new MutationExpressionsHandler(),
