@@ -59,6 +59,6 @@ describe('a StringToLDflexHandler instance', () => {
 
   it('errors on invalid expressions', () => {
     expect(() => parseLDflex('..foo.bar'))
-      .toThrow('Expression "..foo.bar" is invalid: Unexpected token .');
+      .toThrow(/Expression "..foo.bar" is invalid: Unexpected token/);
   });
 });

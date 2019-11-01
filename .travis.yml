@@ -2,10 +2,12 @@ language: node_js
 node_js:
  - 10
  - 11
+ - 12
+ - 13
  - lts/*
  - node
 env:
-  - DEFAULT_NODE_VERSION=10
+  - DEFAULT_NODE_VERSION=12
 
 before_script:
   - npm run build
