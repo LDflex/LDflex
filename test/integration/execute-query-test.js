@@ -65,11 +65,17 @@ describe('when the query engine throws an error', () => {
     person = pathProxy.createPath({ queryEngine: failingQueryEngine }, { subject });
   });
 
-  it('throws an error to the calling application', async () => {
+  it('throws an error to the calling iterator', async () => {
     await expect((async () => {
       // eslint-disable-next-line  no-unused-vars
       for await (const item of person.firstName)
         throw new Error();
+    })()).rejects.toThrow('Boom!');
+  });
+
+  it.skip('throws an error to the calling non-iterator', async () => {
+    await expect((async () => {
+      await person.firstName;
     })()).rejects.toThrow('Boom!');
   });
 });
