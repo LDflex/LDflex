@@ -52,6 +52,24 @@ const handlersMutation = {
   toString: DataHandler.syncFunction('subject', 'value'),
 };
 
+describe('when the query engine throws an error', () => {
+  let person;
+  beforeAll(() => {
+    const failingQueryEngine = {
+      execute: jest.fn(async () => {
+        throw new Error('Boom!');
+      }),
+    };
+    const pathProxy = new PathProxy({ handlers: handlersPath, resolvers });
+    person = pathProxy.createPath({ failingQueryEngine }, { subject });
+  });
+
+  it.skip('throws an error to the calling application', async () => {
+    const promise = person.firstName;
+    return expect(promise).rejects.toThrow('Boom!');
+  });
+});
+
 describe('a query path with a path expression handler', () => {
   let person;
   beforeAll(() => {
