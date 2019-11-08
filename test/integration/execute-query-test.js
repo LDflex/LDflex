@@ -56,27 +56,19 @@ describe('when the query engine throws an error', () => {
   let person;
   beforeAll(() => {
     const failingQueryEngine = {
-      // eslint-disable-next-line  require-yield
       async *execute() {
-        throw new Error('Boom!');
+        throw new Error('Query engine error');
       },
     };
     const pathProxy = new PathProxy({ handlers: handlersPath, resolvers });
     person = pathProxy.createPath({ queryEngine: failingQueryEngine }, { subject });
   });
 
-  it('throws an error to the calling iterator', async () => {
+  it('rejects with an error to a calling iterator', async () => {
     await expect((async () => {
-      // eslint-disable-next-line  no-unused-vars
       for await (const item of person.firstName)
-        throw new Error();
-    })()).rejects.toThrow('Boom!');
-  });
-
-  it.skip('throws an error to the calling non-iterator', async () => {
-    await expect((async () => {
-      await person.firstName;
-    })()).rejects.toThrow('Boom!');
+        throw new Error(`Unexpected ${item}`);
+    })()).rejects.toThrow('Query engine error');
   });
 });
 
