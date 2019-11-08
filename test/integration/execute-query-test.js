@@ -56,17 +56,21 @@ describe('when the query engine throws an error', () => {
   let person;
   beforeAll(() => {
     const failingQueryEngine = {
-      execute: jest.fn(async () => {
+      // eslint-disable-next-line  require-yield
+      async *execute() {
         throw new Error('Boom!');
-      }),
+      },
     };
     const pathProxy = new PathProxy({ handlers: handlersPath, resolvers });
-    person = pathProxy.createPath({ failingQueryEngine }, { subject });
+    person = pathProxy.createPath({ queryEngine: failingQueryEngine }, { subject });
   });
 
-  it.skip('throws an error to the calling application', async () => {
-    const promise = person.firstName;
-    return expect(promise).rejects.toThrow('Boom!');
+  it('throws an error to the calling application', async () => {
+    await expect((async () => {
+      // eslint-disable-next-line  no-unused-vars
+      for await (const item of person.firstName)
+        throw new Error();
+    })()).rejects.toThrow('Boom!');
   });
 });
 
