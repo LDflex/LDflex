@@ -52,6 +52,26 @@ const handlersMutation = {
   toString: DataHandler.syncFunction('subject', 'value'),
 };
 
+describe('when the query engine throws an error', () => {
+  let person;
+  beforeAll(() => {
+    const failingQueryEngine = {
+      async *execute() {
+        throw new Error('Query engine error');
+      },
+    };
+    const pathProxy = new PathProxy({ handlers: handlersPath, resolvers });
+    person = pathProxy.createPath({ queryEngine: failingQueryEngine }, { subject });
+  });
+
+  it('rejects with an error to a calling iterator', async () => {
+    await expect((async () => {
+      for await (const item of person.firstName)
+        throw new Error(`Unexpected ${item}`);
+    })()).rejects.toThrow('Query engine error');
+  });
+});
+
 describe('a query path with a path expression handler', () => {
   let person;
   beforeAll(() => {
