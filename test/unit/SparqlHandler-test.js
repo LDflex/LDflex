@@ -135,6 +135,40 @@ describe('a SparqlHandler instance', () => {
       expect(await handler.handle(pathData, { pathExpression })).toMatch(
         /<urn:ldflex:sk\d+> <https:\/\/ex.org\/p1> \?p1\./);
     });
+
+    it('supports ORDER BY with one variable', async () => {
+      const pathExpression = [
+        { subject: namedNode('https://example.org/#me') },
+        { predicate: namedNode('https://ex.org/p1') },
+        { predicate: namedNode('https://ex.org/p2'), sort: 'ASC' },
+      ];
+
+      const pathData = { property: 'p2' };
+      expect(await handler.handle(pathData, { pathExpression })).toEqual(deindent(`
+        SELECT ?v0 WHERE {
+          <https://example.org/#me> <https://ex.org/p1> ?v0.
+          ?v0 <https://ex.org/p2> ?p2.
+        }
+        ORDER BY ASC(?p2)`));
+    });
+
+    it('supports ORDER BY with two variables', async () => {
+      const pathExpression = [
+        { subject: namedNode('https://example.org/#me') },
+        { predicate: namedNode('https://ex.org/p1') },
+        { predicate: namedNode('https://ex.org/p2'), sort: 'ASC' },
+        { predicate: namedNode('https://ex.org/p3'), sort: 'ASC' },
+      ];
+
+      const pathData = { property: 'p3' };
+      expect(await handler.handle(pathData, { pathExpression })).toEqual(deindent(`
+        SELECT ?v0 WHERE {
+          <https://example.org/#me> <https://ex.org/p1> ?v0.
+          ?v0 <https://ex.org/p2> ?v1.
+          ?v0 <https://ex.org/p3> ?p3.
+        }
+        ORDER BY ASC(?v1) ASC(?p3)`));
+    });
   });
 
   describe('with mutationExpressions', () => {

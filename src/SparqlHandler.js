@@ -32,11 +32,10 @@ export default class SparqlHandler {
       throw new Error(`${pathData} should at least contain a subject and a predicate`);
 
     // Create triple patterns
-    let queryVar = '?subject';
-    const clauses = [];
+    let queryVar = '?subject', sorts = [], clauses = [];
     if (pathExpression.length > 1) {
       queryVar = this.createVar(pathData.property);
-      clauses.push(...this.expressionToTriplePatterns(pathExpression, queryVar));
+      ({ queryVar, sorts, clauses } = this.expressionToTriplePatterns(pathExpression, queryVar));
     }
     if (pathData.finalClause)
       clauses.push(pathData.finalClause(queryVar));
@@ -44,8 +43,10 @@ export default class SparqlHandler {
     // Create SPARQL query body
     const distinct = pathData.distinct ? 'DISTINCT ' : '';
     const select = `SELECT ${distinct}${pathData.select ? pathData.select : queryVar}`;
-    const where = `WHERE {\n  ${clauses.join('\n  ')}\n}`;
-    return `${select} ${where}`;
+    const where = ` WHERE {\n  ${clauses.join('\n  ')}\n}`;
+    const orderClauses = sorts.map(({ order, variable }) => `${order}(${variable})`);
+    const orderBy = orderClauses.length === 0 ? '' : `\nORDER BY ${orderClauses.join(' ')}`;
+    return `${select}${where}${orderBy}`;
   }
 
   mutationExpressionToQuery({ mutationType, conditions, predicate, objects }) {
@@ -60,7 +61,7 @@ export default class SparqlHandler {
     else {
       const lastPredicate = conditions[conditions.length - 1].predicate;
       subject = this.createVar(lastPredicate.value, scope);
-      where = this.expressionToTriplePatterns(conditions, subject, scope);
+      ({ queryVar: subject, clauses: where } = this.expressionToTriplePatterns(conditions, subject, scope));
     }
 
     // If a list of objects was specified, the mutation is "<s> <p> objects"
@@ -77,16 +78,30 @@ export default class SparqlHandler {
       `${mutationType} {\n  ${mutationPattern}\n} WHERE {\n  ${where.join('\n  ')}\n}`;
   }
 
-  expressionToTriplePatterns([root, ...pathExpression], queryVar, scope = {}) {
-    const last = pathExpression.length - 1;
+  expressionToTriplePatterns([root, ...pathExpression], lastVar, scope = {}) {
+    const lastIndex = pathExpression.length - 1;
     let object = this.termToString(skolemize(root.subject));
-    return pathExpression.map((segment, index) => {
+    let queryVar = object;
+    const sorts = [];
+    const clauses = pathExpression.map((segment, index) => {
       // Obtain components and generate triple pattern
       const subject = object;
       const { predicate } = segment;
-      object = index < last ? this.createVar(`v${index}`, scope) : queryVar;
-      return `${subject} ${this.termToString(predicate)} ${object}.`;
+      object = index < lastIndex ? this.createVar(`v${index}`, scope) : lastVar;
+      const result = `${subject} ${this.termToString(predicate)} ${object}.`;
+
+      // If the sort option was not set, use this object as a query variable
+      if (!segment.sort) {
+        queryVar = object;
+      }
+      // If sort was set, use this object as a sorting variable
+      else {
+        sorts.push({ variable: object, order: segment.sort });
+        object = queryVar;
+      }
+      return result;
     });
+    return { queryVar, sorts, clauses };
   }
 
   // Creates a unique query variable within the given scope, based on the suggestion
