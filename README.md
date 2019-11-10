@@ -116,16 +116,16 @@ async function showPerson(person) {
 ### Sorting path results
 ```Javascript
 (async person => {
-    for await (const uri of person.interest.sort('label'))
-      console.log(`- ${uri}`);
+  for await (const uri of person.interest.sort('label'))
+    console.log(`- ${uri}`);
 })(ruben);
 
 ```
 
 The sort function takes multiple arguments,
 creating a path that sorts on the last argument.
-The path can also continue after the sort.
-E.g.: `person.friends.sort('country', 'label').givenName`
+The path can also continue after the sort:
+`person.friends.sort('country', 'label').givenName`
 will sort the friends based on the label of their country,
 and then return their names.
 

@@ -347,17 +347,17 @@ describe('a PathProxy with child data', () => {
     pathProxy = new PathProxy({ handlers });
   });
 
-  it('will give the data to grandchildren for count > 1', () => {
-    const path = pathProxy.createPath(settings, { a: 1, childData: { count: 2, data: { b: 6 } } });
+  it('will pass the data to grandchildren for count > 1', () => {
+    const path = pathProxy.createPath(settings, { a: 1, childData: { childLimit: 2, b: 6 } });
     const extendedPath = path.internal.extendPath({});
     expect(extendedPath.internal).toHaveProperty('b');
     expect(extendedPath.internal.b).toBe(6);
     expect(extendedPath.internal).toHaveProperty('childData');
-    expect(extendedPath.internal.childData).toEqual({ count: 1, data: { b: 6 } });
+    expect(extendedPath.internal.childData).toEqual({ childLimit: 1, b: 6 });
   });
 
-  it('will not give the childData property to children if count <= 1', () => {
-    const path = pathProxy.createPath(settings, { a: 1, childData: { count: 1, data: { b: 6 } } });
+  it('will not pass the childData property to children if childLimit <= 1', () => {
+    const path = pathProxy.createPath(settings, { a: 1, childData: { childLimit: 1, b: 6 } });
     const extendedPath = path.internal.extendPath({});
     expect(extendedPath.internal).toHaveProperty('b');
     expect(extendedPath.internal.b).toBe(6);

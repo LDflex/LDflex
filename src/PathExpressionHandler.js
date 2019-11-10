@@ -10,8 +10,10 @@ export default class PathExpressionHandler {
     while (current.parent) {
       // Obtain and store predicate
       if (current.predicate) {
-        const predicate = await current.predicate;
-        segments.unshift({ predicate, sort: current.sort });
+        segments.unshift({
+          predicate: await current.predicate,
+          sort: current.sort,
+        });
       }
       // Move to parent link
       current = current.parent;

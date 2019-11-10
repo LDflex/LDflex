@@ -12,11 +12,14 @@ describe('a SortHandler instance', () => {
     });
 
     it('errors if called after a previous sort', () => {
-      expect(handler.handle({ sort: 'DESC' })).toThrow('Multiple sorts not supported');
+      expect(handler.handle({ sort: 'DESC' })).toThrow('Multiple sorts on a path are not yet supported');
     });
 
     it('creates a path entry with child data', () => {
-      expect(handler.handle({ extendPath })()).toEqual({ ...dummyData, childData: { count: 0, data: { sort: 'ASC' } } });
+      expect(handler.handle({ extendPath })()).toEqual({
+        ...dummyData,
+        childData: { childLimit: 0, sort: 'ASC' },
+      });
     });
 
     it('calls the proxy with the given parameters', () => {

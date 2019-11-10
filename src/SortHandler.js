@@ -1,5 +1,6 @@
 /**
- * Returns a function that creates a new path with the same values as the previous one but sorted on the given predicate.
+ * Returns a function that creates a new path with the same values,
+ * but sorted on the given predicate.
  * The function accepts multiple parameters to sort on a deeper path.
  */
 export default class SortHandler {
@@ -8,11 +9,12 @@ export default class SortHandler {
   }
 
   handle(pathData) {
-    return (...args) => {
+    return (...properties) => {
       if (pathData.sort)
-        throw new Error('Multiple sorts not supported');
-      const sortProxy = pathData.extendPath({ childData: { count: args.length, data: { sort: this.order } } });
-      return args.reduce((acc, val) => acc[val], sortProxy);
+        throw new Error('Multiple sorts on a path are not yet supported');
+      const childData = { childLimit: properties.length, sort: this.order };
+      const sortPath = pathData.extendPath({ childData });
+      return properties.reduce((path, property) => path[property], sortPath);
     };
   }
 }
