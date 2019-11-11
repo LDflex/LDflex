@@ -16,6 +16,7 @@ describe('The LDflex module', () => {
     'PropertiesHandler',
     'ReplaceFunctionHandler',
     'SetFunctionHandler',
+    'SortHandler',
     'SparqlHandler',
     'StringToLDflexHandler',
     'SubjectHandler',

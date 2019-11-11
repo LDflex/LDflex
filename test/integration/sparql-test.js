@@ -6,6 +6,7 @@ import DeleteFunctionHandler from '../../src/DeleteFunctionHandler';
 import MutationExpressionsHandler from '../../src/MutationExpressionsHandler';
 import PredicatesHandler from '../../src/PredicatesHandler';
 import SetFunctionHandler from '../../src/SetFunctionHandler';
+import SortHandler from '../../src/SortHandler';
 import ReplaceFunctionHandler from '../../src/ReplaceFunctionHandler';
 import JSONLDResolver from '../../src/JSONLDResolver';
 import { namedNode } from '@rdfjs/data-model';
@@ -26,6 +27,7 @@ describe('a query path with a path expression handler', () => {
     mutationExpressions: new MutationExpressionsHandler(),
     replace: new ReplaceFunctionHandler(),
     set: new SetFunctionHandler(),
+    sort: new SortHandler(),
     [Symbol.asyncIterator]: {
       handle() {
         const iterable = (async function *() {
@@ -55,6 +57,19 @@ describe('a query path with a path expression handler', () => {
         ?v0 <${FOAF}knows> ?v1.
         ?v1 <${FOAF}givenName> ?firstName.
       }`));
+  });
+
+  it('resolves a path with 3 links and a sort operation', async () => {
+    const query = await person.friends.friends.name.sort('familyName', 'givenName').sparql;
+    expect(query).toEqual(deindent(`
+      SELECT ?v2 WHERE {
+        <https://example.org/#me> <${FOAF}knows> ?v0.
+        ?v0 <${FOAF}knows> ?v1.
+        ?v1 <${FOAF}name> ?v2.
+        ?v2 <${FOAF}familyName> ?v3.
+        ?v2 <${FOAF}givenName> ?givenName.
+      }
+      ORDER BY ASC(?v3) ASC(?givenName)`));
   });
 
   it('resolves a path with 1 link and a predicates call', async () => {
