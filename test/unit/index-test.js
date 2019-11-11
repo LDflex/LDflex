@@ -13,6 +13,7 @@ describe('The LDflex module', () => {
     'PathExpressionHandler',
     'PathFactory',
     'PathProxy',
+    'PredicateHandler',
     'PredicatesHandler',
     'PropertiesHandler',
     'ReplaceFunctionHandler',

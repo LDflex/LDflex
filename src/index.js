@@ -9,6 +9,7 @@ import MutationFunctionHandler from './MutationFunctionHandler';
 import PathExpressionHandler from './PathExpressionHandler';
 import PathFactory from './PathFactory';
 import PathProxy from './PathProxy';
+import PredicateHandler from './PredicateHandler';
 import PredicatesHandler from './PredicatesHandler';
 import PropertiesHandler from './PropertiesHandler';
 import ReplaceFunctionHandler from './ReplaceFunctionHandler';
@@ -35,6 +36,7 @@ export {
   PathExpressionHandler,
   PathFactory,
   PathProxy,
+  PredicateHandler,
   PredicatesHandler,
   PropertiesHandler,
   ReplaceFunctionHandler,

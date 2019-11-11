@@ -25,7 +25,7 @@ describe('a SubjectHandler instance', () => {
     it('returns a new path with the subject', async () => {
       expect(pathData.extendPath).toHaveBeenCalledTimes(1);
       expect(pathData.extendPath).toHaveBeenCalledWith({ subject }, null);
-      await expect(result).resolves.toEqual(newPath);
+      await expect(result).resolves.toBe(newPath);
     });
   });
 
@@ -38,7 +38,7 @@ describe('a SubjectHandler instance', () => {
     it('returns a new path with the resolved subject', async () => {
       expect(pathData.extendPath).toHaveBeenCalledTimes(1);
       expect(pathData.extendPath).toHaveBeenCalledWith({ subject }, null);
-      await expect(result).resolves.toEqual(newPath);
+      await expect(result).resolves.toBe(newPath);
     });
   });
 
@@ -58,7 +58,7 @@ describe('a SubjectHandler instance', () => {
     it('returns a new path with the subject', async () => {
       expect(pathData.extendPath).toHaveBeenCalledTimes(1);
       expect(pathData.extendPath).toHaveBeenCalledWith({ subject }, null);
-      await expect(result).resolves.toEqual(newPath);
+      await expect(result).resolves.toBe(newPath);
     });
   });
 });

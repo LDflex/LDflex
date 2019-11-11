@@ -5,6 +5,7 @@ import ExecuteQueryHandler from './ExecuteQueryHandler';
 import InsertFunctionHandler from './InsertFunctionHandler';
 import MutationExpressionsHandler from './MutationExpressionsHandler';
 import PathExpressionHandler from './PathExpressionHandler';
+import PredicateHandler from './PredicateHandler';
 import PredicatesHandler from './PredicatesHandler';
 import PropertiesHandler from './PropertiesHandler';
 import ReplaceFunctionHandler from './ReplaceFunctionHandler';
@@ -29,6 +30,7 @@ export default {
 
   // Add read and query functionality
   subject: new SubjectHandler(),
+  predicate: new PredicateHandler(),
   properties: new PropertiesHandler(),
   predicates: new PredicatesHandler(),
   pathExpression: new PathExpressionHandler(),
