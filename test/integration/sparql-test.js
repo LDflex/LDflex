@@ -1,12 +1,16 @@
+import DataHandler from '../../src/DataHandler';
 import PathProxy from '../../src/PathProxy';
 import SparqlHandler from '../../src/SparqlHandler';
 import PathExpressionHandler from '../../src/PathExpressionHandler';
 import InsertFunctionHandler from '../../src/InsertFunctionHandler';
 import DeleteFunctionHandler from '../../src/DeleteFunctionHandler';
 import MutationExpressionsHandler from '../../src/MutationExpressionsHandler';
+import PredicateHandler from '../../src/PredicateHandler';
 import PredicatesHandler from '../../src/PredicatesHandler';
 import SetFunctionHandler from '../../src/SetFunctionHandler';
 import SortHandler from '../../src/SortHandler';
+import SubjectHandler from '../../src/SubjectHandler';
+import ThenHandler from '../../src/ThenHandler';
 import ReplaceFunctionHandler from '../../src/ReplaceFunctionHandler';
 import JSONLDResolver from '../../src/JSONLDResolver';
 import { namedNode } from '@rdfjs/data-model';
@@ -23,11 +27,14 @@ describe('a query path with a path expression handler', () => {
     add: new InsertFunctionHandler(),
     delete: new DeleteFunctionHandler(),
     properties: new PredicatesHandler(),
+    predicate: new PredicateHandler(),
     predicates: new PredicatesHandler(),
     mutationExpressions: new MutationExpressionsHandler(),
     replace: new ReplaceFunctionHandler(),
     set: new SetFunctionHandler(),
     sort: new SortHandler(),
+    subject: new SubjectHandler(),
+    then: new ThenHandler(),
     [Symbol.asyncIterator]: {
       handle() {
         const iterable = (async function *() {
@@ -37,6 +44,8 @@ describe('a query path with a path expression handler', () => {
         return () => iterable[Symbol.asyncIterator]();
       },
     },
+    value: DataHandler.sync('subject', 'value'),
+    termType: DataHandler.sync('subject', 'termType'),
   };
   const resolvers = [
     new JSONLDResolver(context),

@@ -1,29 +1,54 @@
 import SortHandler from '../../src/SortHandler';
 
 describe('a SortHandler instance', () => {
+  const path = {
+    p1: { predicate: 'http://p.example/#1' },
+    p2: { predicate: 'http://p.example/#2' },
+  };
+  const pathData = {
+    extendPath: jest.fn(data => ({ ...data, ...path })),
+  };
+
   let handler;
-  const dummyData = { p1: { p2: 'done' } };
-  const extendPath = jest.fn(data => ({ ...data, ...dummyData }));
   beforeAll(() => handler = new SortHandler());
 
-  describe('creates a function that', () => {
-    it('is a function', () => {
-      expect(handler.handle({})).toBeInstanceOf(Function);
+  describe('returns a function that', () => {
+    let sort;
+    beforeAll(() => {
+      sort = handler.handle(pathData, path);
+      path.sort = sort;
     });
 
-    it('errors if called after a previous sort', () => {
-      expect(handler.handle({ sort: 'DESC' })).toThrow('Multiple sorts on a path are not yet supported');
+    it('returns the original path when called without arguments', () => {
+      expect(sort()).toBe(path);
     });
 
-    it('creates a path entry with child data', () => {
-      expect(handler.handle({ extendPath })()).toEqual({
-        ...dummyData,
-        childData: { childLimit: 0, sort: 'ASC' },
+    it('returns a sort path when called with one property', () => {
+      const sortedPath = sort('p1');
+      expect(pathData.extendPath).toHaveBeenCalledTimes(1);
+      expect(pathData.extendPath).toHaveBeenCalledWith({
+        property: 'p1',
+        predicate: 'http://p.example/#1',
+        sort: 'ASC',
       });
+      expect(sortedPath).toBe(pathData.extendPath.mock.results[0].value);
     });
 
-    it('calls the proxy with the given parameters', () => {
-      expect(handler.handle({ extendPath })('p1', 'p2')).toEqual('done');
+    it('returns a sort path when called with two properties', () => {
+      const sortedPath = sort('p1', 'p2');
+      expect(pathData.extendPath).toHaveBeenCalledTimes(2);
+      expect(pathData.extendPath).toHaveBeenCalledWith({
+        property: 'p1',
+        predicate: 'http://p.example/#1',
+        sort: 'ASC',
+      });
+      expect(pathData.extendPath).toHaveBeenCalledWith({
+        property: 'p2',
+        predicate: 'http://p.example/#2',
+        sort: 'ASC',
+      });
+      expect(sortedPath).toBe(pathData.extendPath.mock.results[1].value);
+      expect(sortedPath).toEqual(path.sort('p1').sort('p2'));
     });
   });
 });
