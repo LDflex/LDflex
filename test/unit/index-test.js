@@ -15,6 +15,7 @@ describe('The LDflex module', () => {
     'PathProxy',
     'PredicateHandler',
     'PredicatesHandler',
+    'PreloadHandler',
     'PropertiesHandler',
     'ReplaceFunctionHandler',
     'SetFunctionHandler',
@@ -28,6 +29,7 @@ describe('The LDflex module', () => {
     'getFirstItem',
     'getThen',
     'iteratorFor',
+    'lazyThenable',
     'toIterablePromise',
   ];
 

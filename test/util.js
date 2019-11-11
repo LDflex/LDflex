@@ -4,11 +4,19 @@ export function deindent(string) {
   return string.trim().replace(indent, '');
 }
 
-export function createQueryEngine(results) {
+export function createQueryEngine(variableNames, results) {
+  if (!results) {
+    results = variableNames;
+    variableNames = ['?value'];
+  }
   return {
     execute: jest.fn(async function*() {
-      for (const term of results)
-        yield new Map([['?value', term]]);
+      for (let result of results) {
+        if (!Array.isArray(result))
+          result = [result];
+        const bindings = variableNames.map((name, i) => [name, result[i]]);
+        yield new Map(bindings);
+      }
     }),
   };
 }

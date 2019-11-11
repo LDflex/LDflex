@@ -6,16 +6,16 @@ describe('a ExecuteQueryHandler instance', () => {
   beforeAll(() => handler = new ExecuteQueryHandler());
 
   it('errors when a path defines no query engine', async () => {
-    const path = { settings: {}, toString: () => 'path' };
-    const iterable = handler.handle(path, {});
+    const pathData = { settings: {}, toString: () => 'path' };
+    const iterable = handler.handle(pathData, {});
     const iterator = iterable[Symbol.asyncIterator]();
     await expect(iterator.next()).rejects
       .toThrow(new Error('path has no queryEngine setting'));
   });
 
   it('errors when a path defines no sparql property', async () => {
-    const path = { settings: { queryEngine: {} }, toString: () => 'path' };
-    const iterable = handler.handle(path, {});
+    const pathData = { settings: { queryEngine: {} }, toString: () => 'path' };
+    const iterable = handler.handle(pathData, {});
     const iterator = iterable[Symbol.asyncIterator]();
     await expect(iterator.next()).rejects
       .toThrow(new Error('path has no sparql property'));
@@ -23,8 +23,21 @@ describe('a ExecuteQueryHandler instance', () => {
 
   it('errors with multi-variable results', async () => {
     const bindings = new Map([['?a', literal('')], ['?b', literal('')]]);
-    const path = { extendPath: args => args };
-    await expect(() => handler.extractTerm(bindings, path))
+    const pathData = { extendPath: args => args };
+    await expect(() => handler.extractTerm(bindings, pathData))
       .toThrow(new Error('Only single-variable queries are supported'));
+  });
+
+  it('tries the result cache before executing a query', async () => {
+    const cache = [
+      { subject: {} },
+      { subject: {} },
+    ];
+    const resultsCache = Promise.resolve(cache);
+    const results = handler.handle({ resultsCache });
+    const items = [];
+    for await (const result of results)
+      items.push(result);
+    expect(items).toEqual(cache);
   });
 });

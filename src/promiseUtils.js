@@ -1,6 +1,13 @@
 import { getFirstItem } from './iterableUtils';
 
 /**
+ * Returns a lazy thenable to the created promise.
+ */
+export function lazyThenable(createPromise) {
+  return { then: getThen(createPromise) };
+}
+
+/**
  * Lazily returns the `then` function of the created promise.
  */
 export function getThen(createPromise) {

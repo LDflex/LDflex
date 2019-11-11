@@ -15,6 +15,7 @@ import SparqlHandler from './SparqlHandler';
 import StringToLDflexHandler from './StringToLDflexHandler';
 import SubjectHandler from './SubjectHandler';
 import SubjectsHandler from './SubjectsHandler';
+import PreloadHandler from './PreloadHandler';
 import ThenHandler from './ThenHandler';
 
 /**
@@ -39,6 +40,7 @@ export default {
   results: new ExecuteQueryHandler(),
   sort: new SortHandler('ASC'),
   sortDesc: new SortHandler('DESC'),
+  preload: new PreloadHandler(),
 
   // Add write functionality
   mutationExpressions: new MutationExpressionsHandler(),

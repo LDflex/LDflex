@@ -19,10 +19,11 @@ import SparqlHandler from './SparqlHandler';
 import StringToLDflexHandler from './StringToLDflexHandler';
 import SubjectHandler from './SubjectHandler';
 import SubjectsHandler from './SubjectsHandler';
+import PreloadHandler from './PreloadHandler';
 import ThenHandler from './ThenHandler';
 import defaultHandlers from './defaultHandlers';
 import { getFirstItem, iteratorFor } from './iterableUtils';
-import { getThen, toIterablePromise } from './promiseUtils';
+import { lazyThenable, getThen, toIterablePromise } from './promiseUtils';
 
 export {
   AsyncIteratorHandler,
@@ -38,6 +39,7 @@ export {
   PathProxy,
   PredicateHandler,
   PredicatesHandler,
+  PreloadHandler,
   PropertiesHandler,
   ReplaceFunctionHandler,
   SetFunctionHandler,
@@ -51,5 +53,6 @@ export {
   getFirstItem,
   getThen,
   iteratorFor,
+  lazyThenable,
   toIterablePromise,
 };

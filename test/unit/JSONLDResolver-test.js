@@ -56,7 +56,7 @@ describe('a JSONLDResolver instance with a context', () => {
     });
 
     it('returns the extended path', () => {
-      expect(result).toEqual(extendedPath);
+      expect(result).toBe(extendedPath);
     });
   });
 
@@ -85,7 +85,7 @@ describe('a JSONLDResolver instance with a context', () => {
     });
 
     it('returns the extended path', () => {
-      expect(result).toEqual(extendedPath);
+      expect(result).toBe(extendedPath);
     });
   });
 
@@ -114,7 +114,7 @@ describe('a JSONLDResolver instance with a context', () => {
     });
 
     it('returns the extended path', () => {
-      expect(result).toEqual(extendedPath);
+      expect(result).toBe(extendedPath);
     });
   });
 
@@ -143,7 +143,7 @@ describe('a JSONLDResolver instance with a context', () => {
     });
 
     it('returns the extended path', () => {
-      expect(result).toEqual(extendedPath);
+      expect(result).toBe(extendedPath);
     });
   });
 
@@ -172,7 +172,7 @@ describe('a JSONLDResolver instance with a context', () => {
     });
 
     it('returns the extended path', () => {
-      expect(result).toEqual(extendedPath);
+      expect(result).toBe(extendedPath);
     });
   });
 
@@ -201,6 +201,52 @@ describe('a JSONLDResolver instance with a context', () => {
       it('sets predicate to a promise for sameAs', async () => {
         const { predicate } = pathData.extendPath.mock.calls[0][0];
         expect(await predicate).toEqual(namedNode('http://www.w3.org/2002/07/owl#sameAs'));
+      });
+    });
+  });
+
+  describe('when a propertyCache is present', () => {
+    const extendedPath = {};
+    const pathData = {
+      extendPath: jest.fn(() => extendedPath),
+      propertyCache: Promise.resolve({
+        'http://xmlns.com/foaf/0.1/knows': [
+          { subject: namedNode('http://people.example/#Alice') },
+          { subject: namedNode('http://people.example/#Bob') },
+        ],
+      }),
+    };
+
+    describe('when accessing a non-cached property', () => {
+      let result;
+      beforeEach(() => result = resolver.resolve('foaf:givenName', pathData));
+
+      it('extends the path without a results cache', async () => {
+        expect(pathData.extendPath).toBeCalledTimes(1);
+        const args = pathData.extendPath.mock.calls[0];
+        expect(args).toHaveLength(1);
+        await expect(args[0].resultsCache).resolves.toBeUndefined();
+      });
+
+      it('returns the extended path', () => {
+        expect(result).toBe(extendedPath);
+      });
+    });
+
+    describe('when accessing a cached property', () => {
+      let result;
+      beforeEach(() => result = resolver.resolve('foaf:knows', pathData));
+
+      it('extends the path with a results cache', async () => {
+        expect(pathData.extendPath).toBeCalledTimes(1);
+        const args = pathData.extendPath.mock.calls[0];
+        expect(args).toHaveLength(1);
+        await expect(args[0].resultsCache).resolves.toBe(
+          (await pathData.propertyCache)['http://xmlns.com/foaf/0.1/knows']);
+      });
+
+      it('returns the extended path', () => {
+        expect(result).toBe(extendedPath);
       });
     });
   });

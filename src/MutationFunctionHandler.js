@@ -1,5 +1,5 @@
 import { literal } from '@rdfjs/data-model';
-import { getThen } from './promiseUtils';
+import { lazyThenable } from './promiseUtils';
 
 /**
  * Returns a function that, when called with arguments,
@@ -25,8 +25,9 @@ export default class MutationFunctionHandler {
         throw new Error(`Mutation on ${pathData} can not be invoked without arguments`);
 
       // Create a lazy Promise to the mutation expressions
-      const then = getThen(() => this.createMutationExpressions(pathData, path, args));
-      return pathData.extendPath({ mutationExpressions: { then } });
+      const mutationExpressions = lazyThenable(() =>
+        this.createMutationExpressions(pathData, path, args));
+      return pathData.extendPath({ mutationExpressions });
     };
   }
 
