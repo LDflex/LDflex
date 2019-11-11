@@ -1,20 +1,20 @@
+import AsyncIteratorHandler from './AsyncIteratorHandler';
 import DataHandler from './DataHandler';
-import SubjectHandler from './SubjectHandler';
+import DeleteFunctionHandler from './DeleteFunctionHandler';
+import ExecuteQueryHandler from './ExecuteQueryHandler';
+import InsertFunctionHandler from './InsertFunctionHandler';
+import MutationExpressionsHandler from './MutationExpressionsHandler';
+import PathExpressionHandler from './PathExpressionHandler';
 import PredicatesHandler from './PredicatesHandler';
 import PropertiesHandler from './PropertiesHandler';
-import PathExpressionHandler from './PathExpressionHandler';
-import SparqlHandler from './SparqlHandler';
-import ExecuteQueryHandler from './ExecuteQueryHandler';
-import MutationExpressionsHandler from './MutationExpressionsHandler';
-import InsertFunctionHandler from './InsertFunctionHandler';
-import SetFunctionHandler from './SetFunctionHandler';
 import ReplaceFunctionHandler from './ReplaceFunctionHandler';
-import SubjectsHandler from './SubjectsHandler';
-import DeleteFunctionHandler from './DeleteFunctionHandler';
-import StringToLDflexHandler from './StringToLDflexHandler';
+import SetFunctionHandler from './SetFunctionHandler';
 import SortHandler from './SortHandler';
-import { getFirstItem, iteratorFor } from './iterableUtils';
-import { getThen } from './promiseUtils';
+import SparqlHandler from './SparqlHandler';
+import StringToLDflexHandler from './StringToLDflexHandler';
+import SubjectHandler from './SubjectHandler';
+import SubjectsHandler from './SubjectsHandler';
+import ThenHandler from './ThenHandler';
 
 /**
  * A map with default property handlers.
@@ -23,25 +23,9 @@ export default {
   // Flag to loaders that exported paths are not ES6 modules
   __esModule: () => undefined,
 
-  // Add Promise behavior
-  then: ({ subject }, pathProxy) => {
-    // If a direct subject is set (zero-length path), resolve it
-    if (subject)
-      // If the subject is not a promise, it has already been resolved;
-      // consumers should not await it, but access its properties directly.
-      // This avoids infinite `then` chains when awaiting this path.
-      return subject.then && getThen(() => pathProxy.subject);
-    // Otherwise, return the first result of this path
-    return getThen(() => getFirstItem(pathProxy.results));
-  },
-
-  // Add async iterable behavior
-  [Symbol.asyncIterator]: ({ subject }, pathProxy) =>
-    // Return a one-item iterator of the subject or,
-    // if no subject is present, all results of this path
-    () => subject ?
-      iteratorFor(pathProxy.subject) :
-      pathProxy.results[Symbol.asyncIterator](),
+  // Add thenable and async iterable behavior
+  then: new ThenHandler(),
+  [Symbol.asyncIterator]: new AsyncIteratorHandler(),
 
   // Add read and query functionality
   subject: new SubjectHandler(),

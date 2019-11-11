@@ -2,6 +2,7 @@ import * as ldflex from '../../src/index';
 
 describe('The LDflex module', () => {
   const exports = [
+    'AsyncIteratorHandler',
     'DataHandler',
     'DeleteFunctionHandler',
     'ExecuteQueryHandler',
@@ -21,6 +22,7 @@ describe('The LDflex module', () => {
     'StringToLDflexHandler',
     'SubjectHandler',
     'SubjectsHandler',
+    'ThenHandler',
     'defaultHandlers',
     'getFirstItem',
     'getThen',
