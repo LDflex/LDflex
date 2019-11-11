@@ -96,7 +96,9 @@ export default class SparqlHandler {
       }
       // If sort was set, use this object as a sorting variable
       else {
+        // TODO: handle when an object is used for sorting, and later also for querying
         sorts.push({ variable: object, order: segment.sort });
+        // TODO: use a descriptive lastVar in case of sorting
         object = queryVar;
       }
       return result;
