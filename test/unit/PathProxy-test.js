@@ -334,33 +334,3 @@ describe('a PathProxy whose paths are extended', () => {
     });
   });
 });
-
-describe('a PathProxy with child data', () => {
-  const handlers = {
-    internal: {
-      handle: pathProxy => pathProxy,
-    },
-  };
-  const settings = {};
-  let pathProxy;
-  beforeAll(() => {
-    pathProxy = new PathProxy({ handlers });
-  });
-
-  it('will pass the data to grandchildren for count > 1', () => {
-    const path = pathProxy.createPath(settings, { a: 1, childData: { childLimit: 2, b: 6 } });
-    const extendedPath = path.internal.extendPath({});
-    expect(extendedPath.internal).toHaveProperty('b');
-    expect(extendedPath.internal.b).toBe(6);
-    expect(extendedPath.internal).toHaveProperty('childData');
-    expect(extendedPath.internal.childData).toEqual({ childLimit: 1, b: 6 });
-  });
-
-  it('will not pass the childData property to children if childLimit <= 1', () => {
-    const path = pathProxy.createPath(settings, { a: 1, childData: { childLimit: 1, b: 6 } });
-    const extendedPath = path.internal.extendPath({});
-    expect(extendedPath.internal).toHaveProperty('b');
-    expect(extendedPath.internal.b).toBe(6);
-    expect(extendedPath.internal).not.toHaveProperty('childData');
-  });
-});

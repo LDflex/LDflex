@@ -42,15 +42,6 @@ export default class PathProxy {
     if (!path.extendPath) {
       const pathProxy = this;
       path.extendPath = function extendPath(newData, parent = this) {
-        // Inherit data from parent if present
-        const inheritedData = parent && parent.childData;
-        if (inheritedData) {
-          let { childLimit, ...inherited } = inheritedData;
-          newData = { ...inherited, ...newData };
-          // Only inherit data for up to childLimit children
-          if (--childLimit > 0)
-            newData.childData = { childLimit, ...inherited };
-        }
         return pathProxy.createPath(settings, { parent, extendPath, ...newData });
       };
     }
