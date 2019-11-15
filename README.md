@@ -4,9 +4,9 @@ for querying Linked Data on the Web
 as if you were browsing a local JavaScript graph.
 
 [![npm version](https://img.shields.io/npm/v/ldflex.svg)](https://www.npmjs.com/package/ldflex)
-[![Build Status](https://travis-ci.org/RubenVerborgh/LDflex.svg?branch=master)](https://travis-ci.org/RubenVerborgh/LDflex)
-[![Coverage Status](https://coveralls.io/repos/github/RubenVerborgh/LDflex/badge.svg?branch=master)](https://coveralls.io/github/RubenVerborgh/LDflex?branch=master)
-[![Dependency Status](https://david-dm.org/RubenVerborgh/LDflex.svg)](https://david-dm.org/RubenVerborgh/LDflex)
+[![Build Status](https://travis-ci.org/LDflex/LDflex.svg?branch=master)](https://travis-ci.org/LDflex/LDflex)
+[![Coverage Status](https://coveralls.io/repos/github/LDflex/LDflex/badge.svg?branch=master)](https://coveralls.io/github/LDflex/LDflex?branch=master)
+[![Dependency Status](https://david-dm.org/LDflex/LDflex.svg)](https://david-dm.org/LDflex/LDflex)
 
 You can write things like `person.friends.firstName`
 to get a list of your friends.
@@ -133,4 +133,4 @@ and then return their names.
 ©2018–present
 [Ruben Verborgh](https://ruben.verborgh.org/),
 [Ruben Taelman](https://www.rubensworks.net/).
-[MIT License](https://github.com/RubenVerborgh/LDflex/blob/master/LICENSE.md).
+[MIT License](https://github.com/LDflex/LDflex/blob/master/LICENSE.md).
