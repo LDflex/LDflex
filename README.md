@@ -43,7 +43,7 @@ use `await` if you want a single value,
 or `for await` to iterate over all values.
 
 ### Initialization
-```JavaScript
+```javascript
 const { PathFactory } = require('ldflex');
 const { default: ComunicaEngine } = require('ldflex-comunica');
 const { namedNode } = require('@rdfjs/data-model');
@@ -63,7 +63,7 @@ const path = new PathFactory({ context, queryEngine });
 ```
 
 ### Looking up data on the Web
-```JavaScript
+```javascript
 const ruben = path.create({ subject: namedNode('https://ruben.verborgh.org/profile/#me') });
 showPerson(ruben);
 
@@ -81,7 +81,7 @@ async function showPerson(person) {
 ```
 
 ### Inspecting the generated path expression
-```JavaScript
+```javascript
 (async person => {
   console.log(await person.friends.givenName.pathExpression);
 })(ruben);
@@ -97,7 +97,7 @@ async function showPerson(person) {
 ```
 
 ### Getting all properties of a subject
-```JavaScript
+```javascript
 (async subject => {
   for await (const property of subject.properties)
     console.log(`${property}`);
@@ -106,7 +106,7 @@ async function showPerson(person) {
 ```
 
 ### Converting an LDflex expression into a SPARQL query
-```JavaScript
+```javascript
 (async person => {
   console.log(await person.friends.givenName.sparql);
 })(ruben);
@@ -114,7 +114,7 @@ async function showPerson(person) {
 ```
 
 ### Sorting path results
-```Javascript
+```javascript
 (async person => {
   for await (const uri of person.interest.sort('label'))
     console.log(`- ${uri}`);
