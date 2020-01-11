@@ -51,10 +51,10 @@ export default {
   delete: new DeleteFunctionHandler(),
 
   // Add RDFJS term handling
-  termType:    DataHandler.sync('subject', 'termType'),
-  value:       DataHandler.sync('subject', 'value'),
-  datatype:    DataHandler.sync('subject', 'datatype'),
-  language:    DataHandler.sync('subject', 'language'),
+  termType:    termPropertyHandler('termType'),
+  value:       termPropertyHandler('value'),
+  datatype:    termPropertyHandler('datatype'),
+  language:    termPropertyHandler('language'),
   equals:      DataHandler.sync('subject', 'equals'),
   toString:    DataHandler.syncFunction('subject', 'value'),
   toPrimitive: DataHandler.syncFunction('subject', 'value'),
@@ -73,4 +73,19 @@ export default {
 // Creates a handler from the given function
 function handler(handle) {
   return { handle };
+}
+
+// Creates a handler for the given RDF/JS Term property
+function termPropertyHandler(property) {
+  return handler((pathData, path) => {
+    // If a resolved subject is present,
+    // synchronously expose the RDF/JS property
+    const { subject } = pathData;
+    const subjectValue = subject && subject[property];
+    if (typeof subjectValue !== 'undefined')
+      return subjectValue;
+
+    // Otherwise, return a promise to the property value
+    return path.then(term => term && term[property]);
+  });
 }
