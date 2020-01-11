@@ -149,9 +149,24 @@ describe('a PathFactory instance with a Term as subject', () => {
     expect(items[0].equals(term)).toBe(true);
   });
 
-  it('exposes the values as an array', async () => {
+  it('exposes termTypes as an array', async () => {
+    const items = await path.termTypes;
+    expect(items).toEqual([term.termType]);
+  });
+
+  it('exposes values as an array', async () => {
     const items = await path.values;
     expect(items).toEqual([term.value]);
+  });
+
+  it('exposes datatypes as an array', async () => {
+    const items = await path.datatypes;
+    expect(items).toEqual([term.datatype]);
+  });
+
+  it('exposes languages as an array', async () => {
+    const items = await path.languages;
+    expect(items).toEqual([term.language]);
   });
 });
 

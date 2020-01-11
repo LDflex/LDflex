@@ -51,17 +51,20 @@ export default {
   delete: new DeleteFunctionHandler(),
 
   // Add RDFJS term handling
-  termType: DataHandler.sync('subject', 'termType'),
-  value: DataHandler.sync('subject', 'value'),
-  equals: DataHandler.sync('subject', 'equals'),
-  language: DataHandler.sync('subject', 'language'),
-  datatype: DataHandler.sync('subject', 'datatype'),
-  toString: DataHandler.syncFunction('subject', 'value'),
+  termType:    DataHandler.sync('subject', 'termType'),
+  value:       DataHandler.sync('subject', 'value'),
+  datatype:    DataHandler.sync('subject', 'datatype'),
+  language:    DataHandler.sync('subject', 'language'),
+  equals:      DataHandler.sync('subject', 'equals'),
+  toString:    DataHandler.syncFunction('subject', 'value'),
   toPrimitive: DataHandler.syncFunction('subject', 'value'),
 
   // Add iteration helpers
   toArray: new ToArrayHandler(),
-  values: handler((_, path) => path.toArray(term => term.value)),
+  termTypes: handler((_, path) => path.toArray(t => t.termType)),
+  values:    handler((_, path) => path.toArray(t => t.value)),
+  datatypes: handler((_, path) => path.toArray(t => t.datatype)),
+  languages: handler((_, path) => path.toArray(t => t.language)),
 
   // Parse a string into an LDflex object
   resolve: new StringToLDflexHandler(),
