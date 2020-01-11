@@ -19,10 +19,8 @@ describe('a PathFactory instance', () => {
   });
 
   it('returns results for a path with 1 link', async () => {
-    const names = [];
-    for await (const firstName of person)
-      names.push(firstName);
-    expect(names.map(n => `${n}`)).toEqual(['https://example.org/#me']);
+    expect(await person.values)
+      .toEqual(['https://example.org/#me']);
   });
 
   it('returns the first result for a path with 1 link', async () => {
@@ -31,10 +29,8 @@ describe('a PathFactory instance', () => {
   });
 
   it('returns results for a path with 3 links', async () => {
-    const names = [];
-    for await (const firstName of person.friends.firstName)
-      names.push(firstName);
-    expect(names.map(n => `${n}`)).toEqual(['Alice', 'Bob', 'Carol']);
+    expect(await person.friends.firstName.values)
+      .toEqual(['Alice', 'Bob', 'Carol']);
   });
 
   describe('the first result for a path with 3 links', () => {

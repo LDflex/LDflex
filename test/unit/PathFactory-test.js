@@ -148,6 +148,11 @@ describe('a PathFactory instance with a Term as subject', () => {
     expect(term.equals(items[0])).toBe(true);
     expect(items[0].equals(term)).toBe(true);
   });
+
+  it('exposes the values as an array', async () => {
+    const items = await path.values;
+    expect(items).toEqual([term.value]);
+  });
 });
 
 describe('a PathFactory instance with a promise to a Term as subject', () => {
@@ -237,6 +242,11 @@ describe('a PathFactory instance with a promise to a Term as subject', () => {
       expect(term.equals(items[0])).toBe(true);
       expect(items[0].equals(term)).toBe(true);
     });
+
+    it('exposes the values as an array', async () => {
+      const items = await path.values;
+      expect(items).toEqual([term.value]);
+    });
   });
 
   describe('its asyncIterator', () => {
@@ -265,6 +275,11 @@ describe('a PathFactory instance with a promise to a Term as subject', () => {
     expect(items).toHaveLength(1);
     expect(term.equals(items[0])).toBe(true);
     expect(items[0].equals(term)).toBe(true);
+  });
+
+  it('exposes the values as an array', async () => {
+    const items = await path.values;
+    expect(items).toEqual([term.value]);
   });
 });
 

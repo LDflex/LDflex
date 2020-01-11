@@ -61,7 +61,13 @@ export default {
 
   // Add iteration helpers
   toArray: new ToArrayHandler(),
+  values: handler((_, path) => path.toArray(term => term.value)),
 
   // Parse a string into an LDflex object
   resolve: new StringToLDflexHandler(),
 };
+
+// Creates a handler from the given function
+function handler(handle) {
+  return { handle };
+}
