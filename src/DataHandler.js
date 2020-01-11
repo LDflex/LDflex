@@ -29,28 +29,32 @@ export default class DataHandler {
     return new DataHandler({ async: true, function: true }, ...dataProperties);
   }
 
-  /**
-   * Resolve the data path.
-   */
+
+  // Resolves the data path, or returns a function that does so
   handle(pathData) {
     return !this._isFunction ?
       this._resolveDataPath(pathData) :
       () => this._resolveDataPath(pathData);
   }
 
+  // Resolves the data path
   _resolveDataPath(data) {
-    // Resolve synchronous property access
-    if (!this._isAsync) {
-      for (const property of this._dataProperties)
-        data = data && data[property];
-      return data;
-    }
+    return !this._isAsync ?
+      this._resolveSyncDataPath(data) :
+      this._resolveAsyncDataPath(data);
+  }
 
-    // Resolve asynchronous property access
-    return new Promise(async resolve => {
-      for (const property of this._dataProperties)
-        data = data && await data[property];
-      resolve(data);
-    });
+  // Resolves synchronous property access
+  _resolveSyncDataPath(data) {
+    for (const property of this._dataProperties)
+      data = data && data[property];
+    return data;
+  }
+
+  // Resolves asynchronous property access
+  async _resolveAsyncDataPath(data) {
+    for (const property of this._dataProperties)
+      data = data && await data[property];
+    return data;
   }
 }

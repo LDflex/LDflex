@@ -5,8 +5,8 @@ describe('a MutationExpressionsHandler instance', () => {
   let handler;
   beforeAll(() => handler = new MutationExpressionsHandler());
 
-  it('returns an empty array if no mutationExpressions is set', () => {
-    expect(handler.handle({})).resolves.toEqual([]);
+  it('returns an empty array if no mutationExpressions are set', async () => {
+    await expect(handler.handle({})).resolves.toEqual([]);
   });
 
   it('returns mutationExpressions from a single segment', () => {

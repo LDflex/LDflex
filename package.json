@@ -25,15 +25,15 @@
     "jsonld-context-parser": "^1.3.4"
   },
   "devDependencies": {
-    "@babel/cli": "^7.0.0",
-    "@babel/core": "^7.0.1",
-    "@babel/plugin-proposal-class-properties": "^7.5.5",
-    "@babel/preset-env": "^7.0.0",
-    "babel-eslint": "^10.0.2",
-    "eslint": "^5.16.0",
-    "eslint-plugin-jest": "^21.22.0",
-    "husky": "^1.1.2",
-    "jest": "^24.1.0"
+    "@babel/cli": "^7.7.7",
+    "@babel/core": "^7.7.7",
+    "@babel/plugin-proposal-class-properties": "^7.7.4",
+    "@babel/preset-env": "^7.7.7",
+    "babel-eslint": "^10.0.3",
+    "eslint": "^6.8.0",
+    "eslint-plugin-jest": "^23.4.0",
+    "husky": "^4.0.6",
+    "jest": "^24.9.0"
   },
   "scripts": {
     "build": "npm run build:lib && npm run build:module",

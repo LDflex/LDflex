@@ -16,21 +16,19 @@ describe('toIterablePromise', () => {
 
   it('returns an object with a then function that rejects', async () => {
     const promise = toIterablePromise(() => iteratorOf(0));
-    await expect(promise).rejects.toEqual(new Error('iterator error'));
+    await expect(promise).rejects.toEqual(new Error('Iterator Error'));
   });
 
   it('returns an object with a catch function', async () => {
     const promise = toIterablePromise(() => iteratorOf(0));
-    const result = promise.catch(error => {
-      expect(error).toEqual(new Error('iterator error'));
-      return 'caught';
-    });
-    await expect(result).resolves.toBe('caught');
+    await expect(promise.catch(error => `caught ${error.message}`))
+      .resolves.toBe('caught Iterator Error');
   });
 
-  it('returns an object with a finally function', done => {
+  it('returns an object with a finally function', async () => {
     const promise = toIterablePromise(() => iteratorOf());
-    promise.finally(done);
+    await expect(new Promise(resolve => promise.finally(resolve)))
+      .resolves.toBeUndefined();
   });
 });
 
@@ -59,7 +57,7 @@ describe('memoizeIterable', () => {
 async function* iteratorOf(...items) {
   for (const item of items) {
     if (item === 0)
-      throw new Error('iterator error');
+      throw new Error('Iterator Error');
     yield item;
   }
 }
