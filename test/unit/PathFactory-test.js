@@ -141,6 +141,13 @@ describe('a PathFactory instance with a Term as subject', () => {
       await expect(items[0].sparql).rejects.toThrow(/predicate/);
     });
   });
+
+  it('can be converted into an array', async () => {
+    const items = await path.toArray();
+    expect(items).toHaveLength(1);
+    expect(term.equals(items[0])).toBe(true);
+    expect(items[0].equals(term)).toBe(true);
+  });
 });
 
 describe('a PathFactory instance with a promise to a Term as subject', () => {
@@ -223,6 +230,13 @@ describe('a PathFactory instance with a promise to a Term as subject', () => {
         await expect(items[0].sparql).rejects.toThrow(/predicate/);
       });
     });
+
+    it('can be converted into an array', async () => {
+      const items = await path.toArray();
+      expect(items).toHaveLength(1);
+      expect(term.equals(items[0])).toBe(true);
+      expect(items[0].equals(term)).toBe(true);
+    });
   });
 
   describe('its asyncIterator', () => {
@@ -244,6 +258,13 @@ describe('a PathFactory instance with a promise to a Term as subject', () => {
     it('exposes the subject as a path', async () => {
       await expect(items[0].sparql).rejects.toThrow(/predicate/);
     });
+  });
+
+  it('can be converted into an array', async () => {
+    const items = await path.toArray();
+    expect(items).toHaveLength(1);
+    expect(term.equals(items[0])).toBe(true);
+    expect(items[0].equals(term)).toBe(true);
   });
 });
 

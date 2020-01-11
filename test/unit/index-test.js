@@ -25,6 +25,7 @@ describe('The LDflex module', () => {
     'SubjectHandler',
     'SubjectsHandler',
     'ThenHandler',
+    'ToArrayHandler',
     'defaultHandlers',
     'getFirstItem',
     'getThen',

@@ -7,6 +7,7 @@ import MutationExpressionsHandler from './MutationExpressionsHandler';
 import PathExpressionHandler from './PathExpressionHandler';
 import PredicateHandler from './PredicateHandler';
 import PredicatesHandler from './PredicatesHandler';
+import PreloadHandler from './PreloadHandler';
 import PropertiesHandler from './PropertiesHandler';
 import ReplaceFunctionHandler from './ReplaceFunctionHandler';
 import SetFunctionHandler from './SetFunctionHandler';
@@ -15,8 +16,8 @@ import SparqlHandler from './SparqlHandler';
 import StringToLDflexHandler from './StringToLDflexHandler';
 import SubjectHandler from './SubjectHandler';
 import SubjectsHandler from './SubjectsHandler';
-import PreloadHandler from './PreloadHandler';
 import ThenHandler from './ThenHandler';
+import ToArrayHandler from './ToArrayHandler';
 
 /**
  * A map with default property handlers.
@@ -57,6 +58,9 @@ export default {
   datatype: DataHandler.sync('subject', 'datatype'),
   toString: DataHandler.syncFunction('subject', 'value'),
   toPrimitive: DataHandler.syncFunction('subject', 'value'),
+
+  // Add iteration helpers
+  toArray: new ToArrayHandler(),
 
   // Parse a string into an LDflex object
   resolve: new StringToLDflexHandler(),

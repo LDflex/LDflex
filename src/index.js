@@ -11,6 +11,7 @@ import PathFactory from './PathFactory';
 import PathProxy from './PathProxy';
 import PredicateHandler from './PredicateHandler';
 import PredicatesHandler from './PredicatesHandler';
+import PreloadHandler from './PreloadHandler';
 import PropertiesHandler from './PropertiesHandler';
 import ReplaceFunctionHandler from './ReplaceFunctionHandler';
 import SetFunctionHandler from './SetFunctionHandler';
@@ -19,8 +20,8 @@ import SparqlHandler from './SparqlHandler';
 import StringToLDflexHandler from './StringToLDflexHandler';
 import SubjectHandler from './SubjectHandler';
 import SubjectsHandler from './SubjectsHandler';
-import PreloadHandler from './PreloadHandler';
 import ThenHandler from './ThenHandler';
+import ToArrayHandler from './ToArrayHandler';
 import defaultHandlers from './defaultHandlers';
 import { getFirstItem, iteratorFor } from './iterableUtils';
 import { lazyThenable, getThen, toIterablePromise } from './promiseUtils';
@@ -49,6 +50,7 @@ export {
   SubjectHandler,
   SubjectsHandler,
   ThenHandler,
+  ToArrayHandler,
   defaultHandlers,
   getFirstItem,
   getThen,
