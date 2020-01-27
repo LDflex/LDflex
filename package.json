@@ -38,7 +38,7 @@
   "scripts": {
     "build": "npm run build:lib && npm run build:module",
     "build:lib": "babel src --out-dir lib",
-    "build:module": "BABEL_ENV=module babel src --out-dir module",
+    "build:module": "babel src --env-name module --out-dir module",
     "jest": "jest",
     "lint": "eslint src test",
     "prepublishOnly": "npm run build",
