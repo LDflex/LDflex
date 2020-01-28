@@ -45,9 +45,9 @@ export default class MutationFunctionHandler {
     const mutationType = this._mutationType;
     if (!objects)
       return [{ mutationType, conditions }];
-    // If no objects are affected, do not perform any mutations
+    // No need to continue if there are no objects to mutate
     if (objects.length === 0)
-      return [];
+      return [{ objects: [] }];
 
     // Otherwise, mutate the affected objects
     const { predicate } = conditions.pop();

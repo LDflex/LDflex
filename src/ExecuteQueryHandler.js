@@ -21,8 +21,11 @@ export default class ExecuteQueryHandler {
     if (!queryEngine)
       throw new Error(`${pathData} has no queryEngine setting`);
     const query = await path.sparql;
-    if (!query)
+    if (query === null || query === undefined)
       throw new Error(`${pathData} has no sparql property`);
+    // No results if the query is empty
+    if (query.length === 0)
+      return;
 
     // Extract the term from every query result
     for await (const bindings of queryEngine.execute(query))

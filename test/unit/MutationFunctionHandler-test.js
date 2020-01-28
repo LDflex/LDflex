@@ -297,7 +297,7 @@ describe('a MutationFunctionHandler instance not allowing 0 args', () => {
       ];
 
       expect(await handler.createMutationExpressions(pathData, { pathExpression }, args))
-        .toEqual([]);
+        .toEqual([{ objects: [] }]);
     });
   });
 

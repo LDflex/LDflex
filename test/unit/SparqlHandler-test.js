@@ -346,6 +346,11 @@ describe('a SparqlHandler instance', () => {
           }`));
       });
     });
+
+    it('returns an empty query if there are no applicable objects', async () => {
+      const mutationExpressions = [{ objects: [] }];
+      expect(await handler.handle({}, { mutationExpressions })).toEqual('');
+    });
   });
 
   describe('#createVar', () => {
