@@ -18,7 +18,8 @@ export default class SparqlHandler {
     // First check if we have a mutation expression
     const mutationExpressions = await path.mutationExpressions;
     if (Array.isArray(mutationExpressions) && mutationExpressions.length)
-      return mutationExpressions.map(e => this.mutationExpressionToQuery(e)).join('\n;\n');
+      // Remove empty results to prevent dangling semicolons
+      return mutationExpressions.map(e => this.mutationExpressionToQuery(e)).filter(Boolean).join('\n;\n');
 
     // Otherwise, fall back to checking for a path expression
     const pathExpression = await path.pathExpression;
@@ -50,6 +51,9 @@ export default class SparqlHandler {
   }
 
   mutationExpressionToQuery({ mutationType, conditions, predicate, objects }) {
+    // If there are no objects to mutate there is no query
+    if (objects && objects.length === 0)
+      return '';
     // If the only condition is a subject, we need no WHERE clause
     const scope = {};
     let subject, where;

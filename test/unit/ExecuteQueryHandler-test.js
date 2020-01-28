@@ -40,4 +40,11 @@ describe('a ExecuteQueryHandler instance', () => {
       items.push(result);
     expect(items).toEqual(cache);
   });
+
+  it('immediately returns if there is an empty query', async () => {
+    const pathData = { settings: { queryEngine: { execute: () => [new Map([['?a', 'b']])] } }, toString: () => 'path' };
+    const iterable = handler.handle(pathData, { sparql: '' });
+    const iterator = iterable[Symbol.asyncIterator]();
+    await expect((await iterator.next()).value).toEqual(undefined);
+  });
 });
