@@ -373,6 +373,44 @@ describe('a MutationFunctionHandler instance not allowing 0 args', () => {
       ]);
     });
   });
+
+  describe('with an object map arg', () => {
+    const pathExpression = [
+      { subject: namedNode('https://example.org/#me') },
+    ];
+
+    it('resolves a path of length 1', async () => {
+      const args = [{ 'http://a': 'b', 'http://c': 'd' }];
+      const path = { pathExpression };
+      path['http://a'] = { pathExpression: pathExpression.concat([{ predicate: namedNode('http://a') }]) };
+      path['http://c'] = { pathExpression: pathExpression.concat([{ predicate: namedNode('http://c') }]) };
+
+      expect(await handler.createMutationExpressions(pathData, path, args)).toEqual([
+        {
+          mutationType,
+          conditions: [{ subject: namedNode('https://example.org/#me') }],
+          predicate: namedNode('http://a'),
+          objects: [literal('b')],
+        },
+        {
+          mutationType,
+          conditions: [{ subject: namedNode('https://example.org/#me') }],
+          predicate: namedNode('http://c'),
+          objects: [literal('d')],
+        },
+      ]);
+    });
+
+    it('interprets no value as an empty argument list', async () => {
+      const args0 = [{ 'http://a': null }];
+      const args1 = [{ 'http://a': [] }];
+      const path = { pathExpression };
+      path['http://a'] = { pathExpression: pathExpression.concat([{ predicate: namedNode('http://a') }]) };
+
+      expect(await handler.createMutationExpressions(pathData, path, args0))
+        .toEqual(await handler.createMutationExpressions(pathData, path, args1));
+    });
+  });
 });
 
 describe('a MutationFunctionHandler instance allowing 0 args', () => {
