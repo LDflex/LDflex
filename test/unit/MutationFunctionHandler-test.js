@@ -44,8 +44,10 @@ describe('a MutationFunctionHandler instance not allowing 0 args', () => {
           {
             mutationType,
             conditions: [{ subject: namedNode('https://example.org/#me') }],
-            predicate: namedNode('https://ex.org/p1'),
-            objects: [literal('Ruben')],
+            predicateObjects: [{
+              predicate: namedNode('https://ex.org/p1'),
+              objects: [literal('Ruben')],
+            }],
           },
         ]);
       });
@@ -72,8 +74,10 @@ describe('a MutationFunctionHandler instance not allowing 0 args', () => {
           {
             mutationType,
             conditions: [{ subject: namedNode('https://example.org/#me') }],
-            predicate: namedNode('https://ex.org/p1'),
-            objects: [namedNode('http://example.org/')],
+            predicateObjects: [{
+              predicate: namedNode('https://ex.org/p1'),
+              objects: [namedNode('http://example.org/')],
+            }],
           },
         ]);
       });
@@ -129,8 +133,10 @@ describe('a MutationFunctionHandler instance not allowing 0 args', () => {
           {
             mutationType,
             conditions: [{ subject: namedNode('https://example.org/#me') }],
-            predicate: namedNode('https://ex.org/p1'),
-            objects: [literal('other')],
+            predicateObjects: [{
+              predicate: namedNode('https://ex.org/p1'),
+              objects: [literal('other')],
+            }],
           },
         ]);
       });
@@ -149,8 +155,10 @@ describe('a MutationFunctionHandler instance not allowing 0 args', () => {
               { subject: namedNode('https://example.org/#me') },
               { predicate: namedNode('https://ex.org/p1') },
             ],
-            predicate: namedNode('https://ex.org/p2'),
-            objects: [literal('other')],
+            predicateObjects: [{
+              predicate: namedNode('https://ex.org/p2'),
+              objects: [literal('other')],
+            }],
           },
         ]);
       });
@@ -193,8 +201,10 @@ describe('a MutationFunctionHandler instance not allowing 0 args', () => {
           {
             mutationType,
             conditions: [{ subject: namedNode('https://example.org/#me') }],
-            predicate: namedNode('https://ex.org/p1'),
-            objects: [namedNode('http://example.org/other')],
+            predicateObjects: [{
+              predicate: namedNode('https://ex.org/p1'),
+              objects: [namedNode('http://example.org/other')],
+            }],
           },
         ]);
       });
@@ -213,8 +223,10 @@ describe('a MutationFunctionHandler instance not allowing 0 args', () => {
               { subject: namedNode('https://example.org/#me') },
               { predicate: namedNode('https://ex.org/p1') },
             ],
-            predicate: namedNode('https://ex.org/p2'),
-            objects: [namedNode('http://example.org/other')],
+            predicateObjects: [{
+              predicate: namedNode('https://ex.org/p2'),
+              objects: [namedNode('http://example.org/other')],
+            }],
           },
         ]);
       });
@@ -258,8 +270,10 @@ describe('a MutationFunctionHandler instance not allowing 0 args', () => {
         {
           mutationType,
           conditions: [{ subject: namedNode('https://example.org/#me') }],
-          predicate: namedNode('https://ex.org/p1'),
-          objects: [literal('other1'), literal('other2')],
+          predicateObjects: [{
+            predicate: namedNode('https://ex.org/p1'),
+            objects: [literal('other1'), literal('other2')],
+          }],
         },
       ]);
     });
@@ -278,8 +292,10 @@ describe('a MutationFunctionHandler instance not allowing 0 args', () => {
             { subject: namedNode('https://example.org/#me') },
             { predicate: namedNode('https://ex.org/p1') },
           ],
-          predicate: namedNode('https://ex.org/p2'),
-          objects: [literal('other1'), literal('other2')],
+          predicateObjects: [{
+            predicate: namedNode('https://ex.org/p2'),
+            objects: [literal('other1'), literal('other2')],
+          }],
         },
       ]);
     });
@@ -297,7 +313,7 @@ describe('a MutationFunctionHandler instance not allowing 0 args', () => {
       ];
 
       expect(await handler.createMutationExpressions(pathData, { pathExpression }, args))
-        .toEqual([{ objects: [] }]);
+        .toEqual([{ predicateObjects: [] }]);
     });
   });
 
@@ -319,8 +335,10 @@ describe('a MutationFunctionHandler instance not allowing 0 args', () => {
         {
           mutationType,
           conditions: [{ subject: namedNode('https://example.org/#me') }],
-          predicate: namedNode('https://ex.org/p1'),
-          objects: [literal('other1'), literal('other2')],
+          predicateObjects: [{
+            predicate: namedNode('https://ex.org/p1'),
+            objects: [literal('other1'), literal('other2')],
+          }],
         },
       ]);
     });
@@ -364,11 +382,13 @@ describe('a MutationFunctionHandler instance not allowing 0 args', () => {
         {
           mutationType,
           conditions: [{ subject: namedNode('https://example.org/#me') }],
-          predicate: namedNode('https://ex.org/p1'),
-          objects: [
-            literal('other1'), literal('other2'), literal('other3'),
-            literal('other4'), literal('other5'), literal('other6'),
-          ],
+          predicateObjects: [{
+            predicate: namedNode('https://ex.org/p1'),
+            objects: [
+              literal('other1'), literal('other2'), literal('other3'),
+              literal('other4'), literal('other5'), literal('other6'),
+            ],
+          }],
         },
       ]);
     });
@@ -389,14 +409,10 @@ describe('a MutationFunctionHandler instance not allowing 0 args', () => {
         {
           mutationType,
           conditions: [{ subject: namedNode('https://example.org/#me') }],
-          predicate: namedNode('http://a'),
-          objects: [literal('b')],
-        },
-        {
-          mutationType,
-          conditions: [{ subject: namedNode('https://example.org/#me') }],
-          predicate: namedNode('http://c'),
-          objects: [literal('d')],
+          predicateObjects: [
+            { predicate: namedNode('http://a'), objects: [literal('b')] },
+            { predicate: namedNode('http://c'), objects: [literal('d')] },
+          ],
         },
       ]);
     });

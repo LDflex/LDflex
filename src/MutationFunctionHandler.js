@@ -59,7 +59,7 @@ export default class MutationFunctionHandler {
       return [{ mutationType, conditions: await path.pathExpression }];
     // No need to continue if there are no objects to mutate
     if (objects.length === 0)
-      return [{ objects: [] }];
+      return [{ predicateObjects: [] }];
 
     // Check if the input was an object map
     const hasObjects = !objects[0].termType;
@@ -69,7 +69,13 @@ export default class MutationFunctionHandler {
       return Promise.all(objects.map(async obj => {
         const conditions = await path[obj.key].pathExpression;
         return this.createMutationExpression(pathData, conditions, await obj.value);
-      }));
+      })).then(results =>
+        // We know all results will have the same conditions (since only the last element changes and gets removed as predicate)
+        [results.reduce((acc, val) => {
+          acc.predicateObjects.push(val.predicateObjects[0]);
+          return acc;
+        })]
+      );
     }
 
     const conditions = await path.pathExpression;
@@ -87,7 +93,7 @@ export default class MutationFunctionHandler {
     const { predicate } = conditions[conditions.length - 1];
     if (!predicate)
       throw new Error(`Expected predicate in ${pathData}`);
-    return { mutationType: this._mutationType, conditions: conditions.slice(0, conditions.length - 1), predicate, objects };
+    return { mutationType: this._mutationType, conditions: conditions.slice(0, conditions.length - 1), predicateObjects: [{ predicate, objects }] };
   }
 
   async extractObjects(pathData, path, args) {

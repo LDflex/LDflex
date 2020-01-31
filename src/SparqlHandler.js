@@ -50,9 +50,9 @@ export default class SparqlHandler {
     return `${select}${where}${orderBy}`;
   }
 
-  mutationExpressionToQuery({ mutationType, conditions, predicate, objects }) {
+  mutationExpressionToQuery({ mutationType, conditions, predicateObjects }) {
     // If there are no objects to mutate there is no query
-    if (objects && objects.length === 0)
+    if (predicateObjects && predicateObjects.length === 0)
       return '';
     // If the only condition is a subject, we need no WHERE clause
     const scope = {};
@@ -68,18 +68,24 @@ export default class SparqlHandler {
       ({ queryVar: subject, clauses: where } = this.expressionToTriplePatterns(conditions, subject, scope));
     }
 
+    const mutationPatterns = [];
+    // The mutation is the unconstrained last segment if there are no predicate objects
+    if (!predicateObjects) {
+      mutationPatterns.push(where[where.length - 1]);
+    }
     // If a list of objects was specified, the mutation is "<s> <p> objects"
-    const objectList = objects && objects.map(o => this.termToString(o)).join(', ');
-    const mutationPattern = objectList ?
-      `${subject} ${this.termToString(predicate)} ${objectList}.` :
-      // Otherwise, the mutation is the unconstrained last segment
-      where[where.length - 1];
-
+    else {
+      for (const { predicate, objects } of predicateObjects) {
+        const objectList = objects.map(o => this.termToString(o)).join(', ');
+        const mutationPattern = `${subject} ${this.termToString(predicate)} ${objectList}.`;
+        mutationPatterns.push(mutationPattern);
+      }
+    }
     return where.length === 0 ?
       // If there are no WHERE clauses, just mutate raw data
-      `${mutationType} DATA {\n  ${mutationPattern}\n}` :
+      `${mutationType} DATA {\n  ${mutationPatterns.join('  \n')}\n}` :
       // Otherwise, return a DELETE/INSERT ... WHERE ... query
-      `${mutationType} {\n  ${mutationPattern}\n} WHERE {\n  ${where.join('\n  ')}\n}`;
+      `${mutationType} {\n  ${mutationPatterns.join('\n  ')}\n} WHERE {\n  ${where.join('\n  ')}\n}`;
   }
 
   expressionToTriplePatterns([root, ...pathExpression], lastVar, scope = {}) {
