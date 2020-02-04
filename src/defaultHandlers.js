@@ -2,6 +2,7 @@ import AsyncIteratorHandler from './AsyncIteratorHandler';
 import DataHandler from './DataHandler';
 import DeleteFunctionHandler from './DeleteFunctionHandler';
 import ExecuteQueryHandler from './ExecuteQueryHandler';
+import GetHandler from './GetFunctionHandler';
 import InsertFunctionHandler from './InsertFunctionHandler';
 import MutationExpressionsHandler from './MutationExpressionsHandler';
 import PathExpressionHandler from './PathExpressionHandler';
@@ -42,6 +43,7 @@ export default {
   sort: new SortHandler('ASC'),
   sortDesc: new SortHandler('DESC'),
   preload: new PreloadHandler(),
+  get: new GetHandler(),
 
   // Add write functionality
   mutationExpressions: new MutationExpressionsHandler(),
