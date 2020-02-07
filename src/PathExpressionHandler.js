@@ -12,6 +12,7 @@ export default class PathExpressionHandler {
       if (current.predicate) {
         segments.unshift({
           predicate: await current.predicate,
+          reverse: await current.reverse,
           sort: current.sort,
         });
       }

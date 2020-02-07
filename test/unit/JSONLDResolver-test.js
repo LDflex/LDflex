@@ -176,6 +176,40 @@ describe('a JSONLDResolver instance with a context', () => {
     });
   });
 
+  describe('resolving the makerOf property', () => {
+    const extendedPath = {};
+    const pathData = { extendPath: jest.fn(() => extendedPath) };
+
+    let result;
+    beforeEach(() => result = resolver.resolve('makerOf', pathData));
+
+    it('extends the path', () => {
+      expect(pathData.extendPath).toBeCalledTimes(1);
+      const args = pathData.extendPath.mock.calls[0];
+      expect(args).toHaveLength(1);
+      expect(args[0]).toBeInstanceOf(Object);
+    });
+
+    it('sets property to makerOf', () => {
+      const { property } = pathData.extendPath.mock.calls[0][0];
+      expect(property).toBe('makerOf');
+    });
+
+    it('sets predicate to a promise for foaf:maker', async () => {
+      const { predicate } = pathData.extendPath.mock.calls[0][0];
+      expect(await predicate).toEqual(namedNode('http://xmlns.com/foaf/0.1/maker'));
+    });
+
+    it('sets the reverse property to a promise resolving to true', async () => {
+      const { reverse } = pathData.extendPath.mock.calls[0][0];
+      expect(await reverse).toBeTruthy();
+    });
+
+    it('returns the extended path', () => {
+      expect(result).toBe(extendedPath);
+    });
+  });
+
   describe('when the context is extended', () => {
     describe('before extending', () => {
       it('does not resolve sameAs', async () => {
@@ -243,6 +277,22 @@ describe('a JSONLDResolver instance with a context', () => {
         expect(args).toHaveLength(1);
         await expect(args[0].resultsCache).resolves.toBe(
           (await pathData.propertyCache)['http://xmlns.com/foaf/0.1/knows']);
+      });
+
+      it('returns the extended path', () => {
+        expect(result).toBe(extendedPath);
+      });
+    });
+
+    describe('when accessing the reverse of a cached property', () => {
+      let result;
+      beforeEach(() => result = resolver.resolve('friendOf', pathData));
+
+      it('extends the path without a results cache', async () => {
+        expect(pathData.extendPath).toBeCalledTimes(1);
+        const args = pathData.extendPath.mock.calls[0];
+        expect(args).toHaveLength(1);
+        await expect(args[0].resultsCache).resolves.toBeFalsy();
       });
 
       it('returns the extended path', () => {

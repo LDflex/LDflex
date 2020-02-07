@@ -457,6 +457,42 @@ describe('a MutationFunctionHandler instance not allowing 0 args', () => {
         .toEqual(await handler.createMutationExpressions(pathData, path, args1));
     });
   });
+
+  describe('with a reversed property', () => {
+    let pathExpression;
+    let result;
+    beforeEach(() => {
+      pathExpression = [
+        { subject: namedNode('https://example.org/#me') },
+        { predicate: namedNode('https://ex.org/p1'), reverse: true },
+      ];
+      result = handler.handle(pathData, { pathExpression });
+    });
+
+    describe('with the function called with one raw argument', () => {
+      let functionResult;
+      beforeEach(async () => functionResult = await result('Ruben'));
+
+      it('sets mutationExpressions to a promise to the expressions', async () => {
+        const { mutationExpressions } = pathData.extendPath.mock.calls[0][0];
+        expect(await mutationExpressions).toEqual([
+          {
+            mutationType,
+            conditions: [{ subject: namedNode('https://example.org/#me') }],
+            predicateObjects: [{
+              predicate: namedNode('https://ex.org/p1'),
+              reverse: true,
+              objects: [literal('Ruben')],
+            }],
+          },
+        ]);
+      });
+
+      it('returns the extended path', () => {
+        expect(functionResult).toEqual(extendedPath);
+      });
+    });
+  });
 });
 
 describe('a MutationFunctionHandler instance allowing 0 args', () => {

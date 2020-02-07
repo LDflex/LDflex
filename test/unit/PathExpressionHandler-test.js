@@ -55,12 +55,12 @@ describe('a PathExpressionHandler instance', () => {
   it('resolves a path with promises', async () => {
     const pathData = { subject: Promise.resolve(namedNode('abc')) };
     const first = { parent: pathData, predicate: Promise.resolve(namedNode('p1')) };
-    const second = { parent: first, predicate: Promise.resolve(namedNode('p2')) };
+    const second = { parent: first, predicate: Promise.resolve(namedNode('p2')), reverse: Promise.resolve(true) };
 
     expect(await handler.handle(second)).toEqual([
       { subject: namedNode('abc') },
       { predicate: namedNode('p1') },
-      { predicate: namedNode('p2') },
+      { predicate: namedNode('p2'), reverse: true },
     ]);
   });
 });

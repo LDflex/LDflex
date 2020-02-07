@@ -70,13 +70,21 @@ export default class SparqlHandler {
     }
 
     const mutationPatterns = [];
-    for (const { predicate, objects } of predicateObjects) {
+    for (const { predicate, reverse, objects } of predicateObjects) {
       const objectList = !objects ?
         // If no objects were listed, we need to mutate all of them
-        this.createVar(predicate.value, scope) :
+        [this.createVar(predicate.value, scope)] :
         // Otherwise, we need to mutate the listed objects
-        objects.map(o => this.termToString(o)).join(', ');
-      mutationPatterns.push(`${subject} ${this.termToString(predicate)} ${objectList}.`);
+        objects.map(o => this.termToString(o));
+      const predicateString = this.termToString(predicate);
+      if (!reverse) {
+        const objectString = objectList.join(', ');
+        mutationPatterns.push(`${subject} ${predicateString} ${objectString}.`);
+      }
+      else {
+        mutationPatterns.push(objectList.map(object =>
+          `${object} ${predicateString} ${subject}.`).join('\n  '));
+      }
     }
     return where.length === 0 ?
       // If there are no WHERE clauses, just mutate raw data
@@ -93,18 +101,20 @@ export default class SparqlHandler {
     const clauses = pathExpression.map((segment, index) => {
       // Obtain components and generate triple pattern
       const subject = object;
-      const { predicate } = segment;
+      const { predicate, reverse, sort } = segment;
       object = index < lastIndex ? this.createVar(`v${index}`, scope) : lastVar;
-      const result = `${subject} ${this.termToString(predicate)} ${object}.`;
+      const result = reverse ?
+        `${object} ${this.termToString(predicate)} ${subject}.` :
+        `${subject} ${this.termToString(predicate)} ${object}.`;
 
       // If the sort option was not set, use this object as a query variable
-      if (!segment.sort) {
+      if (!sort) {
         queryVar = object;
       }
       // If sort was set, use this object as a sorting variable
       else {
         // TODO: handle when an object is used for sorting, and later also for querying
-        sorts.push({ variable: object, order: segment.sort });
+        sorts.push({ variable: object, order: sort });
         // TODO: use a descriptive lastVar in case of sorting
         object = queryVar;
       }
