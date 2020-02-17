@@ -60,6 +60,43 @@ describe('a JSONLDResolver instance with a context', () => {
     });
   });
 
+  describe('resolving properties as functions', () => {
+    const pathData = { extendPath: jest.fn(x => Object.assign(x, { proxy: x })) };
+
+    let result;
+    beforeEach(() => result = resolver.resolve('knows', pathData));
+
+    it('exists', () => {
+      result = resolver.resolve('knows', pathData);
+      expect(result.asFunction).toBeInstanceOf(Function);
+    });
+
+    it('errors if there are no arguments', () => {
+      expect(() => result.asFunction(result, [])).toThrowError();
+    });
+
+    it('errors if the input is not an RDF object', () => {
+      expect(() => result.asFunction(result, ['Ruben'])).toThrowError();
+    });
+
+    describe('with 2 values', () => {
+      const ruben = namedNode('Ruben');
+      const joachim = namedNode('Joachim');
+      let applied;
+      beforeEach(() => {
+        applied = result.asFunction(result, [ruben, joachim]);
+      });
+
+      it('stores the new values in the result', () => {
+        expect(applied.values).toEqual([ruben, joachim]);
+      });
+
+      it('deletes the asFunction property', () => {
+        expect(applied).not.toHaveProperty('asFunction');
+      });
+    });
+  });
+
   describe('resolving the foaf:knows property', () => {
     const extendedPath = {};
     const pathData = { extendPath: jest.fn(() => extendedPath) };

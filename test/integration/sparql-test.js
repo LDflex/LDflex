@@ -81,6 +81,27 @@ describe('a query path with a path expression handler', () => {
       ORDER BY ASC(?v3) ASC(?givenName)`));
   });
 
+  it('resolves a path with 3 links and fixed values', async () => {
+    const query = await person.friends.friends(namedNode('http://ex.org/Alice'), namedNode('http://ex.org/Bob')).name.sparql;
+    expect(query).toEqual(deindent(`
+      SELECT ?name WHERE {
+        <https://example.org/#me> <http://xmlns.com/foaf/0.1/knows> ?v0.
+        ?v0 <http://xmlns.com/foaf/0.1/knows> <http://ex.org/Alice>, <http://ex.org/Bob>.
+        ?v0 <http://xmlns.com/foaf/0.1/name> ?name.
+      }`));
+  });
+
+  it('resolves a path with 3 links and reversed fixed values', async () => {
+    const query = await person.friends.friendOf(namedNode('http://ex.org/Alice'), namedNode('http://ex.org/Bob')).name.sparql;
+    expect(query).toEqual(deindent(`
+      SELECT ?name WHERE {
+        <https://example.org/#me> <http://xmlns.com/foaf/0.1/knows> ?v0.
+        <http://ex.org/Alice> <http://xmlns.com/foaf/0.1/knows> ?v0.
+        <http://ex.org/Bob> <http://xmlns.com/foaf/0.1/knows> ?v0.
+        ?v0 <http://xmlns.com/foaf/0.1/name> ?name.
+      }`));
+  });
+
   it('resolves a path with 1 link and a predicates call', async () => {
     const query = await person.predicates.sparql;
     expect(query).toEqual(deindent(`
@@ -183,7 +204,7 @@ describe('a query path with a path expression handler', () => {
 
   it('errors on a path with 3 links and an addition without args', async () => {
     expect(() => person.friends.friends.add().sparql)
-      .toThrow(new Error('Mutation on [object Object] can not be invoked without arguments'));
+      .toThrow();
   });
 
   it('resolves a path with 3 links and an addition with a raw arg and path arg', async () => {

@@ -184,6 +184,48 @@ describe('a SparqlHandler instance', () => {
           ?v0 <https://ex.org/p2> ?p2.
         }`));
     });
+
+    it('supports fixed values', async () => {
+      const pathExpression = [
+        { subject: namedNode('https://example.org/#me') },
+        { predicate: namedNode('https://ex.org/p1') },
+        { predicate: namedNode('https://ex.org/p2'), values: [namedNode('https://ex.org/o1'), namedNode('https://ex.org/o2')] },
+      ];
+
+      const pathData = { property: 'p2' };
+      expect(await handler.handle(pathData, { pathExpression })).toEqual(deindent(`
+       SELECT ?v0 WHERE {
+         <https://example.org/#me> <https://ex.org/p1> ?v0.
+         ?v0 <https://ex.org/p2> <https://ex.org/o1>, <https://ex.org/o2>.
+       }`));
+    });
+
+    it('errors on static triples in a query', async () => {
+      const pathExpression = [
+        { subject: namedNode('https://example.org/#me') },
+        { predicate: namedNode('https://ex.org/p1'), values: [namedNode('https://ex.org/o1'), namedNode('https://ex.org/o2')] },
+        { predicate: namedNode('https://ex.org/p2') },
+      ];
+
+      const pathData = { property: 'p2' };
+      await expect(handler.handle(pathData, { pathExpression })).rejects.toEqual(new Error('Can not have static objects if the subject is also static'));
+    });
+
+    it('supports reversed fixed values', async () => {
+      const pathExpression = [
+        { subject: namedNode('https://example.org/#me') },
+        { predicate: namedNode('https://ex.org/p1') },
+        { predicate: namedNode('https://ex.org/p2'), values: [namedNode('https://ex.org/o1'), namedNode('https://ex.org/o2')], reverse: true },
+      ];
+
+      const pathData = { property: 'p2' };
+      expect(await handler.handle(pathData, { pathExpression })).toEqual(deindent(`
+       SELECT ?v0 WHERE {
+         <https://example.org/#me> <https://ex.org/p1> ?v0.
+         <https://ex.org/o1> <https://ex.org/p2> ?v0.
+         <https://ex.org/o2> <https://ex.org/p2> ?v0.
+       }`));
+    });
   });
 
   describe('with mutationExpressions', () => {

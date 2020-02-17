@@ -35,7 +35,10 @@ export default class PathProxy {
       [data, settings] = [settings, {}];
 
     // Create the path's internal data object and the proxy that wraps it
-    const path = { settings, ...data };
+    // This needs to be a function or `apply` can't be proxied
+    // eslint-disable-next-line no-empty-function
+    function path() { }
+    Object.assign(path, { settings, ...data });
     const proxy = path.proxy = new Proxy(path, this);
 
     // Add an extendPath method to create child paths
@@ -66,8 +69,18 @@ export default class PathProxy {
       if (resolver.supports(property))
         return resolver.resolve(property, pathData, pathData.proxy);
     }
-
     // Otherwise, the property does not exist
+    return undefined;
+  }
+
+  /**
+   * Handles calling the proxy as a function
+   */
+  apply(pathData, thisArg, args) {
+    if (pathData.asFunction && typeof pathData.asFunction === 'function')
+      return pathData.asFunction(pathData, args);
+
+    // Otherwise, there is no apply handler
     return undefined;
   }
 }

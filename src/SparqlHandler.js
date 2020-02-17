@@ -100,12 +100,29 @@ export default class SparqlHandler {
     let object = this.termToString(skolemize(root.subject));
     let queryVar = object;
     const sorts = [];
-    const clauses = pathExpression.map((segment, index) => {
+    const clauses = [];
+    let staticValid = false;
+    pathExpression.forEach((segment, index) => {
       // Obtain components and generate triple pattern
       const subject = object;
-      const { predicate, reverse, sort } = segment;
-      object = index < lastIndex ? this.createVar(`v${index}`, scope) : lastVar;
-      const patttern = this.triplePattern(subject, predicate, object, reverse);
+      const { predicate, reverse, sort, values } = segment;
+      // Don't update variable if there are static values instead
+      if (values && values.length > 0) {
+        if (!staticValid)
+          throw new Error('Can not have static objects if the subject is also static');
+        // Can't have 2 subsequent static triple sets
+        staticValid = false;
+        const valueStrs = values.map(v => this.termToString(v));
+        if (reverse)
+          clauses.push(...valueStrs.map(v => this.triplePattern(v, predicate, subject)));
+        else
+          clauses.push(this.triplePattern(subject, predicate, valueStrs.join(', ')));
+      }
+      else {
+        staticValid = true;
+        object = index < lastIndex ? this.createVar(`v${index}`, scope) : lastVar;
+        clauses.push(this.triplePattern(subject, predicate, object, reverse));
+      }
 
       // If the sort option was not set, use this object as a query variable
       if (!sort) {
@@ -118,7 +135,6 @@ export default class SparqlHandler {
         // TODO: use a descriptive lastVar in case of sorting
         object = queryVar;
       }
-      return patttern;
     });
     return { queryVar, sorts, clauses };
   }
