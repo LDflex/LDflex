@@ -4,7 +4,7 @@ for querying Linked Data on the Web
 as if you were browsing a local JavaScript graph.
 
 [![npm version](https://img.shields.io/npm/v/ldflex.svg)](https://www.npmjs.com/package/ldflex)
-[![Build Status](https://travis-ci.org/LDflex/LDflex.svg?branch=master)](https://travis-ci.org/LDflex/LDflex)
+[![Build Status](https://travis-ci.com/LDflex/LDflex.svg?branch=master)](https://travis-ci.com/LDflex/LDflex)
 [![Coverage Status](https://coveralls.io/repos/github/LDflex/LDflex/badge.svg?branch=master)](https://coveralls.io/github/LDflex/LDflex?branch=master)
 [![Dependency Status](https://david-dm.org/LDflex/LDflex.svg)](https://david-dm.org/LDflex/LDflex)
 
