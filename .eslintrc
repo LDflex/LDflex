@@ -24,7 +24,7 @@
     no-console: [ error, { allow: [ warn ] } ],
     no-case-declarations: off,
     no-div-regex: error,
-    no-else-return: error,
+    no-else-return: off,
     no-empty-function: error,
     no-empty-pattern: error,
     no-eq-null: error,

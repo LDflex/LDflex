@@ -11,16 +11,14 @@ import MutationFunctionHandler from './MutationFunctionHandler';
 export default class SetFunctionHandler extends MutationFunctionHandler {
   handle(pathData, path) {
     return (...args) => {
-      // Don't support object maps with multiple arguments
-      if (args.length !== 1 || !this.isObject(args[0])) {
-        if (args.some(arg => this.isObject(arg)))
-          throw new Error('Object maps can only appear as a single argument');
-        return path.delete().add(...args);
-      }
-
-      // Still have to make sure the deletes happen before the adds
-      const deletePath = Object.keys(args[0]).reduce((newPath, key) => newPath.delete({ [key]: [] }), path);
-
+      // First, delete all existing values for the property/properties
+      const deletePath = !this.hasPropertyMap(args) ?
+        // When a single property is given, delete all of its values
+        path.delete() :
+        // When a map of properties is given, delete all of their values
+        Object.keys(args[0]).reduce((previousPath, property) =>
+          previousPath.delete({ [property]: [] }), path);
+      // Next, insert the new values
       return deletePath.add(...args);
     };
   }

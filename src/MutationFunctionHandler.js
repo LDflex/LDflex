@@ -5,9 +5,13 @@ import { lazyThenable } from './promiseUtils';
  * Returns a function that, when called with arguments,
  * extends the path with mutationExpressions.
  *
- * It uses the current path expression as domain expression
- * and the given arguments as range expression.
- * These arguments can either be raw, or other path expressions.
+ * Mutation functions can be called in two equivalent ways:
+ * - path.property.set(object, object)
+ * - path.set({ property: [object, object] })
+ * Objects can be strings, terms, or path expressions.
+ * The second syntax allows setting multiple properties at once.
+ * It also has `null` and `undefined` as shortcuts for the empty array,
+ * and a direct value as shortcut for a single-valued array.
  *
  * Requires:
  * - a pathExpression property on the path proxy and all non-raw arguments.
@@ -18,6 +22,7 @@ export default class MutationFunctionHandler {
     this._allowZeroArgs = allowZeroArgs;
   }
 
+  // Creates a function that performs a mutation
   handle(pathData, path) {
     return (...args) => {
       // Check if the given arguments are valid
@@ -31,57 +36,48 @@ export default class MutationFunctionHandler {
     };
   }
 
+  // Creates expressions that represent the requested mutation
   async createMutationExpressions(pathData, path, args) {
-    // The arguments are the affected objects
-    // Do this first since an object input can change the conditions
-    let objects;
-    if (args.length === 1 && this.isObject(args[0])) {
-      objects = Object.keys(args[0]).map(key => {
-        let values = args[0][key];
-        // Simulate the function being called with no arguments
+    // The mutation targets a single property on the path by passing objects
+    if (!this.hasPropertyMap(args)) {
+      const conditions = await path.pathExpression;
+      // If no objects were specified, mutate all objects in the domain
+      if (args.length === 0)
+        return [{ mutationType: this._mutationType, conditions }];
+      // Extract the objects
+      const objects = await this.extractObjects(pathData, path, args);
+      // No need to continue if there are no objects to mutate
+      if (objects.length === 0)
+        return [{ predicateObjects: [] }];
+      return [this.createMutationExpression(pathData, conditions, objects)];
+    }
+    // The mutation targets multiple properties through a map of property-objects pairs
+    else {
+      const pairs = Object.entries(args[0]);
+      // No need to continue if there are no properties to mutate
+      if (pairs.length === 0)
+        return [{ predicateObjects: [] }];
+      const expressions = await Promise.all(pairs.map(async ([property, values]) => {
+        const conditions = await path[property].pathExpression;
+        // null and undefined are shortcuts for the empty array
         if (values === null || values === undefined)
           values = [];
-        // Shortcut for single arguments
+        // A single value is a shortcut for a single-valued array
         else if (!Array.isArray(values))
           values = [values];
-        // Currently the path value is only used by the SolidDeleteFunctionHandlers in query-ldflex
-        // and needs to be updated to be the correct path there.
-        // pathData still matches the old path though.
-        return { key, value: this.extractObjects(pathData, path[key], values) };
-      });
+        const objects = await this.extractObjects(pathData, path[property], values);
+        return this.createMutationExpression(pathData, conditions, objects);
+      }));
+      // Group expressions together to maintain the same structure as the singular case
+      // (All properties have the same parent path, and hence the same condition)
+      return [{
+        ...expressions[0],
+        predicateObjects: [].concat(...expressions.map(e => e.predicateObjects)),
+      }];
     }
-    else {
-      objects = await this.extractObjects(pathData, path, args);
-    }
-    // If no objects were specified, mutate all objects in the domain
-    const mutationType = this._mutationType;
-    if (!objects)
-      return [{ mutationType, conditions: await path.pathExpression }];
-    // No need to continue if there are no objects to mutate
-    if (objects.length === 0)
-      return [{ predicateObjects: [] }];
-
-    // Check if the input was an object map
-    const hasObjects = !objects[0].termType;
-
-    if (hasObjects) {
-      // Make sure promise structure is the same as when there are no objects
-      return Promise.all(objects.map(async obj => {
-        const conditions = await path[obj.key].pathExpression;
-        return this.createMutationExpression(pathData, conditions, await obj.value);
-      })).then(results =>
-        // We know all results will have the same conditions (since only the last element changes and gets removed as predicate)
-        [results.reduce((acc, val) => {
-          acc.predicateObjects.push(val.predicateObjects[0]);
-          return acc;
-        })]
-      );
-    }
-
-    const conditions = await path.pathExpression;
-    return [this.createMutationExpression(pathData, conditions, objects)];
   }
 
+  // Creates an expression that represents a mutation with the given objects
   createMutationExpression(pathData, conditions, objects) {
     // Check if we have a valid path
     if (!Array.isArray(conditions))
@@ -89,51 +85,66 @@ export default class MutationFunctionHandler {
     if (conditions.length < 2)
       throw new Error(`${pathData} should at least contain a subject and a predicate`);
 
-    // Otherwise, use the previous predicate
+    // Create the mutation from the conditions
     const { predicate } = conditions[conditions.length - 1];
     if (!predicate)
       throw new Error(`Expected predicate in ${pathData}`);
-    return { mutationType: this._mutationType, conditions: conditions.slice(0, conditions.length - 1), predicateObjects: [{ predicate, objects }] };
+    return {
+      mutationType: this._mutationType,
+      conditions: conditions.slice(0, -1),
+      predicateObjects: [{ predicate, objects }],
+    };
   }
 
-  async extractObjects(pathData, path, args) {
-    // No arguments means a wildcard
-    if (args.length === 0)
+  // Extracts individual objects from a set of values passed to a mutation function
+  async extractObjects(pathData, path, values) {
+    // No values passed to a mutation function indicates a wildcard
+    if (values.length === 0)
       return null;
 
     // Expand strings, promises, and paths
     const objects = [];
-    for (const arg of args) {
+    for (const value of values) {
       // Process an asynchronously iterable argument
-      if (arg && arg[Symbol.asyncIterator]) {
-        for await (const item of arg)
-          objects.push(this.extractObject(pathData, path, item));
+      if (value && value[Symbol.asyncIterator]) {
+        for await (const item of value)
+          objects.push(this.objectToTerm(item));
       }
       else {
         // Process a (promise to) a string or term
-        objects.push(this.extractObject(pathData, path, await arg));
+        objects.push(this.objectToTerm(await value));
       }
     }
     return objects;
   }
 
-  isObject(arg) {
-    if (!arg)
-      return false;
-    if (typeof arg === 'string')
-      return false;
-    if (arg.termType)
-      return false;
-    if (arg[Symbol.asyncIterator])
-      return false;
-    return true;
+  // Ensures the object is an RDF/JS term
+  objectToTerm(value) {
+    if (typeof value === 'string')
+      return literal(value);
+    if (value && typeof value.termType === 'string')
+      return value;
+    throw new Error(`Invalid object: ${value}`);
   }
 
-  extractObject(pathData, path, arg) {
-    if (typeof arg === 'string')
-      return literal(arg);
-    if (arg && arg.termType)
-      return arg;
-    throw new Error(`Invalid object: ${arg}`);
+  // Checks whether the passed argument list is a property map
+  hasPropertyMap(args) {
+    const hasPlainObject = args.some(this.isPlainObject);
+    if (hasPlainObject && args.length !== 1)
+      throw new Error(`Expected only a property map, but got ${args.length} arguments`);
+    return hasPlainObject;
+  }
+
+  // Checks whether the value is an object without special meaning to LDflex
+  isPlainObject(value) {
+    return value !== null &&
+      // Ignore strings etc.
+      typeof value === 'object' &&
+      // Ignore Promise instances
+      typeof value.then !== 'function' &&
+      // Ignore RDF/JS Term instances
+      typeof value.termType !== 'string' &&
+      // Ignore LDflex paths
+      typeof value[Symbol.asyncIterator] !== 'function';
   }
 }

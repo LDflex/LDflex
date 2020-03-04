@@ -399,6 +399,15 @@ describe('a MutationFunctionHandler instance not allowing 0 args', () => {
       { subject: namedNode('https://example.org/#me') },
     ];
 
+    it('ignores empty objects', async () => {
+      const args = [{}];
+      const path = { pathExpression };
+
+      expect(await handler.createMutationExpressions(pathData, path, args)).toEqual([
+        { predicateObjects: [] },
+      ]);
+    });
+
     it('resolves a path of length 1', async () => {
       const args = [{ 'http://a': 'b', 'http://c': 'd' }];
       const path = { pathExpression };

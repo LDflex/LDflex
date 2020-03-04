@@ -44,7 +44,8 @@ describe('a SetFunctionHandler instance', () => {
 
     describe('with a map as function parameter', () => {
       it('errors if there is more than 1 argument', () => {
-        expect(() => result({ a: 'b' }, 'c')).toThrowError();
+        expect(() => result({ a: 'b' }, 'c'))
+          .toThrowError('Expected only a property map, but got 2 arguments');
       });
 
       it('executes a delete for every key', () => {
