@@ -41,5 +41,28 @@ describe('a SetFunctionHandler instance', () => {
         expect(functionResult).toEqual({ ...proxy, extended: true });
       });
     });
+
+    describe('with a map as function parameter', () => {
+      it('errors if there is more than 1 argument', () => {
+        expect(() => result({ a: 'b' }, 'c'))
+          .toThrowError('Expected only a property map, but got 2 arguments');
+      });
+
+      it('executes a delete for every key', () => {
+        result({ a: 'b', c: 'd' });
+        expect(proxy.delete).toBeCalledTimes(2);
+        const args0 = proxy.delete.mock.calls[0];
+        const args1 = proxy.delete.mock.calls[1];
+        expect(args0).toEqual([{ a: [] }]);
+        expect(args1).toEqual([{ c: [] }]);
+      });
+
+      it('executes an add with the original arguments', () => {
+        result({ a: 'b', c: 'd' });
+        expect(proxy.add).toBeCalledTimes(1);
+        const args = proxy.add.mock.calls[0];
+        expect(args).toEqual([{ a: 'b', c: 'd' }]);
+      });
+    });
   });
 });

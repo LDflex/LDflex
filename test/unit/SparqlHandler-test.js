@@ -178,8 +178,10 @@ describe('a SparqlHandler instance', () => {
           {
             mutationType: 'INSERT',
             conditions: [{ subject: namedNode('https://example.org/#D0') }],
-            predicate: namedNode('https://example.org/p'),
-            objects: [namedNode('https://example.org/#R0')],
+            predicateObjects: [{
+              predicate: namedNode('https://example.org/p'),
+              objects: [namedNode('https://example.org/#R0')],
+            }],
           },
         ];
 
@@ -194,8 +196,10 @@ describe('a SparqlHandler instance', () => {
           {
             mutationType: 'INSERT',
             conditions: [{ subject: namedNode('https://example.org/#D0') }],
-            predicate: namedNode('https://example.org/p'),
-            objects: [literal('Ruben')],
+            predicateObjects: [{
+              predicate: namedNode('https://example.org/p'),
+              objects: [literal('Ruben')],
+            }],
           },
         ];
 
@@ -210,12 +214,14 @@ describe('a SparqlHandler instance', () => {
           {
             mutationType: 'INSERT',
             conditions: [{ subject: namedNode('https://example.org/#D0') }],
-            predicate: namedNode('https://example.org/p'),
-            objects: [
-              namedNode('https://example.org/#R0'),
-              literal('Ruben'),
-              literal('Other'),
-            ],
+            predicateObjects: [{
+              predicate: namedNode('https://example.org/p'),
+              objects: [
+                namedNode('https://example.org/#R0'),
+                literal('Ruben'),
+                literal('Other'),
+              ],
+            }],
           },
         ];
 
@@ -234,8 +240,10 @@ describe('a SparqlHandler instance', () => {
               { predicate: namedNode('https://example.org/#Dp1') },
               { predicate: namedNode('https://example.org/#Dp2') },
             ],
-            predicate: namedNode('https://example.org/p'),
-            objects: [namedNode('https://example.org/#R0')],
+            predicateObjects: [{
+              predicate: namedNode('https://example.org/p'),
+              objects: [namedNode('https://example.org/#R0')],
+            }],
           },
         ];
 
@@ -256,8 +264,10 @@ describe('a SparqlHandler instance', () => {
               { subject: namedNode('https://example.org/#D0') },
               { predicate: namedNode('https://example.org/#') },
             ],
-            predicate: namedNode('https://example.org/p'),
-            objects: [namedNode('https://example.org/#R0')],
+            predicateObjects: [{
+              predicate: namedNode('https://example.org/p'),
+              objects: [namedNode('https://example.org/#R0')],
+            }],
           },
         ];
 
@@ -276,8 +286,10 @@ describe('a SparqlHandler instance', () => {
           {
             mutationType: 'INSERT',
             conditions: [{ subject: namedNode('https://example.org/#D0') }],
-            predicate: namedNode('https://example.org/p'),
-            objects: [literal('a"b')],
+            predicateObjects: [{
+              predicate: namedNode('https://example.org/p'),
+              objects: [literal('a"b')],
+            }],
           },
         ];
 
@@ -294,8 +306,10 @@ describe('a SparqlHandler instance', () => {
           {
             mutationType: 'DELETE',
             conditions: [{ subject: namedNode('https://example.org/#D0') }],
-            predicate: namedNode('https://example.org/p'),
-            objects: [namedNode('https://example.org/#R0')],
+            predicateObjects: [{
+              predicate: namedNode('https://example.org/p'),
+              objects: [namedNode('https://example.org/#R0')],
+            }],
           },
         ];
 
@@ -311,12 +325,14 @@ describe('a SparqlHandler instance', () => {
         {
           mutationType: 'DELETE',
           conditions: [{ subject: namedNode('https://example.org/#D0') }],
-          predicate: namedNode('https://example.org/p'),
-          objects: [
-            namedNode('https://example.org/#R0'),
-            literal('Ruben'),
-            literal('Other'),
-          ],
+          predicateObjects: [{
+            predicate: namedNode('https://example.org/p'),
+            objects: [
+              namedNode('https://example.org/#R0'),
+              literal('Ruben'),
+              literal('Other'),
+            ],
+          }],
         },
       ];
 
@@ -348,7 +364,7 @@ describe('a SparqlHandler instance', () => {
     });
 
     it('returns an empty query if there are no applicable objects', async () => {
-      const mutationExpressions = [{ objects: [] }];
+      const mutationExpressions = [{ predicateObjects: [] }];
       expect(await handler.handle({}, { mutationExpressions })).toEqual('');
     });
   });

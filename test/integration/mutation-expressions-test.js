@@ -43,8 +43,10 @@ describe('a query path with a path expression handler', () => {
           { subject },
           { predicate: namedNode('http://xmlns.com/foaf/0.1/knows') },
         ],
-        predicate: namedNode('http://xmlns.com/foaf/0.1/givenName'),
-        objects: [literal('Ruben')],
+        predicateObjects: [{
+          predicate: namedNode('http://xmlns.com/foaf/0.1/givenName'),
+          objects: [literal('Ruben')],
+        }],
       },
     ]);
   });
@@ -58,8 +60,10 @@ describe('a query path with a path expression handler', () => {
           { subject },
           { predicate: namedNode('http://xmlns.com/foaf/0.1/knows') },
         ],
-        predicate: namedNode('http://xmlns.com/foaf/0.1/givenName'),
-        objects: [namedNode('http://ex.org/#1'), namedNode('http://ex.org/#2')],
+        predicateObjects: [{
+          predicate: namedNode('http://xmlns.com/foaf/0.1/givenName'),
+          objects: [namedNode('http://ex.org/#1'), namedNode('http://ex.org/#2')],
+        }],
       },
     ]);
   });
@@ -73,8 +77,10 @@ describe('a query path with a path expression handler', () => {
           { subject },
           { predicate: namedNode('http://xmlns.com/foaf/0.1/knows') },
         ],
-        predicate: namedNode('http://xmlns.com/foaf/0.1/givenName'),
-        objects: [literal('Ruben'), namedNode('http://ex.org/#1'), namedNode('http://ex.org/#2')],
+        predicateObjects: [{
+          predicate: namedNode('http://xmlns.com/foaf/0.1/givenName'),
+          objects: [literal('Ruben'), namedNode('http://ex.org/#1'), namedNode('http://ex.org/#2')],
+        }],
       },
     ]);
   });
@@ -88,8 +94,10 @@ describe('a query path with a path expression handler', () => {
           { subject },
           { predicate: namedNode('http://xmlns.com/foaf/0.1/knows') },
         ],
-        predicate: namedNode('http://xmlns.com/foaf/0.1/givenName'),
-        objects: [literal('Ruben'), namedNode('http://ex.org/#1'), namedNode('http://ex.org/#2')],
+        predicateObjects: [{
+          predicate: namedNode('http://xmlns.com/foaf/0.1/givenName'),
+          objects: [literal('Ruben'), namedNode('http://ex.org/#1'), namedNode('http://ex.org/#2')],
+        }],
       },
     ]);
   });
@@ -103,8 +111,10 @@ describe('a query path with a path expression handler', () => {
           { subject },
           { predicate: namedNode('http://xmlns.com/foaf/0.1/knows') },
         ],
-        predicate: namedNode('http://xmlns.com/foaf/0.1/givenName'),
-        objects: [literal('ruben')],
+        predicateObjects: [{
+          predicate: namedNode('http://xmlns.com/foaf/0.1/givenName'),
+          objects: [literal('ruben')],
+        }],
       },
       {
         mutationType: 'INSERT',
@@ -112,8 +122,10 @@ describe('a query path with a path expression handler', () => {
           { subject },
           { predicate: namedNode('http://xmlns.com/foaf/0.1/knows') },
         ],
-        predicate: namedNode('http://xmlns.com/foaf/0.1/givenName'),
-        objects: [literal('Ruben')],
+        predicateObjects: [{
+          predicate: namedNode('http://xmlns.com/foaf/0.1/givenName'),
+          objects: [literal('Ruben')],
+        }],
       },
     ]);
   });
@@ -126,8 +138,10 @@ describe('a query path with a path expression handler', () => {
         conditions: [
           { subject },
         ],
-        predicate: namedNode('http://xmlns.com/foaf/0.1/knows'),
-        objects: [namedNode('http://ex.org/#1'), namedNode('http://ex.org/#2')],
+        predicateObjects: [{
+          predicate: namedNode('http://xmlns.com/foaf/0.1/knows'),
+          objects: [namedNode('http://ex.org/#1'), namedNode('http://ex.org/#2')],
+        }],
       },
       {
         mutationType: 'INSERT',
@@ -135,8 +149,56 @@ describe('a query path with a path expression handler', () => {
           { subject },
           { predicate: namedNode('http://xmlns.com/foaf/0.1/knows') },
         ],
-        predicate: namedNode('http://xmlns.com/foaf/0.1/givenName'),
-        objects: [literal('Ruben')],
+        predicateObjects: [{
+          predicate: namedNode('http://xmlns.com/foaf/0.1/givenName'),
+          objects: [literal('Ruben')],
+        }],
+      },
+    ]);
+  });
+
+  it('resolves a path with a deletion of 2 links, an addition on a link, a link and another addition on a link using object maps', async () => {
+    const path = await person
+      .delete({ friends: person.friends, firstName: 'ruben' })
+      .add({ firstName: 'Ruben' })
+      .friends.add({ firstName: 'Ruben' }).mutationExpressions;
+    expect(path).toEqual([
+      {
+        mutationType: 'DELETE',
+        conditions: [
+          { subject },
+        ],
+        predicateObjects: [
+          {
+            predicate: namedNode('http://xmlns.com/foaf/0.1/knows'),
+            objects: [namedNode('http://ex.org/#1'), namedNode('http://ex.org/#2')],
+          },
+          {
+            predicate: namedNode('http://xmlns.com/foaf/0.1/givenName'),
+            objects: [literal('ruben')],
+          },
+        ],
+      },
+      {
+        mutationType: 'INSERT',
+        conditions: [
+          { subject },
+        ],
+        predicateObjects: [{
+          predicate: namedNode('http://xmlns.com/foaf/0.1/givenName'),
+          objects: [literal('Ruben')],
+        }],
+      },
+      {
+        mutationType: 'INSERT',
+        conditions: [
+          { subject },
+          { predicate: namedNode('http://xmlns.com/foaf/0.1/knows') },
+        ],
+        predicateObjects: [{
+          predicate: namedNode('http://xmlns.com/foaf/0.1/givenName'),
+          objects: [literal('Ruben')],
+        }],
       },
     ]);
   });
