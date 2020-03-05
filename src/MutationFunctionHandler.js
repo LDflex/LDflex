@@ -39,58 +39,44 @@ export default class MutationFunctionHandler {
   // Creates expressions that represent the requested mutation
   async createMutationExpressions(pathData, path, args) {
     // The mutation targets a single property on the path by passing objects
-    if (!this.hasPropertyMap(args)) {
-      const conditions = await path.pathExpression;
-      // If no objects were specified, mutate all objects in the domain
-      if (args.length === 0)
-        return [{ mutationType: this._mutationType, conditions }];
-      // Extract the objects
-      const objects = await this.extractObjects(pathData, path, args);
-      // No need to continue if there are no objects to mutate
-      if (objects.length === 0)
-        return [{ predicateObjects: [] }];
-      return [this.createMutationExpression(pathData, conditions, objects)];
-    }
+    if (!this.hasPropertyMap(args))
+      return [await this.createMutationExpression(pathData, path, args)];
+
     // The mutation targets multiple properties through a map of property-objects pairs
-    else {
-      const pairs = Object.entries(args[0]);
-      // No need to continue if there are no properties to mutate
-      if (pairs.length === 0)
-        return [{ predicateObjects: [] }];
-      const expressions = await Promise.all(pairs.map(async ([property, values]) => {
-        const conditions = await path[property].pathExpression;
-        // null and undefined are shortcuts for the empty array
-        if (values === null || values === undefined)
-          values = [];
-        // A single value is a shortcut for a single-valued array
-        else if (!Array.isArray(values))
-          values = [values];
-        const objects = await this.extractObjects(pathData, path[property], values);
-        return this.createMutationExpression(pathData, conditions, objects);
-      }));
-      // Group expressions together to maintain the same structure as the singular case
-      // (All properties have the same parent path, and hence the same condition)
-      return [{
-        ...expressions[0],
-        predicateObjects: [].concat(...expressions.map(e => e.predicateObjects)),
-      }];
-    }
+    const pairs = Object.entries(args[0]);
+    const expressions = await Promise.all(pairs.map(([property, values]) =>
+      this.createMutationExpression(pathData, path[property], ensureArray(values))));
+    // Group expressions together to maintain the same structure as the singular case
+    // (All properties have the same parent path, and hence the same condition)
+    return [expressions.length === 0 ? {} : {
+      ...expressions[0],
+      predicateObjects: [].concat(...expressions.map(e => e.predicateObjects)),
+    }];
   }
 
   // Creates an expression that represents a mutation with the given objects
-  createMutationExpression(pathData, conditions, objects) {
-    // Check if we have a valid path
+  async createMutationExpression(pathData, path, values) {
+    // Check if the path is valid
+    const conditions = await path.pathExpression;
     if (!Array.isArray(conditions))
       throw new Error(`${pathData} has no pathExpression property`);
     if (conditions.length < 2)
       throw new Error(`${pathData} should at least contain a subject and a predicate`);
 
-    // Create the mutation from the conditions
+    // If no specific objects are listed, mutate all objects in the domain
+    const objects = await this.extractObjects(pathData, path, values);
+    const mutationType = this._mutationType;
+    if (objects === null)
+      return { mutationType, conditions };
+
+    // Otherwise, extract the predicate and its objects
     const { predicate } = conditions[conditions.length - 1];
     if (!predicate)
       throw new Error(`Expected predicate in ${pathData}`);
-    return {
-      mutationType: this._mutationType,
+
+    // Return a mutation on the parent path for the given predicate and objects
+    return objects.length === 0 ? {} : {
+      mutationType,
       conditions: conditions.slice(0, -1),
       predicateObjects: [{ predicate, objects }],
     };
@@ -98,20 +84,20 @@ export default class MutationFunctionHandler {
 
   // Extracts individual objects from a set of values passed to a mutation function
   async extractObjects(pathData, path, values) {
-    // No values passed to a mutation function indicates a wildcard
+    // No values means a wildcard
     if (values.length === 0)
       return null;
 
-    // Expand strings, promises, and paths
+    // Expand singular values, promises, and paths
     const objects = [];
     for (const value of values) {
-      // Process an asynchronously iterable argument
-      if (value && value[Symbol.asyncIterator]) {
+      // Process a path with multiple values
+      if (value && typeof value[Symbol.asyncIterator] === 'function') {
         for await (const item of value)
           objects.push(this.objectToTerm(item));
       }
+      // Process a (promise to) a string or term
       else {
-        // Process a (promise to) a string or term
         objects.push(this.objectToTerm(await value));
       }
     }
@@ -147,4 +133,11 @@ export default class MutationFunctionHandler {
       // Ignore LDflex paths
       typeof value[Symbol.asyncIterator] !== 'function';
   }
+}
+
+// Ensures that the value is an array
+function ensureArray(value) {
+  if (Array.isArray(value))
+    return value;
+  return value ? [value] : [];
 }

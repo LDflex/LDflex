@@ -51,8 +51,8 @@ export default class SparqlHandler {
   }
 
   mutationExpressionToQuery({ mutationType, conditions, predicateObjects }) {
-    // If there are no objects to mutate there is no query
-    if (predicateObjects && predicateObjects.length === 0)
+    // If there are no mutations, there is no query
+    if (!mutationType || !conditions || predicateObjects && predicateObjects.length === 0)
       return '';
     // If the only condition is a subject, we need no WHERE clause
     const scope = {};
@@ -65,7 +65,8 @@ export default class SparqlHandler {
     else {
       const lastPredicate = conditions[conditions.length - 1].predicate;
       subject = this.createVar(lastPredicate.value, scope);
-      ({ queryVar: subject, clauses: where } = this.expressionToTriplePatterns(conditions, subject, scope));
+      ({ queryVar: subject, clauses: where } =
+        this.expressionToTriplePatterns(conditions, subject, scope));
     }
 
     const mutationPatterns = [];

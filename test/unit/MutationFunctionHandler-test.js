@@ -313,7 +313,7 @@ describe('a MutationFunctionHandler instance not allowing 0 args', () => {
       ];
 
       expect(await handler.createMutationExpressions(pathData, { pathExpression }, args))
-        .toEqual([{ predicateObjects: [] }]);
+        .toEqual([{}]);
     });
   });
 
@@ -404,7 +404,7 @@ describe('a MutationFunctionHandler instance not allowing 0 args', () => {
       const path = { pathExpression };
 
       expect(await handler.createMutationExpressions(pathData, path, args)).toEqual([
-        { predicateObjects: [] },
+        {},
       ]);
     });
 
