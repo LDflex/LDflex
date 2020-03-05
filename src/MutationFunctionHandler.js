@@ -56,25 +56,25 @@ export default class MutationFunctionHandler {
 
   // Creates an expression that represents a mutation with the given objects
   async createMutationExpression(pathData, path, values) {
-    // Check if the path is valid
+    // The path segments are the conditions to which the mutation should apply
     const conditions = await path.pathExpression;
     if (!Array.isArray(conditions))
       throw new Error(`${pathData} has no pathExpression property`);
     if (conditions.length < 2)
       throw new Error(`${pathData} should at least contain a subject and a predicate`);
 
-    // If no specific objects are listed, mutate all objects in the domain
+    // Obtain the predicate and objects
+    const { predicate } = conditions[conditions.length - 1];
+    if (!predicate)
+      throw new Error(`Expected predicate in ${pathData}`);
     const objects = await this.extractObjects(pathData, path, values);
+
+    // If no specific objects are listed, mutate all objects matching the path
     const mutationType = this._mutationType;
     if (objects === null)
       return { mutationType, conditions };
 
-    // Otherwise, extract the predicate and its objects
-    const { predicate } = conditions[conditions.length - 1];
-    if (!predicate)
-      throw new Error(`Expected predicate in ${pathData}`);
-
-    // Return a mutation on the parent path for the given predicate and objects
+    // Otherwise, mutate the given predicate and objects on the parent path
     return objects.length === 0 ? {} : {
       mutationType,
       conditions: conditions.slice(0, -1),
