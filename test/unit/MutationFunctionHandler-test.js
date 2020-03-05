@@ -476,7 +476,9 @@ describe('a MutationFunctionHandler instance allowing 0 args', () => {
             mutationType,
             conditions: [
               { subject: namedNode('https://example.org/#me') },
-              { predicate: namedNode('https://ex.org/p1') },
+            ],
+            predicateObjects: [
+              { predicate: namedNode('https://ex.org/p1'), objects: null },
             ],
           },
         ]);
@@ -497,7 +499,9 @@ describe('a MutationFunctionHandler instance allowing 0 args', () => {
               { subject: namedNode('https://example.org/#me') },
               { predicate: namedNode('https://ex.org/p1') },
               { predicate: namedNode('https://ex.org/p2') },
-              { predicate: namedNode('https://ex.org/p3') },
+            ],
+            predicateObjects: [
+              { predicate: namedNode('https://ex.org/p3'), objects: null },
             ],
           },
         ]);

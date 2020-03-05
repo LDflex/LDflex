@@ -70,21 +70,17 @@ export default class SparqlHandler {
     }
 
     const mutationPatterns = [];
-    // The mutation is the unconstrained last segment if there are no predicate objects
-    if (!predicateObjects) {
-      mutationPatterns.push(where[where.length - 1]);
-    }
-    // If a list of objects was specified, the mutation is "<s> <p> objects"
-    else {
-      for (const { predicate, objects } of predicateObjects) {
-        const objectList = objects.map(o => this.termToString(o)).join(', ');
-        const mutationPattern = `${subject} ${this.termToString(predicate)} ${objectList}.`;
-        mutationPatterns.push(mutationPattern);
-      }
+    for (const { predicate, objects } of predicateObjects) {
+      const objectList = !objects ?
+        // If no objects were listed, we need to mutate all of them
+        this.createVar(predicate.value, scope) :
+        // Otherwise, we need to mutate the listed objects
+        objects.map(o => this.termToString(o)).join(', ');
+      mutationPatterns.push(`${subject} ${this.termToString(predicate)} ${objectList}.`);
     }
     return where.length === 0 ?
       // If there are no WHERE clauses, just mutate raw data
-      `${mutationType} DATA {\n  ${mutationPatterns.join('  \n')}\n}` :
+      `${mutationType} DATA {\n  ${mutationPatterns.join('\n  ')}\n}` :
       // Otherwise, return a DELETE/INSERT ... WHERE ... query
       `${mutationType} {\n  ${mutationPatterns.join('\n  ')}\n} WHERE {\n  ${where.join('\n  ')}\n}`;
   }
@@ -122,8 +118,9 @@ export default class SparqlHandler {
     let counter = 0;
     let label = `?${suggestion.match(/[a-z0-9]*$/i)[0] || 'result'}`;
     if (scope) {
+      suggestion = label;
       while (scope[label])
-        label = `?${suggestion}_${counter++}`;
+        label = `${suggestion}_${counter++}`;
       scope[label] = true;
     }
     return label;
