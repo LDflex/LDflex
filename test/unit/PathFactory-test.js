@@ -1,6 +1,7 @@
 import PathFactory from '../../src/PathFactory';
 import context from '../context';
 import { namedNode, literal } from '@rdfjs/data-model';
+import { iterableToArray } from '../../src/iterableUtils';
 
 describe('the PathFactory module', () => {
   it('exposes the defaultHandlers', () => {
@@ -67,11 +68,7 @@ describe('a PathFactory instance with an undefined subject', () => {
   });
 
   it('has an asyncIterator rejecting with an error', async () => {
-    await expect((async () => {
-      const items = [];
-      for await (const item of path)
-        items.push(item);
-    })()).rejects.toBeInstanceOf(Error);
+    await expect(iterableToArray(path)).rejects.toBeInstanceOf(Error);
   });
 });
 
@@ -122,11 +119,8 @@ describe('a PathFactory instance with a Term as subject', () => {
   });
 
   describe('its asyncIterator', () => {
-    const items = [];
-    beforeAll(async () => {
-      for await (const item of path)
-        items.push(item);
-    });
+    let items;
+    beforeAll(async () => items = await iterableToArray(path));
 
     it('has one element', () => {
       expect(items).toHaveLength(1);
@@ -231,11 +225,8 @@ describe('a PathFactory instance with a promise to a Term as subject', () => {
     });
 
     describe('its asyncIterator', () => {
-      const items = [];
-      beforeAll(async () => {
-        for await (const item of value)
-          items.push(item);
-      });
+      let items;
+      beforeAll(async () => items = await iterableToArray(path));
 
       it('has one element', () => {
         expect(items).toHaveLength(1);
@@ -265,11 +256,8 @@ describe('a PathFactory instance with a promise to a Term as subject', () => {
   });
 
   describe('its asyncIterator', () => {
-    const items = [];
-    beforeAll(async () => {
-      for await (const item of path)
-        items.push(item);
-    });
+    let items;
+    beforeAll(async () => items = await iterableToArray(path));
 
     it('has one element', () => {
       expect(items).toHaveLength(1);

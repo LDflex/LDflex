@@ -32,6 +32,8 @@ describe('The LDflex module', () => {
     'iteratorFor',
     'lazyThenable',
     'toIterablePromise',
+    'isPlainObject',
+    'hasPlainObjectArgs',
   ];
 
   exports.forEach(name => {

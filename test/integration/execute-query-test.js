@@ -11,6 +11,7 @@ import DataHandler from '../../src/DataHandler';
 import JSONLDResolver from '../../src/JSONLDResolver';
 import { createQueryEngine, deindent } from '../util';
 import { namedNode, literal } from '@rdfjs/data-model';
+import { iterableToArray } from '../../src/iterableUtils';
 
 import context from '../context';
 
@@ -65,10 +66,8 @@ describe('when the query engine throws an error', () => {
   });
 
   it('rejects with an error to a calling iterator', async () => {
-    await expect((async () => {
-      for await (const item of person.firstName)
-        throw new Error(`Unexpected ${item}`);
-    })()).rejects.toThrow('Query engine error');
+    await expect(iterableToArray(person.firstName)).rejects
+      .toThrow('Query engine error');
   });
 });
 
@@ -80,9 +79,7 @@ describe('a query path with a path expression handler', () => {
   });
 
   it('returns results for a path with 3 links', async () => {
-    const names = [];
-    for await (const firstName of person.friends.firstName)
-      names.push(firstName);
+    const names = await iterableToArray(person.friends.firstName);
     expect(names.map(n => `${n}`)).toEqual(['Alice', 'Bob', 'Carol']);
   });
 
@@ -104,9 +101,7 @@ describe('a query path with a subjects handler', () => {
   });
 
   it('returns results, with executeQuery being called with the right query', async () => {
-    const subjects = [];
-    for await (const subj of person.subjects)
-      subjects.push(subj);
+    const subjects = await iterableToArray(person.subjects);
     expect(queryEngine.execute).toBeCalledWith(deindent(`
       SELECT DISTINCT ?subject WHERE {
         ?subject ?predicate ?object.
@@ -123,9 +118,7 @@ describe('a query path with a path and mutation expression handler', () => {
   });
 
   it('returns results for a path with 3 links', async () => {
-    const names = [];
-    for await (const firstName of person.friends.firstName)
-      names.push(firstName);
+    const names = await iterableToArray(person.friends.firstName);
     expect(names.map(n => `${n}`)).toEqual(['Alice', 'Bob', 'Carol']);
   });
 

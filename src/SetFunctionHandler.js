@@ -1,4 +1,5 @@
 import MutationFunctionHandler from './MutationFunctionHandler';
+import { hasPlainObjectArgs } from './valueUtils';
 
 /**
  * Returns a function that deletes all existing values
@@ -12,7 +13,7 @@ export default class SetFunctionHandler extends MutationFunctionHandler {
   handle(pathData, path) {
     return (...args) => {
       // First, delete all existing values for the property/properties
-      const deletePath = !this.hasPropertyMap(args) ?
+      const deletePath = !hasPlainObjectArgs(args) ?
         // When a single property is given, delete all of its values
         path.delete() :
         // When a map of properties is given, delete all of their values
