@@ -175,10 +175,9 @@ describe('a query path with a path expression handler', () => {
     const query = await person.friends.friends.delete().sparql;
     expect(query).toEqual(deindent(`
       DELETE {
-        ?v0 <${FOAF}knows> ?knows.
+        ?knows <${FOAF}knows> ?knows_0.
       } WHERE {
-        <https://example.org/#me> <${FOAF}knows> ?v0.
-        ?v0 <${FOAF}knows> ?knows.
+        <https://example.org/#me> <${FOAF}knows> ?knows.
       }`));
   });
 
@@ -209,6 +208,15 @@ describe('a query path with a path expression handler', () => {
       }`));
   });
 
+  it('resolves a path where an object map has different conditions', async () => {
+    const query = await person.delete({ friends: null, firstName: 'Ruben' }).sparql;
+    expect(query).toEqual(deindent(`
+      DELETE DATA {
+        <https://example.org/#me> <${FOAF}knows> ?knows.
+        <https://example.org/#me> <${FOAF}givenName> "Ruben".
+      }`));
+  });
+
   it('resolves a path with 3 links and a deletion and addition', async () => {
     const query = await person.friends.friends.firstName.delete('ruben').add('Ruben').sparql;
     expect(query).toEqual(deindent(`
@@ -231,11 +239,10 @@ describe('a query path with a path expression handler', () => {
     const query = await person.friends.friends.firstName.set('Ruben').sparql;
     expect(query).toEqual(deindent(`
       DELETE {
-        ?v1 <${FOAF}givenName> ?givenName.
+        ?knows <${FOAF}givenName> ?givenName.
       } WHERE {
         <https://example.org/#me> <${FOAF}knows> ?v0.
-        ?v0 <${FOAF}knows> ?v1.
-        ?v1 <${FOAF}givenName> ?givenName.
+        ?v0 <${FOAF}knows> ?knows.
       }
       ;
       INSERT {
@@ -250,11 +257,10 @@ describe('a query path with a path expression handler', () => {
     const query = await person.friends.friends.firstName.set('Ruben', 'ruben').sparql;
     expect(query).toEqual(deindent(`
       DELETE {
-        ?v1 <${FOAF}givenName> ?givenName.
+        ?knows <${FOAF}givenName> ?givenName.
       } WHERE {
         <https://example.org/#me> <${FOAF}knows> ?v0.
-        ?v0 <${FOAF}knows> ?v1.
-        ?v1 <${FOAF}givenName> ?givenName.
+        ?v0 <${FOAF}knows> ?knows.
       }
       ;
       INSERT {

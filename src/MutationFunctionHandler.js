@@ -56,27 +56,22 @@ export default class MutationFunctionHandler {
 
   // Creates an expression that represents a mutation with the given objects
   async createMutationExpression(pathData, path, values) {
-    // The path segments are the conditions to which the mutation should apply
+    // Obtain the path segments, which are the selection conditions for the mutation
     const conditions = await path.pathExpression;
     if (!Array.isArray(conditions))
       throw new Error(`${pathData} has no pathExpression property`);
     if (conditions.length < 2)
       throw new Error(`${pathData} should at least contain a subject and a predicate`);
 
-    // Obtain the predicate and objects
+    // Obtain the predicate and target objects
     const { predicate } = conditions[conditions.length - 1];
     if (!predicate)
       throw new Error(`Expected predicate in ${pathData}`);
     const objects = await this.extractObjects(pathData, path, values);
 
-    // If no specific objects are listed, mutate all objects matching the path
-    const mutationType = this._mutationType;
-    if (objects === null)
-      return { mutationType, conditions };
-
-    // Otherwise, mutate the given predicate and objects on the parent path
-    return objects.length === 0 ? {} : {
-      mutationType,
+    // Create a mutation, unless no objects are affected (`null` means all)
+    return objects !== null && objects.length === 0 ? {} : {
+      mutationType: this._mutationType,
       conditions: conditions.slice(0, -1),
       predicateObjects: [{ predicate, objects }],
     };
@@ -84,11 +79,11 @@ export default class MutationFunctionHandler {
 
   // Extracts individual objects from a set of values passed to a mutation function
   async extractObjects(pathData, path, values) {
-    // No values means a wildcard
+    // If no specific values are specified, match all (represented by `null`)
     if (values.length === 0)
       return null;
 
-    // Expand singular values, promises, and paths
+    // Otherwise, expand singular values, promises, and paths
     const objects = [];
     for (const value of values) {
       // Process a path with multiple values

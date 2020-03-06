@@ -349,15 +349,15 @@ describe('a SparqlHandler instance', () => {
             mutationType: 'DELETE',
             conditions: [
               { subject: namedNode('https://example.org/#D0') },
-              { predicate: namedNode('https://example.org/#Dp1') },
+            ],
+            predicateObjects: [
+              { predicate: namedNode('https://example.org/#Dp1'), objects: null },
             ],
           },
         ];
 
         expect(await handler.handle({}, { mutationExpressions })).toEqual(deindent(`
-          DELETE {
-            <https://example.org/#D0> <https://example.org/#Dp1> ?Dp1.
-          } WHERE {
+          DELETE DATA {
             <https://example.org/#D0> <https://example.org/#Dp1> ?Dp1.
           }`));
       });

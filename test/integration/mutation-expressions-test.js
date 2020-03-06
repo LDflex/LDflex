@@ -202,4 +202,26 @@ describe('a query path with a path expression handler', () => {
       },
     ]);
   });
+
+  it('resolves a path where an object map has different conditions', async () => {
+    const path = await person.delete({ friends: null, firstName: 'ruben' }).mutationExpressions;
+    expect(path).toEqual([
+      {
+        mutationType: 'DELETE',
+        conditions: [
+          { subject },
+        ],
+        predicateObjects: [
+          {
+            predicate: namedNode('http://xmlns.com/foaf/0.1/knows'),
+            objects: null,
+          },
+          {
+            predicate: namedNode('http://xmlns.com/foaf/0.1/givenName'),
+            objects: [literal('ruben')],
+          },
+        ],
+      },
+    ]);
+  });
 });
