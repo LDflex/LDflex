@@ -1,5 +1,6 @@
 import ExecuteQueryHandler from '../../src/ExecuteQueryHandler';
 import { literal } from '@rdfjs/data-model';
+import { iterableToArray } from '../../src/iterableUtils';
 
 describe('a ExecuteQueryHandler instance', () => {
   let handler;
@@ -35,10 +36,7 @@ describe('a ExecuteQueryHandler instance', () => {
     ];
     const resultsCache = Promise.resolve(cache);
     const results = handler.handle({ resultsCache });
-    const items = [];
-    for await (const result of results)
-      items.push(result);
-    expect(items).toEqual(cache);
+    expect(await iterableToArray(results)).toEqual(cache);
   });
 
   it('immediately returns if there is an empty query', async () => {

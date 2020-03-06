@@ -1,3 +1,5 @@
+import { isAsyncIterable } from './valueUtils';
+
 /**
  * Converts an asynchronously iterable path into an array.
  *
@@ -8,8 +10,7 @@ export default class ToArrayHandler {
   handle(pathData, path) {
     return async map => {
       const items = [];
-      // Verify the path is async iterable
-      if (path && (typeof path[Symbol.asyncIterator] === 'function')) {
+      if (isAsyncIterable(path)) {
         // Ensure the mapping function is valid
         if (typeof map !== 'function')
           map = item => item;

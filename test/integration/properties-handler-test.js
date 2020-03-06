@@ -5,6 +5,7 @@ import PathExpressionHandler from '../../src/PathExpressionHandler';
 import DataHandler from '../../src/DataHandler';
 import { createQueryEngine } from '../util';
 import { namedNode } from '@rdfjs/data-model';
+import { iterableToArray } from '../../src/iterableUtils';
 
 import context from '../context';
 import { ContextParser } from 'jsonld-context-parser';
@@ -43,9 +44,7 @@ describe('a query path with a properties handler with parsed context', () => {
   });
 
   it('compacts properties on a path', async () => {
-    const names = [];
-    for await (const p of person.properties)
-      names.push(p);
+    const names = await iterableToArray(person.properties);
     expect(names.map(n => `${n}`)).toEqual(['knows', 'name', 'label']);
   });
 
@@ -62,9 +61,7 @@ describe('a query path with a properties handler without parsed context', () => 
   });
 
   it('does not compact properties on a path', async () => {
-    const names = [];
-    for await (const p of person.properties)
-      names.push(p);
+    const names = await iterableToArray(person.properties);
     expect(names.map(n => `${n}`)).toEqual([
       'http://xmlns.com/foaf/0.1/knows',
       'http://xmlns.com/foaf/0.1/name',

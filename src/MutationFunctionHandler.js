@@ -1,5 +1,9 @@
-import { literal } from '@rdfjs/data-model';
 import { lazyThenable } from './promiseUtils';
+import { iterableToArray } from './iterableUtils';
+import {
+  ensureArray, joinArrays,
+  valueToTerm, hasPlainObjectArgs, isAsyncIterable,
+} from './valueUtils';
 
 /**
  * Returns a function that, when called with arguments,
@@ -39,7 +43,7 @@ export default class MutationFunctionHandler {
   // Creates expressions that represent the requested mutation
   async createMutationExpressions(pathData, path, args) {
     // The mutation targets a single property on the path by passing objects
-    if (!this.hasPropertyMap(args))
+    if (!hasPlainObjectArgs(args))
       return [await this.createMutationExpression(pathData, path, args)];
 
     // The mutation targets multiple properties through a map of property-objects pairs
@@ -50,7 +54,7 @@ export default class MutationFunctionHandler {
     // (All properties have the same parent path, and hence the same condition)
     return [expressions.length === 0 ? {} : {
       ...expressions[0],
-      predicateObjects: [].concat(...expressions.map(e => e.predicateObjects)),
+      predicateObjects: joinArrays(expressions.map(e => e.predicateObjects)),
     }];
   }
 
@@ -86,53 +90,13 @@ export default class MutationFunctionHandler {
     // Otherwise, expand singular values, promises, and paths
     const objects = [];
     for (const value of values) {
-      // Process a path with multiple values
-      if (value && typeof value[Symbol.asyncIterator] === 'function') {
-        for await (const item of value)
-          objects.push(this.objectToTerm(item));
-      }
-      // Process a (promise to) a string or term
-      else {
-        objects.push(this.objectToTerm(await value));
-      }
+      if (!isAsyncIterable(value))
+      // Add a (promise to) a single value
+        objects.push(await value);
+      // Add multiple values from a path
+      else
+        objects.push(...(await iterableToArray(value)));
     }
-    return objects;
+    return objects.map(valueToTerm);
   }
-
-  // Ensures the object is an RDF/JS term
-  objectToTerm(value) {
-    if (typeof value === 'string')
-      return literal(value);
-    if (value && typeof value.termType === 'string')
-      return value;
-    throw new Error(`Invalid object: ${value}`);
-  }
-
-  // Checks whether the passed argument list is a property map
-  hasPropertyMap(args) {
-    const hasPlainObject = args.some(this.isPlainObject);
-    if (hasPlainObject && args.length !== 1)
-      throw new Error(`Expected only a property map, but got ${args.length} arguments`);
-    return hasPlainObject;
-  }
-
-  // Checks whether the value is an object without special meaning to LDflex
-  isPlainObject(value) {
-    return value !== null &&
-      // Ignore strings etc.
-      typeof value === 'object' &&
-      // Ignore Promise instances
-      typeof value.then !== 'function' &&
-      // Ignore RDF/JS Term instances
-      typeof value.termType !== 'string' &&
-      // Ignore LDflex paths
-      typeof value[Symbol.asyncIterator] !== 'function';
-  }
-}
-
-// Ensures that the value is an array
-function ensureArray(value) {
-  if (Array.isArray(value))
-    return value;
-  return value ? [value] : [];
 }

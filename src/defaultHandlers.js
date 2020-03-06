@@ -2,6 +2,7 @@ import AsyncIteratorHandler from './AsyncIteratorHandler';
 import DataHandler from './DataHandler';
 import DeleteFunctionHandler from './DeleteFunctionHandler';
 import ExecuteQueryHandler from './ExecuteQueryHandler';
+import GetHandler from './GetFunctionHandler';
 import InsertFunctionHandler from './InsertFunctionHandler';
 import MutationExpressionsHandler from './MutationExpressionsHandler';
 import PathExpressionHandler from './PathExpressionHandler';
@@ -31,6 +32,7 @@ export default {
   [Symbol.asyncIterator]: new AsyncIteratorHandler(),
 
   // Add read and query functionality
+  get: new GetHandler(),
   subject: new SubjectHandler(),
   predicate: new PredicateHandler(),
   properties: new PropertiesHandler(),

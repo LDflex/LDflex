@@ -1,12 +1,11 @@
-import {
-  toIterablePromise,
-  memoizeIterable,
-} from '../../src/promiseUtils';
+import { toIterablePromise, memoizeIterable } from '../../src/promiseUtils';
+import { iterableToArray } from '../../src/iterableUtils';
+
 
 describe('toIterablePromise', () => {
   it('returns an object that is iterable', async () => {
     const iterable = toIterablePromise(iteratorOf(1, 2, 3));
-    expect(await toArray(iterable)).toEqual([1, 2, 3]);
+    expect(await iterableToArray(iterable)).toEqual([1, 2, 3]);
   });
 
   it('returns an object with a then function that resolves', async () => {
@@ -35,14 +34,14 @@ describe('toIterablePromise', () => {
 describe('memoizeIterable', () => {
   it('can memoize the empty iterable', async () => {
     const iterable = memoizeIterable(iteratorOf());
-    expect(await toArray(iterable)).toEqual([]);
-    expect(await toArray(iterable)).toEqual([]);
+    expect(await iterableToArray(iterable)).toEqual([]);
+    expect(await iterableToArray(iterable)).toEqual([]);
   });
 
   it('can memoize an iterable of length 3', async () => {
     const iterable = memoizeIterable(iteratorOf(1, 2, 3));
-    expect(await toArray(iterable)).toEqual([1, 2, 3]);
-    expect(await toArray(iterable)).toEqual([1, 2, 3]);
+    expect(await iterableToArray(iterable)).toEqual([1, 2, 3]);
+    expect(await iterableToArray(iterable)).toEqual([1, 2, 3]);
   });
 
   it('ignores next calls past the end', async () => {
@@ -60,11 +59,4 @@ async function* iteratorOf(...items) {
       throw new Error('Iterator Error');
     yield item;
   }
-}
-
-async function toArray(iterable) {
-  const items = [];
-  for await (const item of iterable)
-    items.push(item);
-  return items;
 }

@@ -1,6 +1,16 @@
 const done = {};
 
 /**
+ * Returns the elements of the iterable as an array
+ */
+export async function iterableToArray(iterable) {
+  const items = [];
+  for await (const item of iterable)
+    items.push(item);
+  return items;
+}
+
+/**
  * Gets the first element of the iterable.
  */
 export function getFirstItem(iterable) {

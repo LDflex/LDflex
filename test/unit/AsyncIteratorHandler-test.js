@@ -1,4 +1,5 @@
 import AsyncIteratorHandler from '../../src/AsyncIteratorHandler';
+import { iterableToArray } from '../../src/iterableUtils';
 
 describe('a AsyncIteratorHandler instance', () => {
   let handler;
@@ -9,44 +10,35 @@ describe('a AsyncIteratorHandler instance', () => {
     const pathData = { subject };
     const path = { subject };
 
-    const items = [];
-    beforeAll(async () => {
-      const iterable = {
-        [Symbol.asyncIterator]: handler.handle(pathData, path),
-      };
-      for await (const item of iterable)
-        items.push(item);
-    });
+    const iterable = {};
+    beforeAll(() =>
+      iterable[Symbol.asyncIterator] = handler.handle(pathData, path)
+    );
 
-    it('returns an iterator for the subject', () => {
-      expect(items).toEqual([subject]);
+    it('returns an iterator for the subject', async () => {
+      expect(await iterableToArray(iterable)).toEqual([subject]);
     });
   });
 
   describe('on a path with results', () => {
     const results = [
-      'https://example.org/#Alice',
-      'https://example.org/#Bob',
+      { subject: 'https://example.org/#Alice' },
+      { subject: 'https://example.org/#Bob' },
     ];
     const pathData = {};
     const path = {
       results: (async function *getResults() {
-        for (const subject of results)
-          yield { subject };
+        yield* results;
       }()),
     };
 
-    const items = [];
-    beforeAll(async () => {
-      const iterable = {
-        [Symbol.asyncIterator]: handler.handle(pathData, path),
-      };
-      for await (const item of iterable)
-        items.push(item.subject);
-    });
+    const iterable = {};
+    beforeAll(() =>
+      iterable[Symbol.asyncIterator] = handler.handle(pathData, path)
+    );
 
-    it('returns an iterator for the results', () => {
-      expect(items).toEqual(results);
+    it('returns an iterator for the results', async () => {
+      expect(await iterableToArray(iterable)).toEqual(results);
     });
   });
 });
