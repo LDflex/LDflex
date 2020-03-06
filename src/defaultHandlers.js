@@ -32,6 +32,7 @@ export default {
   [Symbol.asyncIterator]: new AsyncIteratorHandler(),
 
   // Add read and query functionality
+  get: new GetHandler(),
   subject: new SubjectHandler(),
   predicate: new PredicateHandler(),
   properties: new PropertiesHandler(),
@@ -43,7 +44,6 @@ export default {
   sort: new SortHandler('ASC'),
   sortDesc: new SortHandler('DESC'),
   preload: new PreloadHandler(),
-  get: new GetHandler(),
 
   // Add write functionality
   mutationExpressions: new MutationExpressionsHandler(),
