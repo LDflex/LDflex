@@ -54,9 +54,11 @@ export default class SparqlHandler {
     // If there are no mutations, there is no query
     if (!mutationType || !conditions || predicateObjects && predicateObjects.length === 0)
       return '';
-    // If the only condition is a subject, we need no WHERE clause
+
+    // Create the WHERE clauses
     const scope = {};
     let subject, where;
+    // If the only condition is a subject, we need no WHERE clause
     if (conditions.length === 1) {
       subject = this.termToString(conditions[0].subject);
       where = [];
@@ -69,20 +71,28 @@ export default class SparqlHandler {
         this.expressionToTriplePatterns(conditions, subject, scope));
     }
 
-    const mutationPatterns = [];
-    for (const { predicate, objects } of predicateObjects) {
-      const objectList = !objects ?
-        // If no objects were listed, we need to mutate all of them
-        this.createVar(predicate.value, scope) :
-        // Otherwise, we need to mutate the listed objects
-        objects.map(o => this.termToString(o)).join(', ');
-      mutationPatterns.push(`${subject} ${this.termToString(predicate)} ${objectList}.`);
+    // Create the mutation clauses
+    const mutations = [];
+    for (const { predicate, reverse, objects } of predicateObjects) {
+      // Mutate either only the specified objects, or all of them
+      const objectList = objects ?
+        objects.map(o => this.termToString(o)) :
+        [this.createVar(predicate.value, scope)];
+      // Swap subjects and objects for a reverse predicate
+      const [subjectStrings, objectStrings] = !reverse ?
+        [[subject], objectList.join(', ')] : [objectList, subject];
+      // Generate a triple pattern for all subjects
+      mutations.push(...subjectStrings.map(subjectString =>
+        this.triplePattern(subjectString, predicate, objectStrings)));
     }
+    const mutationClauses = `{\n  ${mutations.join('\n  ')}\n}`;
+
+    // Join clauses into a SPARQL query
     return where.length === 0 ?
       // If there are no WHERE clauses, just mutate raw data
-      `${mutationType} DATA {\n  ${mutationPatterns.join('\n  ')}\n}` :
+      `${mutationType} DATA ${mutationClauses}` :
       // Otherwise, return a DELETE/INSERT ... WHERE ... query
-      `${mutationType} {\n  ${mutationPatterns.join('\n  ')}\n} WHERE {\n  ${where.join('\n  ')}\n}`;
+      `${mutationType} ${mutationClauses} WHERE {\n  ${where.join('\n  ')}\n}`;
   }
 
   expressionToTriplePatterns([root, ...pathExpression], lastVar, scope = {}) {
@@ -93,22 +103,22 @@ export default class SparqlHandler {
     const clauses = pathExpression.map((segment, index) => {
       // Obtain components and generate triple pattern
       const subject = object;
-      const { predicate } = segment;
+      const { predicate, reverse, sort } = segment;
       object = index < lastIndex ? this.createVar(`v${index}`, scope) : lastVar;
-      const result = `${subject} ${this.termToString(predicate)} ${object}.`;
+      const patttern = this.triplePattern(subject, predicate, object, reverse);
 
       // If the sort option was not set, use this object as a query variable
-      if (!segment.sort) {
+      if (!sort) {
         queryVar = object;
       }
       // If sort was set, use this object as a sorting variable
       else {
         // TODO: handle when an object is used for sorting, and later also for querying
-        sorts.push({ variable: object, order: segment.sort });
+        sorts.push({ variable: object, order: sort });
         // TODO: use a descriptive lastVar in case of sorting
         object = queryVar;
       }
-      return result;
+      return patttern;
     });
     return { queryVar, sorts, clauses };
   }
@@ -152,6 +162,13 @@ export default class SparqlHandler {
     default:
       throw new Error(`Could not convert a term of type ${term.termType}`);
     }
+  }
+
+  // Creates a triple pattern
+  triplePattern(subject, predicateTerm, object, reverse = false) {
+    if (reverse)
+      [subject, object] = [object, subject];
+    return `${subject} <${predicateTerm.value}> ${object}.`;
   }
 }
 

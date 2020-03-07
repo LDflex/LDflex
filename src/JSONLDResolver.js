@@ -28,8 +28,10 @@ export default class JSONLDResolver {
    */
   resolve(property, pathData) {
     const predicate = lazyThenable(() => this.expandProperty(property));
-    const resultsCache = this.getResultsCache(pathData, predicate);
-    return pathData.extendPath({ property, predicate, resultsCache });
+    const reverse = lazyThenable(() => this._context.then(context =>
+      context[property] && context[property]['@reverse']));
+    const resultsCache = this.getResultsCache(pathData, predicate, reverse);
+    return pathData.extendPath({ property, predicate, resultsCache, reverse });
   }
 
   /**
@@ -60,10 +62,11 @@ export default class JSONLDResolver {
   /**
    * Gets the results cache for the given predicate.
    */
-  getResultsCache(pathData, predicate) {
+  getResultsCache(pathData, predicate, reverse) {
     let { propertyCache } = pathData;
     return propertyCache && lazyThenable(async () => {
-      propertyCache = await propertyCache;
+      // Preloading does not work with reversed predicates
+      propertyCache = !(await reverse) && await propertyCache;
       return propertyCache && propertyCache[(await predicate).value];
     });
   }

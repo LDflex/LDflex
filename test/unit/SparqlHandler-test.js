@@ -169,6 +169,21 @@ describe('a SparqlHandler instance', () => {
         }
         ORDER BY ASC(?v1) ASC(?p3)`));
     });
+
+    it('supports reversed predicates', async () => {
+      const pathExpression = [
+        { subject: namedNode('https://example.org/#me') },
+        { predicate: namedNode('https://ex.org/p1'), reverse: true },
+        { predicate: namedNode('https://ex.org/p2') },
+      ];
+
+      const pathData = { property: 'p2' };
+      expect(await handler.handle(pathData, { pathExpression })).toEqual(deindent(`
+        SELECT ?p2 WHERE {
+          ?v0 <https://ex.org/p1> <https://example.org/#me>.
+          ?v0 <https://ex.org/p2> ?p2.
+        }`));
+    });
   });
 
   describe('with mutationExpressions', () => {
@@ -276,6 +291,33 @@ describe('a SparqlHandler instance', () => {
             ?result <https://example.org/p> <https://example.org/#R0>.
           } WHERE {
             <https://example.org/#D0> <https://example.org/#> ?result.
+          }`));
+      });
+
+      it('resolves with domain of length 2 and range of length 0 with reversed predicates', async () => {
+        const mutationExpressions = [
+          {
+            mutationType: 'INSERT',
+            conditions: [
+              { subject: namedNode('https://example.org/#D0') },
+              { predicate: namedNode('https://example.org/#Dp1'), reverse: true },
+              { predicate: namedNode('https://example.org/#Dp2') },
+            ],
+            predicateObjects: [{
+              predicate: namedNode('https://example.org/p'),
+              reverse: true,
+              objects: [namedNode('https://example.org/#R0'), namedNode('https://example.org/#R1')],
+            }],
+          },
+        ];
+
+        expect(await handler.handle({}, { mutationExpressions })).toEqual(deindent(`
+          INSERT {
+            <https://example.org/#R0> <https://example.org/p> ?Dp2.
+            <https://example.org/#R1> <https://example.org/p> ?Dp2.
+          } WHERE {
+            ?v0 <https://example.org/#Dp1> <https://example.org/#D0>.
+            ?v0 <https://example.org/#Dp2> ?Dp2.
           }`));
       });
     });

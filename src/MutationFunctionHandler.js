@@ -68,7 +68,7 @@ export default class MutationFunctionHandler {
       throw new Error(`${pathData} should at least contain a subject and a predicate`);
 
     // Obtain the predicate and target objects
-    const { predicate } = conditions[conditions.length - 1];
+    const { predicate, reverse } = conditions[conditions.length - 1];
     if (!predicate)
       throw new Error(`Expected predicate in ${pathData}`);
     const objects = await this.extractObjects(pathData, path, values);
@@ -77,7 +77,7 @@ export default class MutationFunctionHandler {
     return objects !== null && objects.length === 0 ? {} : {
       mutationType: this._mutationType,
       conditions: conditions.slice(0, -1),
-      predicateObjects: [{ predicate, objects }],
+      predicateObjects: [{ predicate, reverse, objects }],
     };
   }
 

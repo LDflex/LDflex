@@ -6,6 +6,8 @@
     "firstName": "foaf:givenName",
     "givenName": "foaf:givenName",
     "familyName": "foaf:familyName",
+    "friendOf" : { "@reverse":  "foaf:knows" },
+    "makerOf" : { "@reverse":  "foaf:maker" },
     "name": "http://xmlns.com/foaf/0.1/name",
     "label": "http://www.w3.org/2000/01/rdf-schema#label"
   }
