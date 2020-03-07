@@ -197,12 +197,12 @@ describe('a JSONLDResolver instance with a context', () => {
 
     it('sets predicate to a promise for foaf:maker', async () => {
       const { predicate } = pathData.extendPath.mock.calls[0][0];
-      expect(await predicate).toEqual(namedNode('http://xmlns.com/foaf/0.1/maker'));
+      await expect(predicate).resolves.toEqual(namedNode('http://xmlns.com/foaf/0.1/maker'));
     });
 
     it('sets the reverse property to a promise resolving to true', async () => {
       const { reverse } = pathData.extendPath.mock.calls[0][0];
-      expect(await reverse).toBeTruthy();
+      await expect(reverse).resolves.toBeTruthy();
     });
 
     it('returns the extended path', () => {

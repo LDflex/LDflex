@@ -83,6 +83,7 @@ export default class PreloadHandler {
 
     // Modify the query to include the preload clauses
     // TODO: instead of query manipulation, adjust the query generator
+    // TODO: support reverse predicates
     const vars = predicates.map((p, i) => `?preload_${i}`);
     const preloadClauses = predicates.map((predicate, i) =>
       `    { ${resultVar} <${predicate}> ${vars[i]}. }`)
