@@ -30,7 +30,7 @@ npm install ldflex
 In order to execute queries,
 you will also need a query engine:
 ```bash
-npm install ldflex-comunica
+npm install @ldflex/comunica
 ```
 
 ## Usage
@@ -45,7 +45,7 @@ or `for await` to iterate over all values.
 ### Initialization
 ```javascript
 const { PathFactory } = require('ldflex');
-const { default: ComunicaEngine } = require('ldflex-comunica');
+const { default: ComunicaEngine } = require('@ldflex/comunica');
 const { namedNode } = require('@rdfjs/data-model');
 
 // The JSON-LD context for resolving properties
