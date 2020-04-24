@@ -31,23 +31,22 @@ export default class JSONLDResolver {
     const reverse = lazyThenable(() => this._context.then(context =>
       context[property] && context[property]['@reverse']));
     const resultsCache = this.getResultsCache(pathData, predicate, reverse);
-    return pathData.extendPath({ property, predicate, resultsCache, reverse, asFunction: this.apply });
+    const newData = { property, predicate, resultsCache, reverse, apply: this.apply };
+    return pathData.extendPath(newData);
   }
 
   /**
    * Function for fixing the object values of the predicate.
    * Extends the proxy with the new values.
    */
-  apply(pathData, args) {
+  apply(args, pathData, path) {
     if (!args || args.length === 0)
-      throw new Error('At least 1 argument is required');
+      throw new Error('Specify at least one value for the property');
     if (args.some(arg => !arg.termType))
-      throw new Error('Args need to be RDF objects');
+      throw new TypeError('All arguments should be RDF terms');
     pathData.values = args;
-    // Prevent children from inheriting this apply function
-    delete pathData.asFunction;
-    // No extendPath call since we don't want to add a chain so return original proxy
-    return pathData.proxy;
+    // With the property constraint added, continue from the previous path
+    return path;
   }
 
   /**

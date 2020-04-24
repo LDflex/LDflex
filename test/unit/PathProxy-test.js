@@ -22,8 +22,24 @@ describe('a PathProxy without handlers or resolvers', () => {
 
     describe('when calling it as a function', () => {
       it('throws an error', () => {
-        expect(path()).toBeUndefined();
+        expect(() => path()).toThrow(new TypeError('path is not a function'));
       });
+    });
+  });
+
+  describe('a created path with an apply setting', () => {
+    let path, apply;
+    beforeAll(() => {
+      apply = jest.fn(args => `result: ${args[0]}`);
+      path = pathProxy.createPath({ apply });
+    });
+
+    it('calls the apply function when called', () => {
+      expect(path('test')).toBe('result: test');
+      expect(apply).toHaveBeenCalledTimes(1);
+      const args = apply.mock.calls[0];
+      expect(args[0]).toEqual(['test']);
+      expect(typeof args[1].apply).toBe('function');
     });
   });
 });
@@ -337,27 +353,6 @@ describe('a PathProxy whose paths are extended', () => {
     it('contains a reference to the settings', () => {
       expect(path.internal).toHaveProperty('settings');
       expect(path.internal.settings).toBe(settings);
-    });
-  });
-});
-
-describe('a PathProxy with an apply function', () => {
-  let pathProxy;
-  beforeAll(() => (pathProxy = new PathProxy()));
-
-  describe('a created path', () => {
-    let path, f;
-    beforeAll(() => {
-      f = jest.fn(x => x);
-      path = pathProxy.createPath({ asFunction: f });
-    });
-
-    it('calls the apply function', () => {
-      path('test');
-      expect(f).toBeCalledTimes(1);
-      const args = f.mock.calls[0];
-      expect(typeof args[0].asFunction).toBe('function');
-      expect(args[1]).toEqual(['test']);
     });
   });
 });

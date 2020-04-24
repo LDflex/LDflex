@@ -18,6 +18,7 @@ const EMPTY = Object.create(null);
  * - settings, an object that is passed on as-is to child paths
  * - proxy, a reference to the proxied object the user sees
  * - parent, a reference to the parent path
+ * - apply, a function the will be invoked when the path is called as a function
  * - extendPath, a method to create a child path with this path as parent
  */
 export default class PathProxy {
@@ -35,11 +36,14 @@ export default class PathProxy {
       [data, settings] = [settings, {}];
 
     // Create the path's internal data object and the proxy that wraps it
-    // This needs to be a function or `apply` can't be proxied
-    // eslint-disable-next-line no-empty-function
-    function path() { }
-    Object.assign(path, { settings, ...data });
-    const proxy = path.proxy = new Proxy(path, this);
+    const { apply, ...rawData } = data;
+    const path = apply ? Object.assign(callPathFunction, rawData) : rawData;
+    const proxy = new Proxy(path, this);
+    path.proxy = proxy;
+    path.settings = settings;
+    function callPathFunction(...args) {
+      return apply(args, path, proxy);
+    }
 
     // Add an extendPath method to create child paths
     if (!path.extendPath) {
@@ -70,17 +74,6 @@ export default class PathProxy {
         return resolver.resolve(property, pathData, pathData.proxy);
     }
     // Otherwise, the property does not exist
-    return undefined;
-  }
-
-  /**
-   * Handles calling the proxy as a function
-   */
-  apply(pathData, thisArg, args) {
-    if (pathData.asFunction && typeof pathData.asFunction === 'function')
-      return pathData.asFunction(pathData, args);
-
-    // Otherwise, there is no apply handler
     return undefined;
   }
 }

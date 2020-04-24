@@ -60,39 +60,40 @@ describe('a JSONLDResolver instance with a context', () => {
     });
   });
 
-  describe('resolving properties as functions', () => {
-    const pathData = { extendPath: jest.fn(x => Object.assign(x, { proxy: x })) };
+  describe('resolving the knows property and calling it as a function', () => {
+    const path = {};
+    const pathData = { extendPath: jest.fn(data => ({ ...data })) };
 
     let result;
     beforeEach(() => result = resolver.resolve('knows', pathData));
 
-    it('exists', () => {
-      result = resolver.resolve('knows', pathData);
-      expect(result.asFunction).toBeInstanceOf(Function);
+    it('sets up the function through apply', () => {
+      expect(result.apply).toBeInstanceOf(Function);
     });
 
     it('errors if there are no arguments', () => {
-      expect(() => result.asFunction(result, [])).toThrowError();
+      expect(() => result.apply([], result, path))
+        .toThrow(new Error('Specify at least one value for the property'));
     });
 
     it('errors if the input is not an RDF object', () => {
-      expect(() => result.asFunction(result, ['Ruben'])).toThrowError();
+      expect(() => result.apply(['Ruben'], result, path))
+        .toThrow(new Error('All arguments should be RDF terms'));
     });
 
     describe('with 2 values', () => {
       const ruben = namedNode('Ruben');
       const joachim = namedNode('Joachim');
+
       let applied;
-      beforeEach(() => {
-        applied = result.asFunction(result, [ruben, joachim]);
+      beforeEach(() => applied = result.apply([ruben, joachim], result, path));
+
+      it('returns the proxied path', () => {
+        expect(applied).toBe(path);
       });
 
       it('stores the new values in the result', () => {
-        expect(applied.values).toEqual([ruben, joachim]);
-      });
-
-      it('deletes the asFunction property', () => {
-        expect(applied).not.toHaveProperty('asFunction');
+        expect(result.values).toEqual([ruben, joachim]);
       });
     });
   });
