@@ -1,6 +1,7 @@
 import { ContextParser } from 'jsonld-context-parser';
 import { namedNode } from '@rdfjs/data-model';
 import { lazyThenable } from './promiseUtils';
+import { valueToTerm } from './valueUtils';
 
 /**
  * Resolves property names of a path
@@ -40,12 +41,10 @@ export default class JSONLDResolver {
    * Extends the proxy with the new values.
    */
   apply(args, pathData, path) {
-    if (!args || args.length === 0)
+    if (args.length === 0)
       throw new Error('Specify at least one value for the property');
-    if (args.some(arg => !arg.termType))
-      throw new TypeError('All arguments should be RDF terms');
-    pathData.values = args;
     // With the property constraint added, continue from the previous path
+    pathData.values = args.map(valueToTerm);
     return path;
   }
 

@@ -1,6 +1,6 @@
 import JSONLDResolver from '../../src/JSONLDResolver';
 import context from '../context';
-import { namedNode } from '@rdfjs/data-model';
+import { namedNode, literal } from '@rdfjs/data-model';
 
 describe('a JSONLDResolver instance', () => {
   let resolver;
@@ -76,12 +76,20 @@ describe('a JSONLDResolver instance with a context', () => {
         .toThrow(new Error('Specify at least one value for the property'));
     });
 
-    it('errors if the input is not an RDF object', () => {
-      expect(() => result.apply(['Ruben'], result, path))
-        .toThrow(new Error('All arguments should be RDF terms'));
+    describe('with two strings', () => {
+      let applied;
+      beforeEach(() => applied = result.apply(['Ruben', 'Joachim'], result, path));
+
+      it('returns the proxied path', () => {
+        expect(applied).toBe(path);
+      });
+
+      it('stores the new values in the result', () => {
+        expect(result.values).toEqual([literal('Ruben'), literal('Joachim')]);
+      });
     });
 
-    describe('with 2 values', () => {
+    describe('with 2 terms', () => {
       const ruben = namedNode('Ruben');
       const joachim = namedNode('Joachim');
 
