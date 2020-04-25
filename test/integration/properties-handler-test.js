@@ -35,11 +35,11 @@ const handlers = {
 
 describe('a query path with a properties handler with parsed context', () => {
   let person;
-  beforeAll(() => {
+  beforeAll(async () => {
     const pathProxy = new PathProxy({ handlers });
     person = pathProxy.createPath({
       queryEngine,
-      parsedContext: new ContextParser().parse(context),
+      parsedContext: (await new ContextParser().parse(context)).contextRaw,
     }, { subject });
   });
 

@@ -1,4 +1,4 @@
-import { ContextParser } from 'jsonld-context-parser';
+import { ContextParser, Util as ContextUtil } from 'jsonld-context-parser';
 import { namedNode } from '@rdfjs/data-model';
 import { lazyThenable } from './promiseUtils';
 import { valueToTerm } from './valueUtils';
@@ -32,8 +32,8 @@ export default class JSONLDResolver {
    */
   resolve(property, pathData) {
     const predicate = lazyThenable(() => this.expandProperty(property));
-    const reverse = lazyThenable(() => this._context.then(context =>
-      context[property] && context[property]['@reverse']));
+    const reverse = lazyThenable(() => this._context.then(({ contextRaw }) =>
+      contextRaw[property] && contextRaw[property]['@reverse']));
     const resultsCache = this.getResultsCache(pathData, predicate, reverse);
     const newData = { property, predicate, resultsCache, reverse, apply: this.apply };
     return pathData.extendPath(newData);
@@ -64,8 +64,8 @@ export default class JSONLDResolver {
 
     // Expand the property to a full IRI
     const context = await this._context;
-    const expandedProperty = ContextParser.expandTerm(property, context, true);
-    if (!ContextParser.isValidIri(expandedProperty))
+    const expandedProperty = context.expandTerm(property, true);
+    if (!ContextUtil.isValidIri(expandedProperty))
       throw new Error(`The JSON-LD context cannot expand the '${property}' property`);
     return namedNode(expandedProperty);
   }
@@ -74,8 +74,8 @@ export default class JSONLDResolver {
    * Extends the current JSON-LD context with the given context(s).
    */
   async extendContext(...contexts) {
-    await (this._context = this._context.then(currentContext =>
-      new ContextParser().parse([currentContext, ...contexts])));
+    await (this._context = this._context.then(({ contextRaw }) =>
+      new ContextParser().parse([contextRaw, ...contexts])));
   }
 
   /**

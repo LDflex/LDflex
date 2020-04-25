@@ -1,7 +1,7 @@
 /**
  * Queries for all compacted predicates of a path subject
  */
-import { ContextParser } from 'jsonld-context-parser';
+import { JsonLdContextNormalized } from 'jsonld-context-parser';
 import { toIterablePromise } from './promiseUtils';
 
 export default class PropertiesHandler {
@@ -10,8 +10,9 @@ export default class PropertiesHandler {
   }
 
   async* _handle(pathData, path) {
-    const context = (await pathData.settings.parsedContext) || {};
+    const contextRaw = (await pathData.settings.parsedContext) || {};
+    const context = new JsonLdContextNormalized(contextRaw);
     for await (const predicate of path.predicates)
-      yield ContextParser.compactIri(`${await predicate}`, context, true);
+      yield context.compactIri(`${await predicate}`, true);
   }
 }

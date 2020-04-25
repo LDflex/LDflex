@@ -23,7 +23,8 @@ export default class PathFactory {
     const resolvers = (settings.resolvers || []).map(toResolver);
     if (settings.context) {
       resolvers.push(new JSONLDResolver(settings.context));
-      settings.parsedContext = new ContextParser().parse(settings.context);
+      settings.parsedContext = new ContextParser().parse(settings.context)
+        .then(({ contextRaw }) => contextRaw);
     }
     else {
       settings.context = settings.parsedContext = {};
