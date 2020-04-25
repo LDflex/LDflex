@@ -9,11 +9,13 @@ import SubjectsHandler from '../../src/SubjectsHandler';
 import SetFunctionHandler from '../../src/SetFunctionHandler';
 import DataHandler from '../../src/DataHandler';
 import JSONLDResolver from '../../src/JSONLDResolver';
+import MutationExpressionsHandler from '../../src/MutationExpressionsHandler';
 import { createQueryEngine, deindent } from '../util';
 import { namedNode, literal } from '@rdfjs/data-model';
 import { iterableToArray } from '../../src/iterableUtils';
 
 import context from '../context';
+import ThenHandler from '../../src/ThenHandler';
 
 const subject = namedNode('https://example.org/#me');
 const queryEngine = createQueryEngine([
@@ -26,6 +28,8 @@ const resolvers = [
   new JSONLDResolver(context),
 ];
 const handlersPath = {
+  then: new ThenHandler(),
+  mutationExpressions: new MutationExpressionsHandler(),
   sparql: new SparqlHandler(),
   pathExpression: new PathExpressionHandler(),
   results: new ExecuteQueryHandler(),
@@ -38,6 +42,8 @@ const handlersPath = {
 };
 
 const handlersMutation = {
+  then: new ThenHandler(),
+  mutationExpressions: new MutationExpressionsHandler(),
   sparql: new SparqlHandler(),
   pathExpression: new PathExpressionHandler(),
   results: new ExecuteQueryHandler(),
@@ -119,6 +125,12 @@ describe('a query path with a path and mutation expression handler', () => {
 
   it('returns results for a path with 3 links', async () => {
     const names = await iterableToArray(person.friends.firstName);
+    expect(names.map(n => `${n}`)).toEqual(['Alice', 'Bob', 'Carol']);
+  });
+
+  it('returns results for a path with 4 links and fixed values', async () => {
+    const names = await iterableToArray(
+      person.friends.friends(namedNode('http://ex.org/John')).firstName);
     expect(names.map(n => `${n}`)).toEqual(['Alice', 'Bob', 'Carol']);
   });
 

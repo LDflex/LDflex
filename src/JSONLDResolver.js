@@ -1,6 +1,7 @@
 import { ContextParser } from 'jsonld-context-parser';
 import { namedNode } from '@rdfjs/data-model';
 import { lazyThenable } from './promiseUtils';
+import { valueToTerm } from './valueUtils';
 
 /**
  * Resolves property names of a path
@@ -24,14 +25,32 @@ export default class JSONLDResolver {
   }
 
   /**
-   * Resolves the property by extending the query path with it.
+   * When resolving a JSON-LD property,
+   * we create a new chainable path segment corresponding to the predicate.
+   *
+   * Example usage: person.friends.firstName
    */
   resolve(property, pathData) {
     const predicate = lazyThenable(() => this.expandProperty(property));
     const reverse = lazyThenable(() => this._context.then(context =>
       context[property] && context[property]['@reverse']));
     const resultsCache = this.getResultsCache(pathData, predicate, reverse);
-    return pathData.extendPath({ property, predicate, resultsCache, reverse });
+    const newData = { property, predicate, resultsCache, reverse, apply: this.apply };
+    return pathData.extendPath(newData);
+  }
+
+  /**
+   * When the property is called as a function,
+   * it adds property-object constraints to the path.
+   *
+   * Example usage: person.friends.location(place).firstName
+   */
+  apply(args, pathData, path) {
+    if (args.length === 0)
+      throw new Error('Specify at least one value for the property');
+    // With the property constraint added, continue from the previous path
+    pathData.values = args.map(valueToTerm);
+    return path;
   }
 
   /**

@@ -19,6 +19,28 @@ describe('a PathProxy without handlers or resolvers', () => {
         expect(path[Symbol('symbol')]).toBeUndefined();
       });
     });
+
+    describe('when calling it as a function', () => {
+      it('throws an error', () => {
+        expect(() => path()).toThrow(new TypeError('path is not a function'));
+      });
+    });
+  });
+
+  describe('a created path with an apply setting', () => {
+    let path, apply;
+    beforeAll(() => {
+      apply = jest.fn(args => `result: ${args[0]}`);
+      path = pathProxy.createPath({ apply });
+    });
+
+    it('calls the apply function when called', () => {
+      expect(path('test')).toBe('result: test');
+      expect(apply).toHaveBeenCalledTimes(1);
+      const args = apply.mock.calls[0];
+      expect(args[0]).toEqual(['test']);
+      expect(typeof args[1].apply).toBe('function');
+    });
   });
 });
 

@@ -18,6 +18,7 @@ const EMPTY = Object.create(null);
  * - settings, an object that is passed on as-is to child paths
  * - proxy, a reference to the proxied object the user sees
  * - parent, a reference to the parent path
+ * - apply, a function the will be invoked when the path is called as a function
  * - extendPath, a method to create a child path with this path as parent
  */
 export default class PathProxy {
@@ -35,8 +36,14 @@ export default class PathProxy {
       [data, settings] = [settings, {}];
 
     // Create the path's internal data object and the proxy that wraps it
-    const path = { settings, ...data };
-    const proxy = path.proxy = new Proxy(path, this);
+    const { apply, ...rawData } = data;
+    const path = apply ? Object.assign(callPathFunction, rawData) : rawData;
+    const proxy = new Proxy(path, this);
+    path.proxy = proxy;
+    path.settings = settings;
+    function callPathFunction(...args) {
+      return apply(args, path, proxy);
+    }
 
     // Add an extendPath method to create child paths
     if (!path.extendPath) {
@@ -66,7 +73,6 @@ export default class PathProxy {
       if (resolver.supports(property))
         return resolver.resolve(property, pathData, pathData.proxy);
     }
-
     // Otherwise, the property does not exist
     return undefined;
   }

@@ -1,6 +1,6 @@
 import JSONLDResolver from '../../src/JSONLDResolver';
 import context from '../context';
-import { namedNode } from '@rdfjs/data-model';
+import { namedNode, literal } from '@rdfjs/data-model';
 
 describe('a JSONLDResolver instance', () => {
   let resolver;
@@ -57,6 +57,52 @@ describe('a JSONLDResolver instance with a context', () => {
 
     it('returns the extended path', () => {
       expect(result).toBe(extendedPath);
+    });
+  });
+
+  describe('resolving the knows property and calling it as a function', () => {
+    const path = {};
+    const pathData = { extendPath: jest.fn(data => ({ ...data })) };
+
+    let result;
+    beforeEach(() => result = resolver.resolve('knows', pathData));
+
+    it('sets up the function through apply', () => {
+      expect(result.apply).toBeInstanceOf(Function);
+    });
+
+    it('errors if there are no arguments', () => {
+      expect(() => result.apply([], result, path))
+        .toThrow(new Error('Specify at least one value for the property'));
+    });
+
+    describe('with two strings', () => {
+      let applied;
+      beforeEach(() => applied = result.apply(['Ruben', 'Joachim'], result, path));
+
+      it('returns the proxied path', () => {
+        expect(applied).toBe(path);
+      });
+
+      it('stores the new values in the result', () => {
+        expect(result.values).toEqual([literal('Ruben'), literal('Joachim')]);
+      });
+    });
+
+    describe('with 2 terms', () => {
+      const ruben = namedNode('Ruben');
+      const joachim = namedNode('Joachim');
+
+      let applied;
+      beforeEach(() => applied = result.apply([ruben, joachim], result, path));
+
+      it('returns the proxied path', () => {
+        expect(applied).toBe(path);
+      });
+
+      it('stores the new values in the result', () => {
+        expect(result.values).toEqual([ruben, joachim]);
+      });
     });
   });
 
