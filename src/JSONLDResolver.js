@@ -25,7 +25,10 @@ export default class JSONLDResolver {
   }
 
   /**
-   * Resolves the property by extending the query path with it.
+   * When resolving a JSON-LD property,
+   * we create a new chainable path segment corresponding to the predicate.
+   *
+   * Example usage: person.friends.firstName
    */
   resolve(property, pathData) {
     const predicate = lazyThenable(() => this.expandProperty(property));
@@ -37,8 +40,10 @@ export default class JSONLDResolver {
   }
 
   /**
-   * Function for fixing the object values of the predicate.
-   * Extends the proxy with the new values.
+   * When the property is called as a function,
+   * it adds property-object constraints to the path.
+   *
+   * Example usage: person.friends.location(place).firstName
    */
   apply(args, pathData, path) {
     if (args.length === 0)
