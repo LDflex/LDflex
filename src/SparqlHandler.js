@@ -75,15 +75,11 @@ export default class SparqlHandler {
     const mutations = [];
     for (const { predicate, reverse, objects } of predicateObjects) {
       // Mutate either only the specified objects, or all of them
-      const objectList = objects ?
+      const objectStrings = objects ?
         objects.map(o => this.termToString(o)) :
         [this.createVar(predicate.value, scope)];
-      // Swap subjects and objects for a reverse predicate
-      const [subjectStrings, objectStrings] = !reverse ?
-        [[subject], objectList.join(', ')] : [objectList, subject];
       // Generate a triple pattern for all subjects
-      mutations.push(...subjectStrings.map(subjectString =>
-        this.triplePattern(subjectString, predicate, objectStrings)));
+      mutations.push(...this.triplePatterns(subject, predicate, objectStrings, reverse));
     }
     const mutationClauses = `{\n  ${mutations.join('\n  ')}\n}`;
 
@@ -97,32 +93,31 @@ export default class SparqlHandler {
 
   expressionToTriplePatterns([root, ...pathExpression], lastVar, scope = {}) {
     const lastIndex = pathExpression.length - 1;
+    const clauses = [];
+    const sorts = [];
     let object = this.termToString(skolemize(root.subject));
     let queryVar = object;
-    const sorts = [];
-    const clauses = [];
-    let staticValid = false;
+    let allowValues = false;
     pathExpression.forEach((segment, index) => {
       // Obtain components and generate triple pattern
       const subject = object;
       const { predicate, reverse, sort, values } = segment;
-      // Don't update variable if there are static values instead
+
+      // Use fixed object values values if they were specified
+      let objects;
       if (values && values.length > 0) {
-        if (!staticValid)
-          throw new Error('Can not have static objects if the subject is also static');
-        // Can't have 2 subsequent static triple sets
-        staticValid = false;
-        const valueStrs = values.map(v => this.termToString(v));
-        if (reverse)
-          clauses.push(...valueStrs.map(v => this.triplePattern(v, predicate, subject)));
-        else
-          clauses.push(this.triplePattern(subject, predicate, valueStrs.join(', ')));
+        if (!allowValues)
+          throw new Error('Specifying fixed values is not allowed here');
+        objects = values.map(this.termToString);
+        allowValues = false; // disallow subsequent fixed values for this predicate
       }
+      // Otherwise, use a variable subject
       else {
-        staticValid = true;
         object = index < lastIndex ? this.createVar(`v${index}`, scope) : lastVar;
-        clauses.push(this.triplePattern(subject, predicate, object, reverse));
+        objects = [object];
+        allowValues = true;
       }
+      clauses.push(...this.triplePatterns(subject, predicate, objects, reverse));
 
       // If the sort option was not set, use this object as a query variable
       if (!sort) {
@@ -180,11 +175,13 @@ export default class SparqlHandler {
     }
   }
 
-  // Creates a triple pattern
-  triplePattern(subject, predicateTerm, object, reverse = false) {
+  // Creates triple patterns for the given subject, predicate, and objects
+  triplePatterns(subjectString, predicateTerm, objectStrings, reverse = false) {
+    let subjectStrings = [subjectString];
     if (reverse)
-      [subject, object] = [object, subject];
-    return `${subject} <${predicateTerm.value}> ${object}.`;
+      [subjectStrings, objectStrings] = [objectStrings, subjectStrings];
+    const objects = objectStrings.join(', ');
+    return subjectStrings.map(s => `${s} <${predicateTerm.value}> ${objects}.`);
   }
 }
 

@@ -208,7 +208,8 @@ describe('a SparqlHandler instance', () => {
       ];
 
       const pathData = { property: 'p2' };
-      await expect(handler.handle(pathData, { pathExpression })).rejects.toEqual(new Error('Can not have static objects if the subject is also static'));
+      await expect(handler.handle(pathData, { pathExpression })).rejects
+        .toEqual(new Error('Specifying fixed values is not allowed here'));
     });
 
     it('supports reversed fixed values', async () => {
