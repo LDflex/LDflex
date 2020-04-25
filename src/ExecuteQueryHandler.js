@@ -40,6 +40,7 @@ export default class ExecuteQueryHandler {
     if (binding.size !== 1)
       throw new Error('Only single-variable queries are supported');
     const subject = binding.values().next().value;
+    console.log('retrieved term', subject, subject.skolemized)
 
     // Each result is a new path that starts from the term as subject
     return pathData.extendPath({ subject }, null);
