@@ -204,7 +204,7 @@ describe('a query path with a path expression handler', () => {
 
   it('errors on a path with 3 links and an addition without args', async () => {
     expect(() => person.friends.friends.add().sparql)
-      .toThrow();
+      .toThrow(new Error('Mutation cannot be invoked without arguments'));
   });
 
   it('resolves a path with 3 links and an addition with a raw arg and path arg', async () => {

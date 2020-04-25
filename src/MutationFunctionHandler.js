@@ -31,7 +31,7 @@ export default class MutationFunctionHandler {
     return (...args) => {
       // Check if the given arguments are valid
       if (!this._allowZeroArgs && !args.length)
-        throw new Error(`Mutation on ${pathData} can not be invoked without arguments`);
+        throw new Error('Mutation cannot be invoked without arguments');
 
       // Create a lazy Promise to the mutation expressions
       const mutationExpressions = lazyThenable(() =>
