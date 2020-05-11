@@ -7,6 +7,7 @@ as if you were browsing a local JavaScript graph.
 [![Build Status](https://travis-ci.com/LDflex/LDflex.svg?branch=master)](https://travis-ci.com/LDflex/LDflex)
 [![Coverage Status](https://coveralls.io/repos/github/LDflex/LDflex/badge.svg?branch=master)](https://coveralls.io/github/LDflex/LDflex?branch=master)
 [![Dependency Status](https://david-dm.org/LDflex/LDflex.svg)](https://david-dm.org/LDflex/LDflex)
+[![DOI](https://zenodo.org/badge/148931900.svg)](https://zenodo.org/badge/latestdoi/148931900)
 
 You can write things like `person.friends.firstName`
 to get a list of your friends.
