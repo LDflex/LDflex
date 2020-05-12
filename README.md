@@ -81,6 +81,9 @@ async function showPerson(person) {
 }
 ```
 
+Prefixed names can be written with a colon between quotes (`person['foaf:knows']`) or by using an underscore (`person.foaf_knows`) or dollar sign (`person.foaf$knows`).
+When the name contains an underscore, such as `foaf:based_near`, then remove the underscore with the context (`"basedNear": "based_near"`).
+
 ### Inspecting the generated path expression
 ```javascript
 (async person => {
