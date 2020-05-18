@@ -23,6 +23,15 @@ pulling in all data first.
 came up with the idea for such a fluid JavaScript interface to Linked Data,
 in a discussion on how to make Linked Data easier for developers.
 
+## Articles and tutorials
+- [Tutorial slides](https://comunica.github.io/Tutorial-ISWC2019-Slides-LDflex/)
+  and [walkthrough](https://github.com/comunica/Tutorial-ISWC2019-LDflex-on-React/wiki/Tutorial-Walkthrough)
+- [Cheatsheet](https://vincenttunru.gitlab.io/tripledoc/docs/cheatsheet)
+- [Designing a Linked Data developer experience](https://ruben.verborgh.org/blog/2018/12/28/designing-a-linked-data-developer-experience/),
+  discussing the design of LDflex
+- [Solid Chess](https://pieterheyvaert.com/blog/2019/02/10/solid-world-summary),
+  an app built with LDflex
+
 ## Installation
 ```bash
 npm install ldflex
