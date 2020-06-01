@@ -57,6 +57,7 @@ export default {
   value:       termPropertyHandler('value'),
   datatype:    termPropertyHandler('datatype'),
   language:    termPropertyHandler('language'),
+  canonical:   termPropertyHandler('canonical'),
   equals:      DataHandler.sync('subject', 'equals'),
   toString:    DataHandler.syncFunction('subject', 'value'),
   toPrimitive: DataHandler.syncFunction('subject', 'value'),

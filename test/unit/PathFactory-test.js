@@ -76,6 +76,7 @@ describe('a PathFactory instance with a Term as subject', () => {
   let term, factory, path;
   beforeAll(() => {
     term = literal('foo', 'en-us');
+    term.canonical = namedNode('urn:canonical:test');
     factory = new PathFactory(undefined, { subject: term });
     path = factory.create();
   });
@@ -111,6 +112,10 @@ describe('a PathFactory instance with a Term as subject', () => {
 
   it('exposes its primitive value', () => {
     expect(path.toPrimitive()).toBe('foo');
+  });
+
+  it('exposes its canonical value', () => {
+    expect(path.canonical).toBe(term.canonical);
   });
 
   it('is equal to the term', () => {
