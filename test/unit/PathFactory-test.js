@@ -111,6 +111,7 @@ describe('a PathFactory instance with a Term as subject', () => {
   });
 
   it('exposes its primitive value', () => {
+    expect(path.valueOf()).toBe('foo');
     expect(path.toPrimitive()).toBe('foo');
   });
 
