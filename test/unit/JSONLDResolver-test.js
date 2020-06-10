@@ -73,7 +73,7 @@ describe('a JSONLDResolver instance with a context', () => {
 
     it('errors if there are no arguments', () => {
       expect(() => result.apply([], result, path))
-        .toThrow(new Error('Specify at least one value for the property'));
+        .toThrow(new Error('Specify at least one term when calling .knows() on a path'));
     });
 
     describe('with two strings', () => {

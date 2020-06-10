@@ -46,8 +46,10 @@ export default class JSONLDResolver {
    * Example usage: person.friends.location(place).firstName
    */
   apply(args, pathData, path) {
-    if (args.length === 0)
-      throw new Error('Specify at least one value for the property');
+    if (args.length === 0) {
+      const name = pathData.property || '';
+      throw new Error(`Specify at least one term when calling .${name}() on a path`);
+    }
     // With the property constraint added, continue from the previous path
     pathData.values = args.map(valueToTerm);
     return path;
