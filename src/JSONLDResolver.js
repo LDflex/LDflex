@@ -47,8 +47,8 @@ export default class JSONLDResolver {
    */
   apply(args, pathData, path) {
     if (args.length === 0) {
-      const name = pathData.property || '';
-      throw new Error(`Specify at least one term when calling .${name}() on a path`);
+      const { property } = pathData;
+      throw new Error(`Specify at least one term when calling .${property}() on a path`);
     }
     // With the property constraint added, continue from the previous path
     pathData.values = args.map(valueToTerm);
