@@ -1,17 +1,31 @@
 import { namedNode, literal } from '@rdfjs/data-model';
 
 const xsd = 'http://www.w3.org/2001/XMLSchema#';
-const xsdBoolean = namedNode(`${xsd}boolean`);
-const xsdDateTime = namedNode(`${xsd}dateTime`);
-const xsdDecimal = namedNode(`${xsd}decimal`);
-const xsdInteger = namedNode(`${xsd}integer`);
-const xsdDouble = namedNode(`${xsd}double`);
 
-const xsdTrue = literal('true', xsdBoolean);
-const xsdFalse = literal('false', xsdBoolean);
-const xsdNaN = literal('NaN', xsdDouble);
-const xsdInf = literal('INF', xsdDouble);
-const xsdMinusInf = literal('-INF', xsdDouble);
+const xsdBoolean = `${xsd}boolean`;
+const xsdDateTime = `${xsd}dateTime`;
+const xsdDecimal = `${xsd}decimal`;
+const xsdDouble = `${xsd}double`;
+const xsdFloat = `${xsd}float`;
+const xsdInteger = `${xsd}integer`;
+
+const xsdBooleanTerm = namedNode(xsdBoolean);
+const xsdDateTimeTerm = namedNode(xsdDateTime);
+const xsdDecimalTerm = namedNode(xsdDecimal);
+const xsdDoubleTerm = namedNode(xsdDouble);
+const xsdIntegerTerm = namedNode(xsdInteger);
+
+const xsdTrue = literal('true', xsdBooleanTerm);
+const xsdFalse = literal('false', xsdBooleanTerm);
+const xsdNaN = literal('NaN', xsdDoubleTerm);
+const xsdInf = literal('INF', xsdDoubleTerm);
+const xsdMinusInf = literal('-INF', xsdDoubleTerm);
+
+const xsdPrimitives = {
+  NaN,
+  'INF': Infinity,
+  '-INF': -Infinity,
+};
 
 // Checks whether the value is asynchronously iterable
 export function isAsyncIterable(value) {
@@ -67,9 +81,9 @@ export function valueToTerm(value) {
   // numbers
   case 'number':
     if (Number.isInteger(value))
-      return literal(value.toString(), xsdInteger);
+      return literal(value.toString(), xsdIntegerTerm);
     else if (Number.isFinite(value))
-      return literal(value.toString(), xsdDecimal);
+      return literal(value.toString(), xsdDecimalTerm);
     else if (value === Infinity)
       return xsdInf;
     else if (value === -Infinity)
@@ -84,10 +98,41 @@ export function valueToTerm(value) {
         return value;
       // Date
       if (value instanceof Date)
-        return literal(value.toISOString(), xsdDateTime);
+        return literal(value.toISOString(), xsdDateTimeTerm);
     }
   }
 
   // invalid objects
   throw new Error(`Invalid object: ${value}`);
+}
+
+// Converts the term into a primitive value
+export function termToPrimitive(term) {
+  const { termType, value } = term;
+
+  // Some literals convert into specific primitive values
+  if (termType === 'Literal') {
+    const datatype = term.datatype.value;
+    if (datatype.startsWith(xsd)) {
+      switch (datatype) {
+      case xsdBoolean:
+        return value === 'true' || value === '1';
+      case xsdInteger:
+        return Number.parseInt(value, 10);
+      case xsdDecimal:
+        return Number.parseFloat(value);
+      case xsdDouble:
+      case xsdFloat:
+        if (value in xsdPrimitives)
+          return xsdPrimitives[value];
+        return Number.parseFloat(value);
+      case xsdDateTime:
+        return new Date(Date.parse(value));
+      default:
+      }
+    }
+  }
+
+  // All other nodes convert to their value
+  return value;
 }

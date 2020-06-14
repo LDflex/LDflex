@@ -19,6 +19,7 @@ import SubjectHandler from './SubjectHandler';
 import SubjectsHandler from './SubjectsHandler';
 import ThenHandler from './ThenHandler';
 import ToArrayHandler from './ToArrayHandler';
+import { termToPrimitive } from './valueUtils';
 
 /**
  * A map with default property handlers.
@@ -59,9 +60,9 @@ export default {
   language:    termPropertyHandler('language'),
   canonical:   termPropertyHandler('canonical'),
   equals:      DataHandler.sync('subject', 'equals'),
-  valueOf:     DataHandler.syncFunction('subject', 'value'),
   toString:    DataHandler.syncFunction('subject', 'value'),
-  toPrimitive: DataHandler.syncFunction('subject', 'value'),
+  valueOf:     subjectToPrimitiveHandler(),
+  toPrimitive: subjectToPrimitiveHandler(),
 
   // Add iteration helpers
   toArray: new ToArrayHandler(),
@@ -92,4 +93,11 @@ function termPropertyHandler(property) {
     // Otherwise, return a promise to the property value
     return path.then(term => term && term[property]);
   });
+}
+
+// Creates a handler that converts the subject into a primitive
+function subjectToPrimitiveHandler() {
+  return handler(({ subject }) => () =>
+    typeof subject?.termType !== 'string' ?
+      undefined : termToPrimitive(subject));
 }

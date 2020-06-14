@@ -70,6 +70,11 @@ describe('a PathFactory instance with an undefined subject', () => {
   it('has an asyncIterator rejecting with an error', async () => {
     await expect(iterableToArray(path)).rejects.toBeInstanceOf(Error);
   });
+
+  it('exposes undefined as its primitive value', () => {
+    expect(path.valueOf()).toBe(undefined);
+    expect(path.toPrimitive()).toBe(undefined);
+  });
 });
 
 describe('a PathFactory instance with a Term as subject', () => {
@@ -289,6 +294,42 @@ describe('a PathFactory instance with a promise to a Term as subject', () => {
   it('exposes the values as an array', async () => {
     const items = await path.values;
     expect(items).toEqual([term.value]);
+  });
+});
+
+describe('a PathFactory instance with a boolean term as subject', () => {
+  let term, factory, path;
+  beforeAll(() => {
+    term = literal('true', 'http://www.w3.org/2001/XMLSchema#boolean');
+    factory = new PathFactory(undefined, { subject: term });
+    path = factory.create();
+  });
+
+  it('exposes its string value', () => {
+    expect(path.toString()).toBe('true');
+  });
+
+  it('exposes its primitive value', () => {
+    expect(path.valueOf()).toBe(true);
+    expect(path.toPrimitive()).toBe(true);
+  });
+});
+
+describe('a PathFactory instance with a decimal term as subject', () => {
+  let term, factory, path;
+  beforeAll(() => {
+    term = literal('4.2', 'http://www.w3.org/2001/XMLSchema#decimal');
+    factory = new PathFactory(undefined, { subject: term });
+    path = factory.create();
+  });
+
+  it('exposes its string value', () => {
+    expect(path.toString()).toBe('4.2');
+  });
+
+  it('exposes its primitive value', () => {
+    expect(path.valueOf()).toBe(4.2);
+    expect(path.toPrimitive()).toBe(4.2);
   });
 });
 
