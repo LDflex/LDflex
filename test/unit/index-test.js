@@ -34,6 +34,7 @@ describe('The LDflex module', () => {
     'toIterablePromise',
     'isPlainObject',
     'hasPlainObjectArgs',
+    'valueToTerm',
   ];
 
   exports.forEach(name => {

@@ -1,4 +1,17 @@
-import { literal } from '@rdfjs/data-model';
+import { namedNode, literal } from '@rdfjs/data-model';
+
+const xsd = 'http://www.w3.org/2001/XMLSchema#';
+const xsdBoolean = namedNode(`${xsd}boolean`);
+const xsdDateTime = namedNode(`${xsd}dateTime`);
+const xsdDecimal = namedNode(`${xsd}decimal`);
+const xsdInteger = namedNode(`${xsd}integer`);
+const xsdDouble = namedNode(`${xsd}double`);
+
+const xsdTrue = literal('true', xsdBoolean);
+const xsdFalse = literal('false', xsdBoolean);
+const xsdNaN = literal('NaN', xsdDouble);
+const xsdInf = literal('INF', xsdDouble);
+const xsdMinusInf = literal('-INF', xsdDouble);
 
 // Checks whether the value is asynchronously iterable
 export function isAsyncIterable(value) {
@@ -42,9 +55,39 @@ export function joinArrays(arrays) {
 
 // Ensures the value is an RDF/JS term
 export function valueToTerm(value) {
-  if (typeof value === 'string')
+  switch (typeof value) {
+  // strings
+  case 'string':
     return literal(value);
-  if (value && typeof value.termType === 'string')
-    return value;
+
+  // booleans
+  case 'boolean':
+    return value ? xsdTrue : xsdFalse;
+
+  // numbers
+  case 'number':
+    if (Number.isInteger(value))
+      return literal(value.toString(), xsdInteger);
+    else if (Number.isFinite(value))
+      return literal(value.toString(), xsdDecimal);
+    else if (value === Infinity)
+      return xsdInf;
+    else if (value === -Infinity)
+      return xsdMinusInf;
+    return xsdNaN;
+
+  // other objects
+  default:
+    if (value) {
+      // RDF/JS Term
+      if (typeof value.termType === 'string')
+        return value;
+      // Date
+      if (value instanceof Date)
+        return literal(value.toISOString(), xsdDateTime);
+    }
+  }
+
+  // invalid objects
   throw new Error(`Invalid object: ${value}`);
 }

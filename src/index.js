@@ -25,7 +25,7 @@ import ToArrayHandler from './ToArrayHandler';
 import defaultHandlers from './defaultHandlers';
 import { getFirstItem, iteratorFor } from './iterableUtils';
 import { lazyThenable, getThen, toIterablePromise } from './promiseUtils';
-import { isPlainObject, hasPlainObjectArgs } from './valueUtils';
+import { isPlainObject, hasPlainObjectArgs, valueToTerm } from './valueUtils';
 
 export {
   AsyncIteratorHandler,
@@ -60,4 +60,5 @@ export {
   toIterablePromise,
   isPlainObject,
   hasPlainObjectArgs,
+  valueToTerm,
 };
