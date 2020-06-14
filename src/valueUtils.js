@@ -39,6 +39,8 @@ export function isPlainObject(value) {
     typeof value === 'object' &&
     // Ignore arrays
     !Array.isArray(value) &&
+    // Ignore dates
+    !(value instanceof Date) &&
     // Ignore Promise instances
     typeof value.then !== 'function' &&
     // Ignore RDF/JS Term instances
