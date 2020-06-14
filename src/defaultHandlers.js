@@ -66,10 +66,10 @@ export default {
 
   // Add iteration helpers
   toArray: new ToArrayHandler(),
-  termTypes: handler((_, path) => path.toArray(t => t.termType)),
-  values:    handler((_, path) => path.toArray(t => t.value)),
-  datatypes: handler((_, path) => path.toArray(t => t.datatype)),
-  languages: handler((_, path) => path.toArray(t => t.language)),
+  termTypes: handler((_, path) => path.toArray(term => term.termType)),
+  values:    handler((_, path) => path.toArray(term => term.value)),
+  datatypes: handler((_, path) => path.toArray(term => term.datatype)),
+  languages: handler((_, path) => path.toArray(term => term.language)),
 
   // Parse a string into an LDflex object
   resolve: new StringToLDflexHandler(),
@@ -82,17 +82,12 @@ function handler(handle) {
 
 // Creates a handler for the given RDF/JS Term property
 function termPropertyHandler(property) {
-  return handler((pathData, path) => {
-    // If a resolved subject is present,
-    // synchronously expose the RDF/JS property
-    const { subject } = pathData;
-    const subjectValue = subject && subject[property];
-    if (typeof subjectValue !== 'undefined')
-      return subjectValue;
-
-    // Otherwise, return a promise to the property value
-    return path.then(term => term && term[property]);
-  });
+  // If a resolved subject is present,
+  // behave as an RDF/JS term and synchronously expose the property;
+  // otherwise, return a promise to the property value
+  return handler(({ subject }, path) =>
+    subject && (property in subject) ? subject[property] :
+      path.then(term => term?.[property]));
 }
 
 // Creates a handler that converts the subject into a primitive
