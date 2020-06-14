@@ -87,7 +87,7 @@ function termPropertyHandler(property) {
   // otherwise, return a promise to the property value
   return handler(({ subject }, path) =>
     subject && (property in subject) ? subject[property] :
-      path.then(term => term?.[property]));
+      path.then && path.then(term => term?.[property]));
 }
 
 // Creates a handler that converts the subject into a primitive
