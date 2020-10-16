@@ -14,7 +14,7 @@ export function createQueryEngine(variableNames, results) {
       const regex = new RegExp('FILTER \\(lang\\(\\?result\\) = \'([a-z]*)\'\\)');
       const matches = query.match(regex);
 
-      if (matches.length && matches[1]) {
+      if (matches && matches.length && matches[1]) {
         const language = matches[1];
         const languageResult = results.filter(result => result.language === language);
         const bindings = variableNames.map((name, i) => [name, languageResult[i]]);

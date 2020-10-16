@@ -69,11 +69,13 @@ export default class PathProxy {
 
     // Resolvers provide functionality for arbitrary properties,
     // so find a resolver that can handle this property
+    let currentPathData;
     for (const resolver of this._resolvers) {
       if (resolver.supports(property))
-        return resolver.resolve(property, pathData, pathData.proxy);
+        currentPathData = resolver.resolve(property, pathData, pathData.proxy);
     }
+
     // Otherwise, the property does not exist
-    return undefined;
+    return currentPathData;
   }
 }

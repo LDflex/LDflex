@@ -435,8 +435,8 @@ describe('a PathFactory instance with functions as handlers and resolvers', () =
     expect(factory.create().foo).toBe('foo');
   });
 
-  it('creates a catch-all resolver', () => {
-    expect(factory.create().other).toBe('bar');
+  it('falls back to other resolvers', () => {
+    expect(factory.create().other).toBe('baz');
   });
 });
 

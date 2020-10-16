@@ -173,8 +173,8 @@ describe('a PathProxy with two resolvers', () => {
         expect(resolvers[0].supports).toHaveBeenCalledWith('foo');
       });
 
-      it('does not test the second resolver', () => {
-        expect(resolvers[1].supports).toBeCalledTimes(0);
+      it('does also test the second resolver', () => {
+        expect(resolvers[1].supports).toBeCalledTimes(1);
       });
 
       it('uses the first resolver', () => {

@@ -20,8 +20,8 @@ const queryEngine = createQueryEngine([
 ]);
 
 const resolvers = [
-  new LanguageResolver(),
   new JSONLDResolver(context),
+  new LanguageResolver(),
 ];
 const handlersPath = {
   then: new ThenHandler(),

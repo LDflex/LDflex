@@ -16,6 +16,7 @@ import { iterableToArray } from '../../src/iterableUtils';
 
 import context from '../context';
 import ThenHandler from '../../src/ThenHandler';
+import LanguageResolver from '../../src/LanguageResolver.js';
 
 const subject = namedNode('https://example.org/#me');
 const queryEngine = createQueryEngine([
@@ -24,8 +25,16 @@ const queryEngine = createQueryEngine([
   literal('Carol'),
 ]);
 
+const queryEngineMultilingual = createQueryEngine([
+  literal('Tomato', 'en'),
+  literal('Tomaat', 'nl'),
+  literal('Tomate', 'de'),
+]);
+
+
 const resolvers = [
   new JSONLDResolver(context),
+  new LanguageResolver(),
 ];
 const handlersPath = {
   then: new ThenHandler(),
@@ -144,5 +153,17 @@ describe('a query path with a path and mutation expression handler', () => {
 
   it('returns true for an replace with 3 links', async () => {
     expect(await person.friends.firstName.set('ruben', 'Ruben')).toBeTruthy();
+  });
+});
+
+describe('a query path with a path and language resolver', () => {
+  let tomato;
+  beforeAll(() => {
+    const pathProxy = new PathProxy({ handlers: handlersMutation, resolvers });
+    tomato = pathProxy.createPath({ queryEngineMultilingual }, { subject });
+  });
+
+  it('adds a FILTER when the languageFilter is present', async () => {
+    expect(await tomato.label.nl.sparql).toContain('FILTER (lang(?result) = \'nl\')');
   });
 });

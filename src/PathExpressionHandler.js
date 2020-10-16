@@ -10,12 +10,18 @@ export default class PathExpressionHandler {
     while (current.parent) {
       // Obtain and store predicate
       if (current.predicate) {
-        segments.unshift({
-          predicate: await current.predicate,
-          reverse: await current.reverse,
-          sort: current.sort,
-          values: current.values,
-        });
+        try {
+          segments.unshift({
+            predicate: await current.predicate,
+            reverse: await current.reverse,
+            sort: current.sort,
+            values: current.values,
+          });
+        }
+        // Let's the path segment fail silently.
+        catch ({ message }) {
+        // Fail silently
+        }
       }
       // Move to parent link
       current = current.parent;
