@@ -110,6 +110,7 @@ export function valueToTerm(value) {
 
 // Converts the term into a primitive value
 export function termToPrimitive(term) {
+
   const { termType, value } = term;
 
   // Some literals convert into specific primitive values
