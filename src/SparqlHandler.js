@@ -44,7 +44,7 @@ export default class SparqlHandler {
     // Create SPARQL query body
     const distinct = pathData.distinct ? 'DISTINCT ' : '';
     const select = `SELECT ${distinct}${pathData.select ? pathData.select : queryVar}`;
-    const filter = pathData?.languageFilter ? `\n  FILTER (lang(${pathData.select ? pathData.select : queryVar}) = '${pathData.languageFilter}')` : '';
+    const filter = pathData.languageFilter ? `\n  FILTER (lang(${pathData.select ? pathData.select : queryVar}) = '${pathData.languageFilter}')` : '';
     const where = ` WHERE {\n  ${clauses.join('\n  ')}${filter}\n}`;
     const orderClauses = sorts.map(({ order, variable }) => `${order}(${variable})`);
     const orderBy = orderClauses.length === 0 ? '' : `\nORDER BY ${orderClauses.join(' ')}`;

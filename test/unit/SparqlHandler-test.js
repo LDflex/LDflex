@@ -227,6 +227,33 @@ describe('a SparqlHandler instance', () => {
          <https://ex.org/o2> <https://ex.org/p2> ?v0.
        }`));
     });
+
+    it('supports FILTER on language', async () => {
+      const pathExpression = [
+        { subject: namedNode('https://example.org/#me') },
+        { predicate: namedNode('http://www.w3.org/2000/01/rdf-schema#label') },
+      ];
+
+      const pathData = { property: 'result', languageFilter: 'nl' };
+      expect(await handler.handle(pathData, { pathExpression })).toEqual(deindent(`
+       SELECT ?result WHERE {
+         <https://example.org/#me> <http://www.w3.org/2000/01/rdf-schema#label> ?result.
+         FILTER (lang(?result) = 'nl')
+       }`));
+    });
+
+    it('does not FILTER on language when languageFilter is not set', async () => {
+      const pathExpression = [
+        { subject: namedNode('https://example.org/#me') },
+        { predicate: namedNode('http://www.w3.org/2000/01/rdf-schema#label') },
+      ];
+
+      const pathData = { property: 'result' };
+      expect(await handler.handle(pathData, { pathExpression })).toEqual(deindent(`
+       SELECT ?result WHERE {
+         <https://example.org/#me> <http://www.w3.org/2000/01/rdf-schema#label> ?result.
+       }`));
+    });
   });
 
   describe('with mutationExpressions', () => {

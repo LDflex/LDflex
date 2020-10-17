@@ -172,5 +172,4 @@ describe('a query path with a language part', () => {
     const frenchLabel = await tomato.label.fr;
     expect(`${frenchLabel}`).toBe('undefined');
   });
-
 });
