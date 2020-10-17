@@ -1,5 +1,6 @@
 import PathProxy from './PathProxy';
 import JSONLDResolver from './JSONLDResolver';
+import LanguageResolver from './LanguageResolver';
 import defaultHandlers from './defaultHandlers';
 import { ContextParser } from 'jsonld-context-parser';
 
@@ -20,7 +21,9 @@ export default class PathFactory {
       handlers[key] = toHandler(handlers[key]);
 
     // Prepare the resolvers
-    const resolvers = (settings.resolvers || []).map(toResolver);
+    const resolvers = (settings.resolvers || [
+      new LanguageResolver(),
+    ]).map(toResolver);
     if (settings.context) {
       resolvers.push(new JSONLDResolver(settings.context));
       settings.parsedContext = new ContextParser().parse(settings.context)

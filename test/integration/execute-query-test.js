@@ -9,6 +9,7 @@ import SubjectsHandler from '../../src/SubjectsHandler';
 import SetFunctionHandler from '../../src/SetFunctionHandler';
 import DataHandler from '../../src/DataHandler';
 import JSONLDResolver from '../../src/JSONLDResolver';
+import LanguageResolver from '../../src/LanguageResolver';
 import MutationExpressionsHandler from '../../src/MutationExpressionsHandler';
 import { createQueryEngine, deindent } from '../util';
 import { namedNode, literal } from '@rdfjs/data-model';
@@ -24,7 +25,14 @@ const queryEngine = createQueryEngine([
   literal('Carol'),
 ]);
 
+const multilingualQueryEngine = createQueryEngine([
+  literal('Tomato', 'en'),
+  literal('Tomaat', 'nl'),
+  literal('Tomate', 'de'),
+]);
+
 const resolvers = [
+  new LanguageResolver(),
   new JSONLDResolver(context),
 ];
 const handlersPath = {
@@ -145,4 +153,24 @@ describe('a query path with a path and mutation expression handler', () => {
   it('returns true for an replace with 3 links', async () => {
     expect(await person.friends.firstName.set('ruben', 'Ruben')).toBeTruthy();
   });
+});
+
+
+describe('a query path with a language part', () => {
+  let tomato;
+  beforeAll(() => {
+    const pathProxy = new PathProxy({ handlers: handlersPath, resolvers });
+    tomato = pathProxy.createPath({ queryEngine: multilingualQueryEngine }, { subject });
+  });
+
+  it('returns the specified language', async () => {
+    const dutchLabel = await tomato.label.nl;
+    expect(`${dutchLabel}`).toBe('Tomaat');
+  });
+
+  it('returns undefined when the language is not available', async () => {
+    const frenchLabel = await tomato.label.fr;
+    expect(`${frenchLabel}`).toBe('undefined');
+  });
+
 });
