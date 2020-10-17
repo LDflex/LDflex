@@ -166,12 +166,17 @@ describe('a query path with a language part', () => {
   });
 
   it('returns the specified language', async () => {
-    const dutchLabel = await tomato.label.nl;
+    const dutchLabel = await tomato.label['@nl'];
+    expect(`${dutchLabel}`).toBe('Tomaat');
+  });
+
+  it('returns the specified language when usin dollar sign', async () => {
+    const dutchLabel = await tomato.label.$nl;
     expect(`${dutchLabel}`).toBe('Tomaat');
   });
 
   it('returns undefined when the language is not available', async () => {
-    const frenchLabel = await tomato.label.fr;
+    const frenchLabel = await tomato.label.$fr;
     expect(`${frenchLabel}`).toBe('undefined');
   });
 });
