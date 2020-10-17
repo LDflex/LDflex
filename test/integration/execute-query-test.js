@@ -14,7 +14,7 @@ import MutationExpressionsHandler from '../../src/MutationExpressionsHandler';
 import { createQueryEngine, deindent } from '../util';
 import { namedNode, literal } from '@rdfjs/data-model';
 import { iterableToArray } from '../../src/iterableUtils';
-import { termPropertyHandler} from '../../src/defaultHandlers';
+import { termPropertyHandler } from '../../src/defaultHandlers';
 
 import context from '../context';
 import ThenHandler from '../../src/ThenHandler';

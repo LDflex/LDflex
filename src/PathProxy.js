@@ -70,7 +70,7 @@ export default class PathProxy {
     // Resolvers provide functionality for arbitrary properties,
     // so find a resolver that can handle this property
     for (const resolver of this._resolvers) {
-      if (resolver.supports(property, pathData))
+      if (resolver.supports(property))
         return resolver.resolve(property, pathData, pathData.proxy);
     }
     // Otherwise, the property does not exist
