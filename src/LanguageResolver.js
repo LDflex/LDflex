@@ -16,7 +16,13 @@ export default class LanguageResolver {
    *
    * Example usage: tomato.label.nl
    */
-  resolve(property, pathData) {
-    return pathData.extendPath({ languageFilter: property });
+  async resolve(property, pathData) {
+    const values = pathData.parent.proxy[pathData.property];
+    for await (const path of values) {
+      if (path.language === property)
+        return path;
+    }
+
+    return undefined;
   }
 }
