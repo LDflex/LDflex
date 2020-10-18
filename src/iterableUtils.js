@@ -13,10 +13,9 @@ export async function iterableToArray(iterable) {
 /**
  * Gets the first element of the iterable.
  */
-export async function getFirstItem(iterable) {
+export function getFirstItem(iterable) {
   const iterator = iterable[Symbol.asyncIterator]();
-  const returnItem = await iterator.next();
-  return returnItem.value;
+  return iterator.next().then(item => item.value);
 }
 
 /**
