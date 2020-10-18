@@ -201,3 +201,24 @@ describe('a query path with a language part and @language in the context', () =>
     expect(`${dutchLabel}`).toBe('Tomaat');
   });
 });
+
+describe('a query path with a language part and an unavailable @language in the context', () => {
+  let tomato;
+  beforeAll(() => {
+    const pathProxy = new PathProxy({ handlers: handlersPath, resolvers: [
+      new LanguageResolver(),
+      new JSONLDResolver(context),
+    ] });
+    tomato = pathProxy.createPath({
+      queryEngine: multilingualQueryEngine,
+      context: {
+        '@language': 'fr',
+      },
+    }, { subject });
+  });
+
+  it('returns the the first item if the default language is not available', async () => {
+    const defaultLabel = await tomato.label;
+    expect(`${defaultLabel}`).toBe('Tomato');
+  });
+});
