@@ -1,10 +1,9 @@
 /**
- * Resolves property names of a path
- * to their corresponding IRIs through a JSON-LD context.
+ * Resolves a specific language of a path
  */
 export default class LanguageResolver {
   /**
-   * The JSON-LD resolver supports all string properties.
+   * The language may be prefixed @ or $.
    */
   supports(property) {
     return typeof property === 'string' && ['@', '$'].includes(property[0]);
