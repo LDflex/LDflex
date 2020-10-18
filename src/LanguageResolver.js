@@ -11,8 +11,7 @@ export default class LanguageResolver {
   }
 
   /**
-   * When resolving a JSON-LD property,
-   * we create a new chainable path segment corresponding to the predicate.
+   * We fetch all the translations and return the selected one.
    *
    * Example usage: tomato.label['@nl']
    * Example usage: tomato.label.@nl

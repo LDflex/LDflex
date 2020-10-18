@@ -170,7 +170,7 @@ describe('a query path with a language part', () => {
     expect(`${dutchLabel}`).toBe('Tomaat');
   });
 
-  it('returns the specified language when usin dollar sign', async () => {
+  it('returns the specified language when using dollar sign', async () => {
     const dutchLabel = await tomato.label.$nl;
     expect(`${dutchLabel}`).toBe('Tomaat');
   });
@@ -178,5 +178,26 @@ describe('a query path with a language part', () => {
   it('returns undefined when the language is not available', async () => {
     const frenchLabel = await tomato.label.$fr;
     expect(`${frenchLabel}`).toBe('undefined');
+  });
+});
+
+describe('a query path with a language part and @language in the context', () => {
+  let tomato;
+  beforeAll(() => {
+    const pathProxy = new PathProxy({ handlers: handlersPath, resolvers: [
+      new LanguageResolver(),
+      new JSONLDResolver(context),
+    ] });
+    tomato = pathProxy.createPath({
+      queryEngine: multilingualQueryEngine,
+      context: {
+        '@language': 'nl',
+      },
+    }, { subject });
+  });
+
+  it('returns the default language if available', async () => {
+    const dutchLabel = await tomato.label;
+    expect(`${dutchLabel}`).toBe('Tomaat');
   });
 });

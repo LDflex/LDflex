@@ -13,9 +13,28 @@ export async function iterableToArray(iterable) {
 /**
  * Gets the first element of the iterable.
  */
-export function getFirstItem(iterable) {
+export async function getFirstItem(iterable) {
   const iterator = iterable[Symbol.asyncIterator]();
-  return iterator.next().then(item => item.value);
+  const returnItem = await iterator.next();
+  return returnItem.value;
+}
+
+/**
+ * Gets the first or the default element of the iterable.
+ */
+export async function getFirstOrDefaultItem(iterable, defaultLanguage) {
+  const iterator = iterable[Symbol.asyncIterator]();
+  let returnItem = await iterator.next();
+
+  let item = returnItem;
+  while (!item.done) {
+    item = await iterator.next();
+    const itemLanguage = item.value?.language?.toString();
+    if (defaultLanguage && itemLanguage === defaultLanguage)
+      returnItem = item;
+  }
+
+  return returnItem.value;
 }
 
 /**
