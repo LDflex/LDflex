@@ -2,6 +2,7 @@ import { ContextParser, Util as ContextUtil } from 'jsonld-context-parser';
 import { namedNode } from '@rdfjs/data-model';
 import { lazyThenable } from './promiseUtils';
 import { valueToTerm } from './valueUtils';
+import { translate } from 'sparqlalgebrajs';
 
 /**
  * Resolves property names of a path
@@ -67,9 +68,20 @@ export default class JSONLDResolver {
     // Expand the property to a full IRI
     const context = await this._context;
     const expandedProperty = context.expandTerm(property, true);
-    if (!ContextUtil.isValidIri(expandedProperty))
-      throw new Error(`The JSON-LD context cannot expand the '${property}' property`);
-    return namedNode(expandedProperty);
+    if (ContextUtil.isValidIri(expandedProperty)) {
+      return namedNode(expandedProperty);
+    }
+    else if (typeof expandedProperty === 'string') {
+      // Wrap inside try/catch as 'translate' throws error on invalid paths
+      try {
+        translate(`SELECT * WHERE { ?s ${expandedProperty} ?o }`);
+        return expandedProperty;
+      }
+      catch (e) {
+        throw new Error(`The JSON-LD context cannot expand the '${property}' property`);
+      }
+    }
+    throw new Error(`The JSON-LD context cannot expand the '${property}' property`);
   }
 
   /**

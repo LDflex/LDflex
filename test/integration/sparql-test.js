@@ -309,4 +309,22 @@ describe('a query path with a path expression handler', () => {
         ?v0 <${FOAF}knows> ?knows.
       }`));
   });
+
+  it('resolves sparql sequence path expressions as predicates', async () => {
+    const query = await person[`<${FOAF}knows>/<${FOAF}givenName>`].sparql;
+    expect(query).toEqual(deindent(`
+      SELECT ?result WHERE {
+        <https://example.org/#me> <${FOAF}knows>/<${FOAF}givenName> ?result.
+      }  
+    `));
+  });
+
+  it('resolves sparql sequence path expressions as predicates and path modifiers', async () => {
+    const query = await person[`(<${FOAF}knows>/<${FOAF}givenName>)*`].sparql;
+    expect(query).toEqual(deindent(`
+      SELECT ?result WHERE {
+        <https://example.org/#me> (<${FOAF}knows>/<${FOAF}givenName>)* ?result.
+      }  
+    `));
+  });
 });
