@@ -68,34 +68,35 @@ export default class JSONLDResolver {
     // Expand the property to a full IRI
     const context = await this._context;
     const expandedProperty = context.expandTerm(property, true);
-    if (ContextUtil.isValidIri(expandedProperty)) {
+    if (ContextUtil.isValidIri(expandedProperty))
       return namedNode(expandedProperty);
+
+    let algebra;
+    const prefixes = {};
+    for (const key in context.contextRaw) {
+      if (typeof context.contextRaw[key] === 'string')
+        prefixes[key] = context.contextRaw[key];
     }
-    else if (typeof expandedProperty === 'string') {
-      // Wrap inside try/catch as 'translate' throws error on invalid paths
-      try {
-        const prefixes = {};
-        for (const key in context.contextRaw) {
-          if (typeof context.contextRaw[key] === 'string')
-            prefixes[key] = context.contextRaw[key];
-        }
-        const algebra = translate(`SELECT * WHERE { ?s ${expandedProperty} ?o }`, {
-          prefixes,
-        });
-        if (algebra.input.type === 'path') {
-          const query = toSparql(algebra);
-          return query.slice(25, query.length - 7);
-        }
-        // The algebra library turns expressions lint foaf:friend/foaf:givenName into
-        // a bgp token rather than a path token
-        else if (algebra.input.type === 'bgp') {
-          return algebra.input.patterns.map(quad => `<${quad.predicate.value}>`).join('/');
-        }
-      }
-      catch (e) {
-        throw new Error(`The JSON-LD context cannot expand the '${property}' property`);
-      }
+    // Wrap inside try/catch as 'translate' throws error on invalid paths
+    try {
+      algebra = translate(`SELECT * WHERE { ?s ${expandedProperty} ?o }`, {
+        prefixes,
+      });
     }
+    catch (e) {
+      throw new Error(`The JSON-LD context cannot expand the '${property}' property`);
+    }
+
+    if (algebra.input.type === 'path') {
+      const query = toSparql(algebra);
+      return query.slice(25, query.length - 7);
+    }
+    // The algebra library turns expressions lint foaf:friend/foaf:givenName into
+    // a bgp token rather than a path token
+    if (algebra.input.type === 'bgp' &&
+        algebra.input.patterns.every(quad => quad.predicate.termType === 'NamedNode'))
+      return algebra.input.patterns.map(quad => `<${quad.predicate.value}>`).join('/');
+
     throw new Error(`The JSON-LD context cannot expand the '${property}' property`);
   }
 
