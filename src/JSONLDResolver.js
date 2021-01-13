@@ -2,7 +2,7 @@ import { ContextParser, Util as ContextUtil } from 'jsonld-context-parser';
 import { namedNode } from '@rdfjs/data-model';
 import { lazyThenable } from './promiseUtils';
 import { valueToTerm } from './valueUtils';
-import { translate } from 'sparqlalgebrajs';
+import { translate, toSparql } from 'sparqlalgebrajs';
 
 /**
  * Resolves property names of a path
@@ -74,8 +74,23 @@ export default class JSONLDResolver {
     else if (typeof expandedProperty === 'string') {
       // Wrap inside try/catch as 'translate' throws error on invalid paths
       try {
-        translate(`SELECT * WHERE { ?s ${expandedProperty} ?o }`);
-        return expandedProperty;
+        const prefixes = {};
+        for (const key in context.contextRaw) {
+          if (typeof context.contextRaw[key] === 'string')
+            prefixes[key] = context.contextRaw[key];
+        }
+        const algebra = translate(`SELECT * WHERE { ?s ${expandedProperty} ?o }`, {
+          prefixes,
+        });
+        if (algebra.input.type === 'path') {
+          const query = toSparql(algebra);
+          return query.slice(25, query.length - 7);
+        }
+        // The algebra library turns expressions lint foaf:friend/foaf:givenName into
+        // a bgp token rather than a path token
+        else if (algebra.input.type === 'bgp') {
+          return algebra.input.patterns.map(quad => `<${quad.predicate.value}>`).join('/');
+        }
       }
       catch (e) {
         throw new Error(`The JSON-LD context cannot expand the '${property}' property`);
