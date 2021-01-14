@@ -67,10 +67,9 @@ export default class JSONLDResolver {
     // Expand the property to a full IRI
     const context = await this._context;
     const expandedProperty = context.expandTerm(property, true);
-    if (ContextUtil.isValidIri(expandedProperty))
-      return namedNode(expandedProperty);
-
-    throw new Error(`The JSON-LD context cannot expand the '${property}' property`);
+    if (!ContextUtil.isValidIri(expandedProperty))
+      throw new Error(`The JSON-LD context cannot expand the '${property}' property`);
+    return namedNode(expandedProperty);
   }
 
   /**
