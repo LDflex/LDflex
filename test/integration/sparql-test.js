@@ -13,6 +13,7 @@ import SubjectHandler from '../../src/SubjectHandler';
 import ThenHandler from '../../src/ThenHandler';
 import ReplaceFunctionHandler from '../../src/ReplaceFunctionHandler';
 import JSONLDResolver from '../../src/JSONLDResolver';
+import ComplexPathResolver from '../../src/ComplexPathResolver';
 import { namedNode } from '@rdfjs/data-model';
 
 import context from '../context';
@@ -48,7 +49,7 @@ describe('a query path with a path expression handler', () => {
     termType: DataHandler.sync('subject', 'termType'),
   };
   const resolvers = [
-    new JSONLDResolver(context),
+    new ComplexPathResolver(JSONLDResolver, context),
   ];
   const subject = namedNode('https://example.org/#me');
 
