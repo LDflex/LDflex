@@ -1,293 +1,97 @@
-import JSONLDResolver from '../../src/JSONLDResolver';
 import ComplexPathResolver from '../../src/ComplexPathResolver';
 import context from '../context';
-import { namedNode, literal } from '@rdfjs/data-model';
+import { namedNode } from '@rdfjs/data-model';
 
-describe('a JSONLDResolver instance', () => {
+describe('a ComplexPathResolver instance', () => {
   let resolver;
-  beforeAll(() => resolver = new ComplexPathResolver(JSONLDResolver));
+  beforeAll(() => resolver = new ComplexPathResolver());
 
-  it('supports strings', () => {
-    expect(resolver.supports('foo')).toBe(true);
+  it('does not support strings that are not complext paths', () => {
+    expect(resolver.supports('foo')).toBe(false);
   });
 
   it('does not support symbols', () => {
     expect(resolver.supports(Symbol('foo'))).toBe(false);
   });
+
+  it('does not support single prefixed IRI', () => {
+    expect(resolver.supports('ex:Jesse')).toBe(false);
+  });
+
+  it('does not support single IRI', () => {
+    expect(resolver.supports('http://example.org#Jesse')).toBe(false);
+    expect(resolver.supports('http://example.org/')).toBe(false);
+    expect(resolver.supports('http://example.org/path/')).toBe(false);
+  });
+
+  it('supports an IRI wrapped in angle brackets', () => {
+    expect(resolver.supports('<http://example.org#Jesse>')).toBe(true);
+  });
+
+  it('supports prefixed IRI\'s with path modifiers', () => {
+    expect(resolver.supports('foaf:friend*')).toBe(true);
+    expect(resolver.supports('foaf:friend+')).toBe(true);
+    expect(resolver.supports('foaf:friend?')).toBe(true);
+    expect(resolver.supports('^foaf:friend')).toBe(true);
+  });
+
+  it('supports full IRI\'s with path modifiers', () => {
+    expect(resolver.supports('<http://xmlns.com/foaf/0.1/friend>*')).toBe(true);
+    expect(resolver.supports('<http://xmlns.com/foaf/0.1/friend>+')).toBe(true);
+    expect(resolver.supports('<http://xmlns.com/foaf/0.1/friend>?')).toBe(true);
+    expect(resolver.supports('^<http://xmlns.com/foaf/0.1/friend>')).toBe(true);
+  });
+
+  it('supports sequence and alt path modifiers', () => {
+    expect(resolver.supports('foaf:friend/foaf:supervisor')).toBe(true);
+    expect(resolver.supports('<http://xmlns.com/foaf/0.1/friend>/foaf:supervisor')).toBe(true);
+    expect(resolver.supports('foaf:friend/<http://xmlns.com/foaf/0.1/supervisor>')).toBe(true);
+    expect(resolver.supports('<http://xmlns.com/foaf/0.1/friend>/<http://xmlns.com/foaf/0.1/supervisor>')).toBe(true);
+    expect(resolver.supports('foaf:friend|foaf:supervisor')).toBe(true);
+    expect(resolver.supports('<http://xmlns.com/foaf/0.1/friend>|foaf:supervisor')).toBe(true);
+    expect(resolver.supports('foaf:friend|<http://xmlns.com/foaf/0.1/supervisor>')).toBe(true);
+    expect(resolver.supports('<http://xmlns.com/foaf/0.1/friend>|<http://xmlns.com/foaf/0.1/supervisor>')).toBe(true);
+  });
 });
 
-describe('[Testing ComplexPath Resolver respects JSONLDResolver] a JSONLDResolver instance with a context', () => {
+describe('Error handling on complex paths without prefixes defined', () => {
   let resolver;
-  beforeAll(() => resolver = new ComplexPathResolver(JSONLDResolver, context));
+  beforeAll(() => resolver = new ComplexPathResolver());
+
+  it('does not support strings that are not complext paths', async () => {
+    await expect(() => resolver.expandProperty('foaf:friend*')).rejects
+      .toThrow('The Complex Path Resolver cannot expand the \'foaf:friend*\' path');
+  });
+});
+
+describe('a ComplexPathResolver instance with a context', () => {
+  let resolver;
+  beforeAll(() => resolver = new ComplexPathResolver(context));
 
   describe('expanding a property', () => {
-    it('expands knows to foaf:knows', async () => {
-      expect(await resolver.expandProperty('knows'))
-        .toEqual(namedNode('http://xmlns.com/foaf/0.1/knows'));
+    it('expands knows to foaf:knows*', async () => {
+      expect(await resolver.expandProperty('foaf:knows*'))
+        .toEqual({ termType: 'path', value: '<http://xmlns.com/foaf/0.1/knows>*' });
+    });
+
+    it('expands knows to foaf:knows*/foaf:friend+', async () => {
+      expect(await resolver.expandProperty('foaf:knows*/foaf:friend+'))
+        .toEqual({ termType: 'path', value: '<http://xmlns.com/foaf/0.1/knows>*/<http://xmlns.com/foaf/0.1/friend>+' });
+    });
+
+    it('expands knows to foaf:knows*/foaf:friend+/foaf:knows?', async () => {
+      expect(await resolver.expandProperty('foaf:knows*/foaf:friend+/foaf:knows?'))
+        .toEqual({ termType: 'path', value: '<http://xmlns.com/foaf/0.1/knows>*/<http://xmlns.com/foaf/0.1/friend>+/<http://xmlns.com/foaf/0.1/knows>?' });
     });
 
     it('errors when expanding an unknown property', async () => {
       await expect(resolver.expandProperty('other')).rejects
-        .toThrow(new Error("The Complex Path Resolver cannot expand the 'other' path"));
+        .toThrow(new Error('The Complex Path Resolver cannot expand the \'other\' path'));
     });
 
     it('errors when expanding a variable property', async () => {
       await expect(resolver.expandProperty('?p')).rejects
-        .toThrow(new Error("The Complex Path Resolver cannot expand the '?p' path"));
-    });
-  });
-
-  describe('resolving the knows property', () => {
-    const extendedPath = {};
-    const pathData = { extendPath: jest.fn(() => extendedPath) };
-
-    let result;
-    beforeEach(() => result = resolver.resolve('knows', pathData));
-
-    it('extends the path', () => {
-      expect(pathData.extendPath).toBeCalledTimes(1);
-      const args = pathData.extendPath.mock.calls[0];
-      expect(args).toHaveLength(1);
-      expect(args[0]).toBeInstanceOf(Object);
-    });
-
-    it('sets property to knows', () => {
-      const { property } = pathData.extendPath.mock.calls[0][0];
-      expect(property).toBe('knows');
-    });
-
-    it('sets predicate to a promise for foaf:knows', async () => {
-      const { predicate } = pathData.extendPath.mock.calls[0][0];
-      expect(await predicate).toEqual(namedNode('http://xmlns.com/foaf/0.1/knows'));
-    });
-
-    it('returns the extended path', () => {
-      expect(result).toBe(extendedPath);
-    });
-  });
-
-  describe('resolving the knows property and calling it as a function', () => {
-    const path = {};
-    const pathData = { extendPath: jest.fn(data => ({ ...data })) };
-
-    let result;
-    beforeEach(() => result = resolver.resolve('knows', pathData));
-
-    it('sets up the function through apply', () => {
-      expect(result.apply).toBeInstanceOf(Function);
-    });
-
-    it('errors if there are no arguments', () => {
-      expect(() => result.apply([], result, path))
-        .toThrow(new Error('Specify at least one term when calling .knows() on a path'));
-    });
-
-    describe('with two strings', () => {
-      let applied;
-      beforeEach(() => applied = result.apply(['Ruben', 'Joachim'], result, path));
-
-      it('returns the proxied path', () => {
-        expect(applied).toBe(path);
-      });
-
-      it('stores the new values in the result', () => {
-        expect(result.values).toEqual([literal('Ruben'), literal('Joachim')]);
-      });
-    });
-
-    describe('with 2 terms', () => {
-      const ruben = namedNode('Ruben');
-      const joachim = namedNode('Joachim');
-
-      let applied;
-      beforeEach(() => applied = result.apply([ruben, joachim], result, path));
-
-      it('returns the proxied path', () => {
-        expect(applied).toBe(path);
-      });
-
-      it('stores the new values in the result', () => {
-        expect(result.values).toEqual([ruben, joachim]);
-      });
-    });
-  });
-
-  describe('resolving the foaf:knows property', () => {
-    const extendedPath = {};
-    const pathData = { extendPath: jest.fn(() => extendedPath) };
-
-    let result;
-    beforeEach(() => result = resolver.resolve('foaf:knows', pathData));
-
-    it('extends the path', () => {
-      expect(pathData.extendPath).toBeCalledTimes(1);
-      const args = pathData.extendPath.mock.calls[0];
-      expect(args).toHaveLength(1);
-      expect(args[0]).toBeInstanceOf(Object);
-    });
-
-    it('sets property to foaf:knows', () => {
-      const { property } = pathData.extendPath.mock.calls[0][0];
-      expect(property).toBe('foaf:knows');
-    });
-
-    it('sets predicate to a promise for foaf:knows', async () => {
-      const { predicate } = pathData.extendPath.mock.calls[0][0];
-      expect(await predicate).toEqual(namedNode('http://xmlns.com/foaf/0.1/knows'));
-    });
-
-    it('returns the extended path', () => {
-      expect(result).toBe(extendedPath);
-    });
-  });
-
-  describe('resolving the foaf_knows property', () => {
-    const extendedPath = {};
-    const pathData = { extendPath: jest.fn(() => extendedPath) };
-
-    let result;
-    beforeEach(() => result = resolver.resolve('foaf_knows', pathData));
-
-    it('extends the path', () => {
-      expect(pathData.extendPath).toBeCalledTimes(1);
-      const args = pathData.extendPath.mock.calls[0];
-      expect(args).toHaveLength(1);
-      expect(args[0]).toBeInstanceOf(Object);
-    });
-
-    it('sets property to foaf_knows', () => {
-      const { property } = pathData.extendPath.mock.calls[0][0];
-      expect(property).toBe('foaf_knows');
-    });
-
-    it('sets predicate to a promise for foaf:knows', async () => {
-      const { predicate } = pathData.extendPath.mock.calls[0][0];
-      expect(await predicate).toEqual(namedNode('http://xmlns.com/foaf/0.1/knows'));
-    });
-
-    it('returns the extended path', () => {
-      expect(result).toBe(extendedPath);
-    });
-  });
-
-  describe('resolving the foaf$knows property', () => {
-    const extendedPath = {};
-    const pathData = { extendPath: jest.fn(() => extendedPath) };
-
-    let result;
-    beforeEach(() => result = resolver.resolve('foaf$knows', pathData));
-
-    it('extends the path', () => {
-      expect(pathData.extendPath).toBeCalledTimes(1);
-      const args = pathData.extendPath.mock.calls[0];
-      expect(args).toHaveLength(1);
-      expect(args[0]).toBeInstanceOf(Object);
-    });
-
-    it('sets property to foaf$knows', () => {
-      const { property } = pathData.extendPath.mock.calls[0][0];
-      expect(property).toBe('foaf$knows');
-    });
-
-    it('sets predicate to a promise for foaf:knows', async () => {
-      const { predicate } = pathData.extendPath.mock.calls[0][0];
-      expect(await predicate).toEqual(namedNode('http://xmlns.com/foaf/0.1/knows'));
-    });
-
-    it('returns the extended path', () => {
-      expect(result).toBe(extendedPath);
-    });
-  });
-
-  describe('resolving the foaf:topic_interest property', () => {
-    const extendedPath = {};
-    const pathData = { extendPath: jest.fn(() => extendedPath) };
-
-    let result;
-    beforeEach(() => result = resolver.resolve('foaf:topic_interest', pathData));
-
-    it('extends the path', () => {
-      expect(pathData.extendPath).toBeCalledTimes(1);
-      const args = pathData.extendPath.mock.calls[0];
-      expect(args).toHaveLength(1);
-      expect(args[0]).toBeInstanceOf(Object);
-    });
-
-    it('sets property to foaf:topic_interest', () => {
-      const { property } = pathData.extendPath.mock.calls[0][0];
-      expect(property).toBe('foaf:topic_interest');
-    });
-
-    it('sets predicate to a promise for foaf:topic_interest', async () => {
-      const { predicate } = pathData.extendPath.mock.calls[0][0];
-      expect(await predicate).toEqual(namedNode('http://xmlns.com/foaf/0.1/topic_interest'));
-    });
-
-    it('returns the extended path', () => {
-      expect(result).toBe(extendedPath);
-    });
-  });
-
-  describe('resolving the makerOf property', () => {
-    const extendedPath = {};
-    const pathData = { extendPath: jest.fn(() => extendedPath) };
-
-    let result;
-    beforeEach(() => result = resolver.resolve('makerOf', pathData));
-
-    it('extends the path', () => {
-      expect(pathData.extendPath).toBeCalledTimes(1);
-      const args = pathData.extendPath.mock.calls[0];
-      expect(args).toHaveLength(1);
-      expect(args[0]).toBeInstanceOf(Object);
-    });
-
-    it('sets property to makerOf', () => {
-      const { property } = pathData.extendPath.mock.calls[0][0];
-      expect(property).toBe('makerOf');
-    });
-
-    it('sets predicate to a promise for foaf:maker', async () => {
-      const { predicate } = pathData.extendPath.mock.calls[0][0];
-      await expect(predicate).resolves.toEqual(namedNode('http://xmlns.com/foaf/0.1/maker'));
-    });
-
-    it('sets the reverse property to a promise resolving to true', async () => {
-      const { reverse } = pathData.extendPath.mock.calls[0][0];
-      await expect(reverse).resolves.toBeTruthy();
-    });
-
-    it('returns the extended path', () => {
-      expect(result).toBe(extendedPath);
-    });
-  });
-
-  describe('when the context is extended', () => {
-    describe('before extending', () => {
-      it('does not resolve sameAs', async () => {
-        await expect(resolver.expandProperty('sameAs')).rejects
-          .toThrow(new Error("The Complex Path Resolver cannot expand the 'sameAs' path"));
-      });
-    });
-
-    describe('after extending', () => {
-      beforeAll(async () => {
-        await resolver.extendContext({
-          '@context': {
-            owl: 'http://www.w3.org/2002/07/owl#',
-          },
-        }, {
-          sameAs: 'owl:sameAs',
-        });
-      });
-
-      const pathData = { extendPath: jest.fn() };
-      beforeEach(() => resolver.resolve('sameAs', pathData));
-
-      it('sets predicate to a promise for sameAs', async () => {
-        const { predicate } = pathData.extendPath.mock.calls[0][0];
-        expect(await predicate).toEqual(namedNode('http://www.w3.org/2002/07/owl#sameAs'));
-      });
+        .toThrow(new Error('The Complex Path Resolver cannot expand the \'?p\' path'));
     });
   });
 
@@ -300,12 +104,58 @@ describe('[Testing ComplexPath Resolver respects JSONLDResolver] a JSONLDResolve
           { subject: namedNode('http://people.example/#Alice') },
           { subject: namedNode('http://people.example/#Bob') },
         ],
+      }, {
+        '<http://xmlns.com/foaf/0.1/knows>/<http://xmlns.com/foaf/0.1/friend>*': [
+          { subject: namedNode('http://people.example/#Alice') },
+          { subject: namedNode('http://people.example/#Bob') },
+          { subject: namedNode('http://people.example/#Charlie') },
+        ],
+      }, {
+        '<http://xmlns.com/foaf/0.1/knows>|<http://xmlns.com/foaf/0.1/friend>*': [
+          { subject: namedNode('http://people.example/#A') },
+        ],
+      }, {
+        '<http://xmlns.com/foaf/0.1/knows>/<http://xmlns.com/foaf/0.1/friend>?': [
+          { subject: namedNode('http://people.example/#B') },
+        ],
+      }, {
+        '<http://xmlns.com/foaf/0.1/knows>|<http://xmlns.com/foaf/0.1/friend>?': [
+          { subject: namedNode('http://people.example/#C') },
+        ],
+      }, {
+        '<http://xmlns.com/foaf/0.1/knows>/<http://xmlns.com/foaf/0.1/friend>+': [
+          { subject: namedNode('http://people.example/#D') },
+        ],
+      }, {
+        '<http://xmlns.com/foaf/0.1/knows>|<http://xmlns.com/foaf/0.1/friend>+': [
+          { subject: namedNode('http://people.example/#E') },
+        ],
+      }, {
+        '<http://xmlns.com/foaf/0.1/knows>/<http://xmlns.com/foaf/0.1/friend>*': [
+          { subject: namedNode('http://people.example/#F') },
+        ],
+      }, {
+        '<http://xmlns.com/foaf/0.1/knows>/<http://xmlns.com/foaf/0.1/friend>*/<http://xmlns.com/foaf/0.1/employer>': [
+          { subject: namedNode('http://people.example/#G') },
+        ],
+      }, {
+        '<http://xmlns.com/foaf/0.1/knows>/<http://xmlns.com/foaf/0.1/friend>?/<http://xmlns.com/foaf/0.1/employer>': [
+          { subject: namedNode('http://people.example/#H') },
+        ],
+      }, {
+        '<http://xmlns.com/foaf/0.1/knows>/<http://xmlns.com/foaf/0.1/friend>+/<http://xmlns.com/foaf/0.1/employer>': [
+          { subject: namedNode('http://people.example/#I') },
+        ],
+      }, {
+        '<http://xmlns.com/foaf/0.1/knows>/<http://xmlns.com/foaf/0.1/friend>/<http://xmlns.com/foaf/0.1/employer>': [
+          { subject: namedNode('http://people.example/#J') },
+        ],
       }),
     };
 
     describe('when accessing a non-cached property', () => {
       let result;
-      beforeEach(() => result = resolver.resolve('foaf:givenName', pathData));
+      beforeEach(() => result = resolver.resolve('<http://xmlns.com/foaf/0.1/givenName>', pathData));
 
       it('extends the path without a results cache', async () => {
         expect(pathData.extendPath).toBeCalledTimes(1);
@@ -321,7 +171,7 @@ describe('[Testing ComplexPath Resolver respects JSONLDResolver] a JSONLDResolve
 
     describe('when accessing a cached property', () => {
       let result;
-      beforeEach(() => result = resolver.resolve('foaf:knows', pathData));
+      beforeEach(() => result = resolver.resolve('<http://xmlns.com/foaf/0.1/knows>', pathData));
 
       it('extends the path with a results cache', async () => {
         expect(pathData.extendPath).toBeCalledTimes(1);
@@ -336,15 +186,265 @@ describe('[Testing ComplexPath Resolver respects JSONLDResolver] a JSONLDResolve
       });
     });
 
-    describe('when accessing the reverse of a cached property', () => {
+    describe('when accessing a cached path foaf:knows/foaf:friend', () => {
       let result;
-      beforeEach(() => result = resolver.resolve('friendOf', pathData));
+      beforeEach(() => result = resolver.resolve('foaf:knows/(foaf:friend)', pathData));
 
-      it('extends the path without a results cache', async () => {
+      it('extends the path with a results cache', async () => {
         expect(pathData.extendPath).toBeCalledTimes(1);
         const args = pathData.extendPath.mock.calls[0];
         expect(args).toHaveLength(1);
-        await expect(args[0].resultsCache).resolves.toBeFalsy();
+        await expect(args[0].resultsCache).resolves.toBe(
+          (await pathData.propertyCache)[
+            '<http://xmlns.com/foaf/0.1/knows>/<http://xmlns.com/foaf/0.1/friend>'
+          ]);
+      });
+
+      it('returns the extended path', () => {
+        expect(result).toBe(extendedPath);
+      });
+    });
+
+    describe('when accessing a cached path foaf:knows/(foaf:friend*)', () => {
+      let result;
+      beforeEach(() => result = resolver.resolve('foaf:knows/(foaf:friend*)', pathData));
+
+      it('extends the path with a results cache', async () => {
+        expect(pathData.extendPath).toBeCalledTimes(1);
+        const args = pathData.extendPath.mock.calls[0];
+        expect(args).toHaveLength(1);
+        await expect(args[0].resultsCache).resolves.toBe(
+          (await pathData.propertyCache)[
+            '<http://xmlns.com/foaf/0.1/knows>/<http://xmlns.com/foaf/0.1/friend>*'
+          ]);
+      });
+
+      it('returns the extended path', () => {
+        expect(result).toBe(extendedPath);
+      });
+    });
+
+    describe('when accessing a cached path foaf:knows/(foaf:friend?)', () => {
+      let result;
+      beforeEach(() => result = resolver.resolve('foaf:knows/(foaf:friend?)', pathData));
+
+      it('extends the path with a results cache', async () => {
+        expect(pathData.extendPath).toBeCalledTimes(1);
+        const args = pathData.extendPath.mock.calls[0];
+        expect(args).toHaveLength(1);
+        await expect(args[0].resultsCache).resolves.toBe(
+          (await pathData.propertyCache)[
+            '<http://xmlns.com/foaf/0.1/knows>/<http://xmlns.com/foaf/0.1/friend>?'
+          ]);
+      });
+
+      it('returns the extended path', () => {
+        expect(result).toBe(extendedPath);
+      });
+    });
+
+    describe('when accessing a cached path foaf:knows/(foaf:friend+)', () => {
+      let result;
+      beforeEach(() => result = resolver.resolve('foaf:knows/(foaf:friend+)', pathData));
+
+      it('extends the path with a results cache', async () => {
+        expect(pathData.extendPath).toBeCalledTimes(1);
+        const args = pathData.extendPath.mock.calls[0];
+        expect(args).toHaveLength(1);
+        await expect(args[0].resultsCache).resolves.toBe(
+          (await pathData.propertyCache)[
+            '<http://xmlns.com/foaf/0.1/knows>/<http://xmlns.com/foaf/0.1/friend>+'
+          ]);
+      });
+
+      it('returns the extended path', () => {
+        expect(result).toBe(extendedPath);
+      });
+    });
+
+    describe('when accessing a cached path foaf:knows/foaf:friend*', () => {
+      let result;
+      beforeEach(() => result = resolver.resolve('foaf:knows/(foaf:friend*)', pathData));
+
+      it('extends the path with a results cache', async () => {
+        expect(pathData.extendPath).toBeCalledTimes(1);
+        const args = pathData.extendPath.mock.calls[0];
+        expect(args).toHaveLength(1);
+        await expect(args[0].resultsCache).resolves.toBe(
+          (await pathData.propertyCache)[
+            '<http://xmlns.com/foaf/0.1/knows>/<http://xmlns.com/foaf/0.1/friend>*'
+          ]);
+      });
+
+      it('returns the extended path', () => {
+        expect(result).toBe(extendedPath);
+      });
+    });
+
+    describe('when accessing a cached path foaf:knows|(foaf:friend*)', () => {
+      let result;
+      beforeEach(() => result = resolver.resolve('foaf:knows/(foaf:friend*)', pathData));
+
+      it('extends the path with a results cache', async () => {
+        expect(pathData.extendPath).toBeCalledTimes(1);
+        const args = pathData.extendPath.mock.calls[0];
+        expect(args).toHaveLength(1);
+        await expect(args[0].resultsCache).resolves.toBe(
+          (await pathData.propertyCache)[
+            '<http://xmlns.com/foaf/0.1/knows>|<http://xmlns.com/foaf/0.1/friend>*'
+          ]);
+      });
+
+      it('returns the extended path', () => {
+        expect(result).toBe(extendedPath);
+      });
+    });
+
+    describe('when accessing a cached path foaf:knows|(foaf:friend?)', () => {
+      let result;
+      beforeEach(() => result = resolver.resolve('foaf:knows/(foaf:friend?)', pathData));
+
+      it('extends the path with a results cache', async () => {
+        expect(pathData.extendPath).toBeCalledTimes(1);
+        const args = pathData.extendPath.mock.calls[0];
+        expect(args).toHaveLength(1);
+        await expect(args[0].resultsCache).resolves.toBe(
+          (await pathData.propertyCache)[
+            '<http://xmlns.com/foaf/0.1/knows>|<http://xmlns.com/foaf/0.1/friend>?'
+          ]);
+      });
+
+      it('returns the extended path', () => {
+        expect(result).toBe(extendedPath);
+      });
+    });
+
+    describe('when accessing a cached path foaf:knows|(foaf:friend+)', () => {
+      let result;
+      beforeEach(() => result = resolver.resolve('foaf:knows|(foaf:friend+)', pathData));
+
+      it('extends the path with a results cache', async () => {
+        expect(pathData.extendPath).toBeCalledTimes(1);
+        const args = pathData.extendPath.mock.calls[0];
+        expect(args).toHaveLength(1);
+        await expect(args[0].resultsCache).resolves.toBe(
+          (await pathData.propertyCache)[
+            '<http://xmlns.com/foaf/0.1/knows>|<http://xmlns.com/foaf/0.1/friend>+'
+          ]);
+      });
+
+      it('returns the extended path', () => {
+        expect(result).toBe(extendedPath);
+      });
+    });
+
+    describe('when accessing a cached path foaf:friend+', () => {
+      let result;
+      beforeEach(() => result = resolver.resolve('foaf:friend+', pathData));
+
+      it('extends the path with a results cache', async () => {
+        expect(pathData.extendPath).toBeCalledTimes(1);
+        const args = pathData.extendPath.mock.calls[0];
+        expect(args).toHaveLength(1);
+        await expect(args[0].resultsCache).resolves.toBe(
+          (await pathData.propertyCache)[
+            '<http://xmlns.com/foaf/0.1/friend>+'
+          ]);
+      });
+
+      it('returns the extended path', () => {
+        expect(result).toBe(extendedPath);
+      });
+    });
+
+    describe('when accessing a cached path foaf:friend?', () => {
+      let result;
+      beforeEach(() => result = resolver.resolve('foaf:friend?', pathData));
+
+      it('extends the path with a results cache', async () => {
+        expect(pathData.extendPath).toBeCalledTimes(1);
+        const args = pathData.extendPath.mock.calls[0];
+        expect(args).toHaveLength(1);
+        await expect(args[0].resultsCache).resolves.toBe(
+          (await pathData.propertyCache)[
+            '<http://xmlns.com/foaf/0.1/friend>?'
+          ]);
+      });
+
+      it('returns the extended path', () => {
+        expect(result).toBe(extendedPath);
+      });
+    });
+
+    describe('when accessing a cached path foaf:knows/foaf:friend/foaf:employer', () => {
+      let result;
+      beforeEach(() => result = resolver.resolve('foaf:knows/(foaf:friend)/foaf:employer', pathData));
+
+      it('extends the path with a results cache', async () => {
+        expect(pathData.extendPath).toBeCalledTimes(1);
+        const args = pathData.extendPath.mock.calls[0];
+        expect(args).toHaveLength(1);
+        await expect(args[0].resultsCache).resolves.toBe(
+          (await pathData.propertyCache)[
+            '<http://xmlns.com/foaf/0.1/knows>/<http://xmlns.com/foaf/0.1/friend>/<http://xmlns.com/foaf/0.1/employer>'
+          ]);
+      });
+
+      it('returns the extended path', () => {
+        expect(result).toBe(extendedPath);
+      });
+    });
+
+    describe('when accessing a cached path foaf:knows/(foaf:friend*)/foaf:employer', () => {
+      let result;
+      beforeEach(() => result = resolver.resolve('foaf:knows/(foaf:friend*)/foaf:employer', pathData));
+
+      it('extends the path with a results cache', async () => {
+        expect(pathData.extendPath).toBeCalledTimes(1);
+        const args = pathData.extendPath.mock.calls[0];
+        expect(args).toHaveLength(1);
+        await expect(args[0].resultsCache).resolves.toBe(
+          (await pathData.propertyCache)[
+            '<http://xmlns.com/foaf/0.1/knows>/<http://xmlns.com/foaf/0.1/friend>*/<http://xmlns.com/foaf/0.1/employer>'
+          ]);
+      });
+
+      it('returns the extended path', () => {
+        expect(result).toBe(extendedPath);
+      });
+    });
+
+    describe('when accessing a cached path foaf:knows/(foaf:friend?)/foaf:employer', () => {
+      let result;
+      beforeEach(() => result = resolver.resolve('foaf:knows/(foaf:friend?)/foaf:employer', pathData));
+
+      it('extends the path with a results cache', async () => {
+        expect(pathData.extendPath).toBeCalledTimes(1);
+        const args = pathData.extendPath.mock.calls[0];
+        expect(args).toHaveLength(1);
+        await expect(args[0].resultsCache).resolves.toBe(
+          (await pathData.propertyCache)[
+            '<http://xmlns.com/foaf/0.1/knows>/<http://xmlns.com/foaf/0.1/friend>?/<http://xmlns.com/foaf/0.1/employer>'
+          ]);
+      });
+
+      it('returns the extended path', () => {
+        expect(result).toBe(extendedPath);
+      });
+    });
+
+    describe('when accessing a cached path foaf:knows/(foaf:friend+)/foaf:employer', () => {
+      let result;
+      beforeEach(() => result = resolver.resolve('foaf:knows/(foaf:friend+)/foaf:employer', pathData));
+
+      it('extends the path with a results cache', async () => {
+        expect(pathData.extendPath).toBeCalledTimes(1);
+        const args = pathData.extendPath.mock.calls[0];
+        expect(args).toHaveLength(1);
+        await expect(args[0].resultsCache).resolves.toBe(
+          (await pathData.propertyCache)[
+            '<http://xmlns.com/foaf/0.1/knows>/<http://xmlns.com/foaf/0.1/friend>+/<http://xmlns.com/foaf/0.1/employer>'
+          ]);
       });
 
       it('returns the extended path', () => {

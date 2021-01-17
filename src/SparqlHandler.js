@@ -181,7 +181,7 @@ export default class SparqlHandler {
     if (reverse)
       [subjectStrings, objectStrings] = [objectStrings, subjectStrings];
     const objects = objectStrings.join(', ');
-    const predicate = typeof predicateTerm === 'string' ? predicateTerm : `<${predicateTerm.value}>`;
+    const predicate = predicateTerm.termType === 'path' ? predicateTerm.value : `<${predicateTerm.value}>`;
     return subjectStrings.map(s => `${s} ${predicate} ${objects}.`);
   }
 }

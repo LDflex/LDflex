@@ -3,6 +3,7 @@ import JSONLDResolver from './JSONLDResolver';
 import ComplexPathResolver from './ComplexPathResolver';
 import defaultHandlers from './defaultHandlers';
 import { ContextParser } from 'jsonld-context-parser';
+import ContextProvider from './ContextProvider';
 
 /**
  * A PathFactory creates paths with default settings.
@@ -23,7 +24,11 @@ export default class PathFactory {
     // Prepare the resolvers
     const resolvers = (settings.resolvers || []).map(toResolver);
     if (settings.context) {
-      resolvers.push(new ComplexPathResolver(JSONLDResolver, settings.context));
+      const contextProvider = new ContextProvider(settings.context);
+      // The complex path resolver *must* run before the JSONLD
+      // resolver
+      resolvers.push(new ComplexPathResolver(contextProvider));
+      resolvers.push(new JSONLDResolver(contextProvider));
       settings.parsedContext = new ContextParser().parse(settings.context)
         .then(({ contextRaw }) => contextRaw);
     }

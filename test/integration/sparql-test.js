@@ -15,6 +15,7 @@ import ReplaceFunctionHandler from '../../src/ReplaceFunctionHandler';
 import JSONLDResolver from '../../src/JSONLDResolver';
 import ComplexPathResolver from '../../src/ComplexPathResolver';
 import { namedNode } from '@rdfjs/data-model';
+import ContextProvider from '../../src/ContextProvider';
 
 import context from '../context';
 import { deindent } from '../util';
@@ -48,8 +49,10 @@ describe('a query path with a path expression handler', () => {
     value: DataHandler.sync('subject', 'value'),
     termType: DataHandler.sync('subject', 'termType'),
   };
+  const contextProvider = new ContextProvider(context);
   const resolvers = [
-    new ComplexPathResolver(JSONLDResolver, context),
+    new ComplexPathResolver(contextProvider),
+    new JSONLDResolver(contextProvider),
   ];
   const subject = namedNode('https://example.org/#me');
 
@@ -316,7 +319,7 @@ describe('a query path with a path expression handler', () => {
     expect(query).toEqual(deindent(`
       SELECT ?result WHERE {
         <https://example.org/#me> <${FOAF}knows>/<${FOAF}givenName> ?result.
-      }  
+      }
     `));
   });
 
@@ -325,7 +328,7 @@ describe('a query path with a path expression handler', () => {
     expect(query).toEqual(deindent(`
       SELECT ?result WHERE {
         <https://example.org/#me> (<${FOAF}knows>/<${FOAF}givenName>)* ?result.
-      }  
+      }
     `));
   });
 
@@ -334,7 +337,7 @@ describe('a query path with a path expression handler', () => {
     expect(query).toEqual(deindent(`
       SELECT ?result WHERE {
         <https://example.org/#me> (<${FOAF}knows>/<${FOAF}givenName>)* ?result.
-      }  
+      }
     `));
   });
 
@@ -343,7 +346,7 @@ describe('a query path with a path expression handler', () => {
     expect(query).toEqual(deindent(`
       SELECT ?result WHERE {
         <https://example.org/#me> <${FOAF}knows> ?result.
-      }  
+      }
     `));
   });
 
@@ -352,7 +355,7 @@ describe('a query path with a path expression handler', () => {
     expect(query).toEqual(deindent(`
       SELECT ?result WHERE {
         <https://example.org/#me> <${FOAF}knows>|<${FOAF}employee> ?result.
-      }  
+      }
     `));
   });
 
@@ -362,7 +365,7 @@ describe('a query path with a path expression handler', () => {
     expect(query).toEqual(deindent(`
       SELECT ?result WHERE {
         <https://example.org/#me> (((<${FOAF}knows>|<${FOAF}employee>)*)/(<${FOAF}friend>?))+ ?result.
-      }  
+      }
     `));
   });
 });
