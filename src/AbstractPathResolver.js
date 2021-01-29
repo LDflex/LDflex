@@ -34,13 +34,9 @@ export default class AbstractPathResolver {
 
   /**
    * The JSON-LD resolver supports all string properties.
-   * Other resolvers may apply additional conditions through
-   * the `runSupports` method.
    */
   supports(property) {
-    return typeof property === 'string' &&
-      (typeof this.runSupports !== 'function' ||
-      this.runSupports(property));
+    return typeof property === 'string';
   }
 
   /**
@@ -50,7 +46,7 @@ export default class AbstractPathResolver {
    * Example usage: person.friends.firstName
    */
   resolve(property, pathData) {
-    const predicate = lazyThenable(() => this.runExpandProperty(property));
+    const predicate = lazyThenable(() => this.expandProperty(property));
     const reverse = lazyThenable(() => this._context.then(({ contextRaw }) =>
       contextRaw[property] && contextRaw[property]['@reverse']));
     const resultsCache = this.getResultsCache(pathData, predicate, reverse);
@@ -74,11 +70,11 @@ export default class AbstractPathResolver {
     return path;
   }
 
-  async runExpandProperty(property) {
+  async expandProperty(property) {
     // JavaScript requires keys containing colons to be quoted,
     // so prefixed names would need to written as path['foaf:knows'].
     // We thus allow writing path.foaf_knows or path.foaf$knows instead.
-    return this.expandProperty(property.replace(/^([a-z][a-z0-9]*)[_$]/i, '$1:'));
+    return this.lookupProperty(property.replace(/^([a-z][a-z0-9]*)[_$]/i, '$1:'));
   }
 
   /**

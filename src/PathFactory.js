@@ -25,8 +25,6 @@ export default class PathFactory {
     const resolvers = (settings.resolvers || []).map(toResolver);
     if (settings.context) {
       const contextProvider = new ContextProvider(settings.context);
-      // The complex path resolver *must* run before the JSONLD
-      // resolver
       resolvers.push(new ComplexPathResolver(contextProvider));
       resolvers.push(new JSONLDResolver(contextProvider));
       settings.parsedContext = new ContextParser().parse(settings.context)

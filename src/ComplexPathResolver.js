@@ -31,23 +31,23 @@ export default class ComplexPathResolver extends AbstractPathResolver {
    * 1. /(^|[/|])[\^]/
    *    Tests for reverse (^) key at start of string or after '/', '|'
    * 2. /([a-z:>)])[\*\+\?]/i
-   *    Tests for length modififier
+   *    Tests for length modifier
    *    e.g. ex:test*, <http://example.org/test>?, (ex:test)+
    * 3. /([)>\*\+\?]|[a-z]*[:][a-z]*)[|/]([<(\^]|[a-z]*[:][a-z]*)/i
    *    Tests for '/' and '|' operators *in* a path
    * 4. /((^[(<])|([)>]$))/
    *    Tests for '(', '<', at the start of a string and ')', '>' at the end of a string
    */
-  runSupports(property) {
-    return (/((^|[/|])[\^])|(([a-z:>)])[*+?])|([)>*+?]|[a-z]*[:][a-z]*)[|/]([<(^]|[a-z]*[:][a-z]*)|(((^[(<])|([)>]$)))/i)
-      .test(property);
+  supports(property) {
+    return super.supports(property) &&
+      (/((^|[/|])[\^])|(([a-z:>)])[*+?])|([)>*+?]|[a-z]*[:][a-z]*)[|/]([<(^]|[a-z]*[:][a-z]*)|(((^[(<])|([)>]$)))/i)
+        .test(property);
   }
 
   /**
-   * Takes string and resolves it to a predicate or
-   * sparql path
+   * Takes string and resolves it to a predicate or SPARQL path
    */
-  async expandProperty(property) {
+  async lookupProperty(property) {
     // Expand the property to a full IRI
     const context = await this._context;
     const prefixes = {};
