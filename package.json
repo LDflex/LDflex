@@ -22,7 +22,8 @@
   ],
   "dependencies": {
     "@rdfjs/data-model": "^1.1.2",
-    "jsonld-context-parser": "^2.0.0"
+    "jsonld-context-parser": "^2.0.0",
+    "sparqlalgebrajs": "^2.4.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.8.4",

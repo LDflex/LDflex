@@ -13,7 +13,9 @@ import SubjectHandler from '../../src/SubjectHandler';
 import ThenHandler from '../../src/ThenHandler';
 import ReplaceFunctionHandler from '../../src/ReplaceFunctionHandler';
 import JSONLDResolver from '../../src/JSONLDResolver';
+import ComplexPathResolver from '../../src/ComplexPathResolver';
 import { namedNode } from '@rdfjs/data-model';
+import ContextProvider from '../../src/ContextProvider';
 
 import context from '../context';
 import { deindent } from '../util';
@@ -47,8 +49,10 @@ describe('a query path with a path expression handler', () => {
     value: DataHandler.sync('subject', 'value'),
     termType: DataHandler.sync('subject', 'termType'),
   };
+  const contextProvider = new ContextProvider(context);
   const resolvers = [
-    new JSONLDResolver(context),
+    new ComplexPathResolver(contextProvider),
+    new JSONLDResolver(contextProvider),
   ];
   const subject = namedNode('https://example.org/#me');
 
@@ -308,5 +312,60 @@ describe('a query path with a path expression handler', () => {
         <https://example.org/#me> <${FOAF}knows> ?v0.
         ?v0 <${FOAF}knows> ?knows.
       }`));
+  });
+
+  it('resolves sparql sequence path expressions as predicates', async () => {
+    const query = await person[`<${FOAF}knows>/<${FOAF}givenName>`].sparql;
+    expect(query).toEqual(deindent(`
+      SELECT ?result WHERE {
+        <https://example.org/#me> <${FOAF}knows>/<${FOAF}givenName> ?result.
+      }
+    `));
+  });
+
+  it('resolves sparql sequence path expressions as predicates and resolves path modifiers', async () => {
+    const query = await person[`(<${FOAF}knows>/<${FOAF}givenName>)*`].sparql;
+    expect(query).toEqual(deindent(`
+      SELECT ?result WHERE {
+        <https://example.org/#me> (<${FOAF}knows>/<${FOAF}givenName>)* ?result.
+      }
+    `));
+  });
+
+  it('resolves prefixes from context in complex paths', async () => {
+    const query = await person['(foaf:knows/foaf:givenName)*'].sparql;
+    expect(query).toEqual(deindent(`
+      SELECT ?result WHERE {
+        <https://example.org/#me> (<${FOAF}knows>/<${FOAF}givenName>)* ?result.
+      }
+    `));
+  });
+
+  it('complex path that is just angular brackets', async () => {
+    const query = await person[`<${FOAF}knows>`].sparql;
+    expect(query).toEqual(deindent(`
+      SELECT ?result WHERE {
+        <https://example.org/#me> <${FOAF}knows> ?result.
+      }
+    `));
+  });
+
+  it('complex alternative path', async () => {
+    const query = await person[`<${FOAF}knows>|<${FOAF}employee>`].sparql;
+    expect(query).toEqual(deindent(`
+      SELECT ?result WHERE {
+        <https://example.org/#me> <${FOAF}knows>|<${FOAF}employee> ?result.
+      }
+    `));
+  });
+
+
+  it('extra complex path test', async () => {
+    const query = await person[`((<${FOAF}knows>|<${FOAF}employee>)*/foaf:friend?)+`].sparql;
+    expect(query).toEqual(deindent(`
+      SELECT ?result WHERE {
+        <https://example.org/#me> (((<${FOAF}knows>|<${FOAF}employee>)*)/(<${FOAF}friend>?))+ ?result.
+      }
+    `));
   });
 });
