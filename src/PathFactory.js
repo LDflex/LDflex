@@ -6,6 +6,10 @@ import defaultHandlers from './defaultHandlers';
 import { ContextParser } from 'jsonld-context-parser';
 import ContextProvider from './ContextProvider';
 
+const DEFAULT_RESOLVERS = [
+  new LanguageResolver(),
+];
+
 /**
  * A PathFactory creates paths with default settings.
  */
@@ -23,9 +27,7 @@ export default class PathFactory {
       handlers[key] = toHandler(handlers[key]);
 
     // Prepare the resolvers
-    const resolvers = (settings.resolvers || [
-      new LanguageResolver(),
-    ]).map(toResolver);
+    const resolvers = (settings.resolvers || DEFAULT_RESOLVERS).map(toResolver);
     if (settings.context) {
       const contextProvider = new ContextProvider(settings.context);
       resolvers.push(new ComplexPathResolver(contextProvider));
