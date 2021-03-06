@@ -139,6 +139,11 @@ The path can also continue after the sort:
 will sort the friends based on the label of their country,
 and then return their names.
 
+## Additional Handlers
+
+The following libraries provide handlers that extend the functionality of LDflex:
+ - [async-iteration-handlers](https://github.com/LDflex/async-iteration-handlers) Provides methods such as `.map`, `.filter` and `.reduce` for the async-iterable results returned by LDflex.
+
 ## License
 ©2018–present
 [Ruben Verborgh](https://ruben.verborgh.org/),
