@@ -323,6 +323,24 @@ describe('a query path with a path expression handler', () => {
     `));
   });
 
+  it('resolves inverse path expressions', async () => {
+    const query = await person[`^<${FOAF}knows>`].sparql;
+    expect(query).toEqual(deindent(`
+      SELECT ?result WHERE {
+        <https://example.org/#me> ^<${FOAF}knows> ?result.
+      }
+    `));
+  });
+
+  it('resolves inverse path expressions with prefix', async () => {
+    const query = await person['^foaf:knows'].sparql;
+    expect(query).toEqual(deindent(`
+      SELECT ?knows WHERE {
+        <https://example.org/#me> ^<${FOAF}knows> ?knows.
+      }
+    `));
+  });
+
   it('resolves sparql sequence path expressions as predicates and resolves path modifiers', async () => {
     const query = await person[`(<${FOAF}knows>/<${FOAF}givenName>)*`].sparql;
     expect(query).toEqual(deindent(`
