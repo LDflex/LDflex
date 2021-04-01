@@ -74,6 +74,11 @@ describe('a ComplexPathResolver instance with a context', () => {
         .toEqual({ termType: 'path', value: '<http://xmlns.com/foaf/0.1/knows>*' });
     });
 
+    it('expands knows to ^foaf:knows', async () => {
+      expect(await resolver.expandProperty('^foaf:knows'))
+        .toEqual({ termType: 'path', value: '^<http://xmlns.com/foaf/0.1/knows>' });
+    });
+
     it('expands knows to foaf:knows*/foaf:friend+', async () => {
       expect(await resolver.expandProperty('foaf:knows*/foaf:friend+'))
         .toEqual({ termType: 'path', value: '<http://xmlns.com/foaf/0.1/knows>*/<http://xmlns.com/foaf/0.1/friend>+' });
@@ -92,6 +97,28 @@ describe('a ComplexPathResolver instance with a context', () => {
     it('errors when expanding a variable property', async () => {
       await expect(resolver.expandProperty('?p')).rejects
         .toThrow(new Error('The Complex Path Resolver cannot expand the \'?p\' path'));
+    });
+  });
+
+  describe('applying unary operators to single IRI', () => {
+    it('*', async () => {
+      expect(await resolver.expandProperty('<http://xmlns.com/foaf/0.1/knows>*'))
+        .toEqual({ termType: 'path', value: '<http://xmlns.com/foaf/0.1/knows>*' });
+    });
+
+    it('+', async () => {
+      expect(await resolver.expandProperty('<http://xmlns.com/foaf/0.1/knows>+'))
+        .toEqual({ termType: 'path', value: '<http://xmlns.com/foaf/0.1/knows>+' });
+    });
+
+    it('?', async () => {
+      expect(await resolver.expandProperty('<http://xmlns.com/foaf/0.1/knows>?'))
+        .toEqual({ termType: 'path', value: '<http://xmlns.com/foaf/0.1/knows>?' });
+    });
+
+    it('^', async () => {
+      expect(await resolver.expandProperty('^<http://xmlns.com/foaf/0.1/knows>'))
+        .toEqual({ termType: 'path', value: '^<http://xmlns.com/foaf/0.1/knows>' });
     });
   });
 
