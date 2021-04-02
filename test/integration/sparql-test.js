@@ -395,6 +395,48 @@ describe('a query path with a path expression handler', () => {
     `));
   });
 
+  it('complex inverse and extended sequence path', async () => {
+    const query = await person[`(^<${FOAF}knows>)/(^<${FOAF}employee>)/(^<${FOAF}employee>)`].sparql;
+    expect(query).toEqual(deindent(`
+      SELECT ?result WHERE {
+        <https://example.org/#me> ^<${FOAF}knows>/^<${FOAF}employee>/^<${FOAF}employee> ?result.
+      }
+    `));
+  });
+
+  it('mixed complex/inverse and extended sequence path(s)', async () => {
+    const queryOne = await person[`(^<${FOAF}knows>)/(<${FOAF}knows>)/(^<${FOAF}employee>)/(^<${FOAF}employee>)`].sparql;
+    const queryTwo = await person[`(^<${FOAF}knows>)/(^<${FOAF}knows>)/(^<${FOAF}employee>)/(^<${FOAF}employee>)`].sparql;
+    const queryThree = await person[`(^<${FOAF}knows>)/(^<${FOAF}knows>)/(^<${FOAF}employee>)/(<${FOAF}employee>)`].sparql;
+    const queryFour = await person[`(^<${FOAF}knows>)/(^<${FOAF}knows>)/(<${FOAF}employee>)/(<${FOAF}employee>)`].sparql;
+    const queryFive = await person[`(<${FOAF}knows>)/(^<${FOAF}knows>)/(<${FOAF}employee>)/(<${FOAF}employee>)`].sparql;
+    expect(queryOne).toEqual(deindent(`
+      SELECT ?result WHERE {
+        <https://example.org/#me> ^<${FOAF}knows>/<${FOAF}knows>/^<${FOAF}employee>/^<${FOAF}employee> ?result.
+      }
+    `));
+    expect(queryTwo).toEqual(deindent(`
+      SELECT ?result WHERE {
+        <https://example.org/#me> ^<${FOAF}knows>/^<${FOAF}knows>/^<${FOAF}employee>/^<${FOAF}employee> ?result.
+      }
+    `));
+    expect(queryThree).toEqual(deindent(`
+      SELECT ?result WHERE {
+        <https://example.org/#me> ^<${FOAF}knows>/^<${FOAF}knows>/^<${FOAF}employee>/<${FOAF}employee> ?result.
+      }
+    `));
+    expect(queryFour).toEqual(deindent(`
+      SELECT ?result WHERE {
+        <https://example.org/#me> ^<${FOAF}knows>/^<${FOAF}knows>/<${FOAF}employee>/<${FOAF}employee> ?result.
+      }
+    `));
+    expect(queryFive).toEqual(deindent(`
+      SELECT ?result WHERE {
+        <https://example.org/#me> <${FOAF}knows>/^<${FOAF}knows>/<${FOAF}employee>/<${FOAF}employee> ?result.
+      }
+    `));
+  });
+
   it('complex inverse and paths in sequence', async () => {
     const query = await person[`^<${FOAF}knows>`][`^<${FOAF}employee>`].sparql;
     expect(query).toEqual(deindent(`
