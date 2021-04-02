@@ -12,8 +12,18 @@ function writePathAlgebra(algebra) {
   // foaf:friend/foaf:givenName into a bgp token rather than a path token
   if (algebra.type === 'bgp' &&
       algebra.patterns.every(quad => quad.predicate.termType === 'NamedNode') &&
-      algebra.patterns.length >= 0)
-    return algebra.patterns.map(quad => `<${quad.predicate.value}>`).join('/');
+      algebra.patterns.length >= 0) {
+    let lastObject = 's';
+    return algebra.patterns.map(quad => {
+      const predicate = `<${quad.predicate.value}>`;
+      if (quad.object.value === lastObject) {
+        lastObject = quad.subject.value;
+        return `^${predicate}`;
+      }
+      lastObject = quad.object.value;
+      return predicate;
+    }).join('/');
+  }
   if (algebra.type === 'path') {
     // Note - this could be made cleaner if sparqlalgebrajs exported
     // the translatePathComponent function
@@ -68,7 +78,10 @@ export default class ComplexPathResolver extends AbstractPathResolver {
 
     if (algebra.input.type === 'bgp' &&
       algebra.input.patterns.length === 1 &&
-      algebra.input.patterns[0].predicate.termType === 'NamedNode')
+      algebra.input.patterns[0].predicate.termType === 'NamedNode' &&
+      // Test to make sure the path is not an inverse path
+      // in which case the subject and object would be switched
+      algebra.input.patterns[0].subject.value === 's')
       return namedNode(algebra.input.patterns[0].predicate.value);
 
     try {

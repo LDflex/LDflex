@@ -6,7 +6,7 @@ describe('a ComplexPathResolver instance', () => {
   let resolver;
   beforeAll(() => resolver = new ComplexPathResolver());
 
-  it('does not support strings that are not complext paths', () => {
+  it('does not support strings that are not complex paths', () => {
     expect(resolver.supports('foo')).toBe(false);
   });
 
@@ -58,7 +58,7 @@ describe('Error handling on complex paths without prefixes defined', () => {
   let resolver;
   beforeAll(() => resolver = new ComplexPathResolver());
 
-  it('does not support strings that are not complext paths', async () => {
+  it('does not support strings that are not complex paths', async () => {
     await expect(() => resolver.expandProperty('foaf:friend*')).rejects
       .toThrow('The Complex Path Resolver cannot expand the \'foaf:friend*\' path');
   });
