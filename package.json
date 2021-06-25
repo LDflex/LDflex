@@ -46,7 +46,8 @@
     "lint:fix": "eslint src test --fix",
     "prepublishOnly": "npm run build",
     "test": "npm run lint && npm run jest -- --collectCoverage",
-    "test:dev": "npm run jest -- --watch"
+    "test:dev": "npm run jest -- --watch",
+    "prepare": "husky install"
   },
   "release": {
     "branches": [
