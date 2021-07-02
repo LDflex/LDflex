@@ -1,7 +1,0 @@
-@prefix ex: <http://example.org/#> .
-
-ex:Armin ex:literalAttribute 10, 12, 6, 1 ;
-  ex:anotherAttribute 1, 2, 3, 4, 5 .
-
-ex:Jesse ex:literalAttribute 1, 3, 7, 2, 9, 4 ;
-  ex:anotherAttribute 10, 12, 2, 4 .
