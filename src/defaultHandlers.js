@@ -1,5 +1,5 @@
 import AsyncIteratorHandler from './AsyncIteratorHandler';
-import { listHandler, containerHandler, collectionsHandler } from './CollectionsHandler';
+import { listHandler, containerHandler, collectionHandler } from './CollectionsHandler';
 import DataHandler from './DataHandler';
 import DeleteFunctionHandler from './DeleteFunctionHandler';
 import ExecuteQueryHandler from './ExecuteQueryHandler';
@@ -35,10 +35,11 @@ export default {
   [Symbol.asyncIterator]: new AsyncIteratorHandler(),
 
   // Add utilities for collections
-  collection: collectionsHandler(),
+  // collection: collectionHandler(),
   list: listHandler(),
   container: containerHandler(false),
   containerAsSet: containerHandler(true),
+  collection: collectionHandler(),
 
   // Add read and query functionality
   get: new GetHandler(),

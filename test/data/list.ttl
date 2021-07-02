@@ -1,0 +1,3 @@
+@prefix ex: <http://example.org/#> .
+
+ex:Jesse ex:myList ( 1 2 3 4 5 ) .
