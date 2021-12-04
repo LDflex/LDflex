@@ -7,7 +7,7 @@ import { namedNode } from '@rdfjs/data-model';
  */
 function writePathAlgebra(algebra) {
   if (algebra.type === 'join')
-    return `${writePathAlgebra(algebra.left)}/${writePathAlgebra(algebra.right)}`;
+    return algebra.input.map(x => writePathAlgebra(x)).join('/');
   // The algebra library turns sequential path expressions like
   // foaf:friend/foaf:givenName into a bgp token rather than a path token
   if (algebra.type === 'bgp' &&
