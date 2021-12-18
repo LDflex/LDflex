@@ -4,7 +4,7 @@
     node: true,
   },
   extends: eslint:recommended,
-  parser: babel-eslint,
+  parser: "@babel/eslint-parser",
   rules: {
     // Best Practices
     accessor-pairs: error,
