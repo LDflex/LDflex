@@ -156,6 +156,5 @@ The following libraries provide handlers that extend the functionality of LDflex
 ## License
 ©2018–present
 [Ruben Verborgh](https://ruben.verborgh.org/),
-[Ruben Taelman](https://www.rubensworks.net/),
-[Jesse Wright](https://github.com/jeswr/).
+[Ruben Taelman](https://www.rubensworks.net/).
 [MIT License](https://github.com/LDflex/LDflex/blob/master/LICENSE.md).
