@@ -30,7 +30,7 @@ export function containerHandler(set) {
   });
 }
 
-// TODO: Discuass handling of setting values
+// TODO: Discuss handling of setting values
 export function collectionHandler() {
   return handler(async (pathData, path) => {
     // TODO: Handle cases where multiple classes may be present (e.g. if inferencing is on)
