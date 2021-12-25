@@ -76,6 +76,18 @@ describe('Testing .list', () => {
     expect((await person['ex:myList'].list()).map(x => x.toPrimitive())).toEqual([1, 2, 3, 4, 5]);
   });
 
+  it('.list (with type) Should return a list in the correct order (with subject resolved)', async () => {
+    expect(await (await person['ex:myList2']).list()).toBeInstanceOf(Array);
+    expect(await (await person['ex:myList2']).list()).toHaveLength(5);
+    expect((await (await person['ex:myList2']).list()).map(x => x.toPrimitive())).toEqual([1, 2, 3, 4, 5]);
+  });
+
+  it('.list (with type) Should return a list in the correct order (with subject unresolved)', async () => {
+    expect(await person['ex:myList2'].list()).toBeInstanceOf(Array);
+    expect(await person['ex:myList2'].list()).toHaveLength(5);
+    expect((await person['ex:myList2'].list()).map(x => x.toPrimitive())).toEqual([1, 2, 3, 4, 5]);
+  });
+
   it('.collection Should return a list in the correct order (with subject resolved)', async () => {
     expect(await (await person['ex:myList2']).collection()).toBeInstanceOf(Array);
     expect(await (await person['ex:myList2']).collection()).toHaveLength(5);
