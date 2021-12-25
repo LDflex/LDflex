@@ -4,7 +4,7 @@ const RDF = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#';
 
 // TODO: Handle non-list entities
 export function listHandler() {
-  return handler(async (_, path) => {
+  return handler((_, path) => async () => {
     let _path = await path;
     const list = [];
     while (`${_path}` !== `${RDF}nil`) {
@@ -20,7 +20,7 @@ export function listHandler() {
  * @returns An RDF collection as an array or set
  */
 export function containerHandler(set) {
-  return handler(async (_, path) => {
+  return handler((_, path) => async () => {
     let container = [];
     let elem;
     let count = 0;
@@ -35,17 +35,17 @@ export function containerHandler(set) {
 
 // TODO: Discuss handling of setting values
 export function collectionHandler() {
-  return handler(async (pathData, path) => {
+  return handler((pathData, path) => async () => {
     // TODO: Handle cases where multiple classes may be present (e.g. if inferencing is on)
     switch (`${await path[`${RDF}type`]}`) {
     case `${RDF}List`:
-      return listHandler().handle(pathData, path);
+      return listHandler().handle(pathData, path)();
     case `${RDF}Bag`:
-      return containerHandler(true).handle(pathData, path);
+      return containerHandler(true).handle(pathData, path)();
     case `${RDF}Alt`:
     case `${RDF}Seq`:
     case `${RDF}Container`:
-      return containerHandler(false).handle(pathData, path);
+      return containerHandler(false).handle(pathData, path)();
     default:
       // In this case none of the appropriate containers apply
       return pathData.subject;

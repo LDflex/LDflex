@@ -44,31 +44,31 @@ describe('Testing .list', () => {
   const factory = new PathFactory({ context, queryEngine });
   const person = factory.create({ subject: Jesse });
   it('.list Should return a list in the correct order (with subject resolved)', async () => {
-    expect(await (await person['ex:myList']).list).toBeInstanceOf(Array);
-    expect(await (await person['ex:myList']).list).toHaveLength(5);
-    expect((await (await person['ex:myList']).list).map(x => x.toPrimitive())).toEqual([1, 2, 3, 4, 5]);
+    expect(await (await person['ex:myList']).list()).toBeInstanceOf(Array);
+    expect(await (await person['ex:myList']).list()).toHaveLength(5);
+    expect((await (await person['ex:myList']).list()).map(x => x.toPrimitive())).toEqual([1, 2, 3, 4, 5]);
   });
 
   it('.list Should return a list in the correct order (with subject unresolved)', async () => {
-    expect(await person['ex:myList'].list).toBeInstanceOf(Array);
-    expect(await person['ex:myList'].list).toHaveLength(5);
-    expect((await person['ex:myList'].list).map(x => x.toPrimitive())).toEqual([1, 2, 3, 4, 5]);
+    expect(await person['ex:myList'].list()).toBeInstanceOf(Array);
+    expect(await person['ex:myList'].list()).toHaveLength(5);
+    expect((await person['ex:myList'].list()).map(x => x.toPrimitive())).toEqual([1, 2, 3, 4, 5]);
   });
 
   it('.container Should return a list in the correct order (with subject resolved)', async () => {
-    expect(await (await person['ex:mySeq']).container).toBeInstanceOf(Array);
-    expect(await (await person['ex:mySeq']).container).toHaveLength(4);
-    expect((await (await person['ex:mySeq']).container).map(x => x.toPrimitive())).toEqual([0, 1, 2, 3]);
+    expect(await (await person['ex:mySeq']).container()).toBeInstanceOf(Array);
+    expect(await (await person['ex:mySeq']).container()).toHaveLength(4);
+    expect((await (await person['ex:mySeq']).container()).map(x => x.toPrimitive())).toEqual([0, 1, 2, 3]);
   });
 
   it('.container Should return a list in the correct order (with subject unresolved)', async () => {
-    expect(await person['ex:mySeq'].container).toBeInstanceOf(Array);
-    expect(await person['ex:mySeq'].container).toHaveLength(4);
-    expect((await person['ex:mySeq'].container).map(x => x.toPrimitive())).toEqual([0, 1, 2, 3]);
+    expect(await person['ex:mySeq'].container()).toBeInstanceOf(Array);
+    expect(await person['ex:mySeq'].container()).toHaveLength(4);
+    expect((await person['ex:mySeq'].container()).map(x => x.toPrimitive())).toEqual([0, 1, 2, 3]);
   });
 
   it('.containerAsSet Should return a list in the correct order (with subject resolved)', async () => {
-    const r = await (await person['ex:mySeq']).containerAsSet;
+    const r = await (await person['ex:mySeq']).containerAsSet();
     expect(r).toBeInstanceOf(Set);
     expect(r.size).toEqual(4);
     const arr = [];
@@ -79,7 +79,7 @@ describe('Testing .list', () => {
   });
 
   it('.containerAsSet Should return a list in the correct order (with subject unresolved)', async () => {
-    const r = await person['ex:mySeq'].containerAsSet;
+    const r = await person['ex:mySeq'].containerAsSet();
     expect(r).toBeInstanceOf(Set);
     expect(r.size).toEqual(4);
     const arr = [];
@@ -90,31 +90,31 @@ describe('Testing .list', () => {
   });
 
   it('.collection Should return a list in the correct order (with subject resolved)', async () => {
-    expect(await (await person['ex:mySeq']).collection).toBeInstanceOf(Array);
-    expect(await (await person['ex:mySeq']).collection).toHaveLength(4);
-    expect((await (await person['ex:mySeq']).collection).map(x => x.toPrimitive())).toEqual([0, 1, 2, 3]);
+    expect(await (await person['ex:mySeq']).collection()).toBeInstanceOf(Array);
+    expect(await (await person['ex:mySeq']).collection()).toHaveLength(4);
+    expect((await (await person['ex:mySeq']).collection()).map(x => x.toPrimitive())).toEqual([0, 1, 2, 3]);
   });
 
   it('.collection Should return a list in the correct order (with subject unresolved)', async () => {
-    expect(await person['ex:mySeq'].collection).toBeInstanceOf(Array);
-    expect(await person['ex:mySeq'].collection).toHaveLength(4);
-    expect((await person['ex:mySeq'].collection).map(x => x.toPrimitive())).toEqual([0, 1, 2, 3]);
+    expect(await person['ex:mySeq'].collection()).toBeInstanceOf(Array);
+    expect(await person['ex:mySeq'].collection()).toHaveLength(4);
+    expect((await person['ex:mySeq'].collection()).map(x => x.toPrimitive())).toEqual([0, 1, 2, 3]);
   });
 
   it('.collection Should return a list in the correct order (with subject resolved) (rdf:Alt)', async () => {
-    expect(await (await person['ex:myAlt']).collection).toBeInstanceOf(Array);
-    expect(await (await person['ex:myAlt']).collection).toHaveLength(4);
-    expect((await (await person['ex:myAlt']).collection).map(x => x.toPrimitive())).toEqual([0, 1, 2, 3]);
+    expect(await (await person['ex:myAlt']).collection()).toBeInstanceOf(Array);
+    expect(await (await person['ex:myAlt']).collection()).toHaveLength(4);
+    expect((await (await person['ex:myAlt']).collection()).map(x => x.toPrimitive())).toEqual([0, 1, 2, 3]);
   });
 
   it('.collection Should return a list in the correct order (with subject unresolved) (rdf:Alt)', async () => {
-    expect(await person['ex:myAlt'].collection).toBeInstanceOf(Array);
-    expect(await person['ex:myAlt'].collection).toHaveLength(4);
-    expect((await person['ex:myAlt'].collection).map(x => x.toPrimitive())).toEqual([0, 1, 2, 3]);
+    expect(await person['ex:myAlt'].collection()).toBeInstanceOf(Array);
+    expect(await person['ex:myAlt'].collection()).toHaveLength(4);
+    expect((await person['ex:myAlt'].collection()).map(x => x.toPrimitive())).toEqual([0, 1, 2, 3]);
   });
 
   it('.collection Should return a set in the correct order (with subject resolved)', async () => {
-    const r = await (await person['ex:myBag']).collection;
+    const r = await (await person['ex:myBag']).collection();
     expect(r).toBeInstanceOf(Set);
     expect(r.size).toEqual(4);
     const arr = [];
@@ -125,7 +125,7 @@ describe('Testing .list', () => {
   });
 
   it('.collection Should return a set in the correct order (with subject unresolved)', async () => {
-    const r = await person['ex:myBag'].collection;
+    const r = await person['ex:myBag'].collection();
     expect(r).toBeInstanceOf(Set);
     expect(r.size).toEqual(4);
     const arr = [];
