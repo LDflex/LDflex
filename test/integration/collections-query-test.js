@@ -19,6 +19,27 @@ describe('Testing .list', () => {
       @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 
       ex:Jesse ex:myList ( 1 2 3 4 5 ) ;
+               ex:myList2 [
+                a rdf:List ;
+                rdf:first 1 ;
+                rdf:rest [
+                  a rdf:List ;
+                  rdf:first 2 ;
+                  rdf:rest [
+                    a rdf:List ;
+                    rdf:first 3 ;
+                    rdf:rest [
+                      a rdf:List ;
+                      rdf:first 4 ;
+                      rdf:rest [
+                        a rdf:List ;
+                        rdf:first 5 ;
+                        rdf:rest rdf:nil ;
+                      ] ;
+                    ] ;
+                  ] ;
+                ] ;
+               ] ;
                ex:mySeq [ a rdf:Seq ;
                 rdf:_1 0 ;
                 rdf:_2 1 ;
@@ -55,6 +76,18 @@ describe('Testing .list', () => {
     expect((await person['ex:myList'].list()).map(x => x.toPrimitive())).toEqual([1, 2, 3, 4, 5]);
   });
 
+  it('.collection Should return a list in the correct order (with subject resolved)', async () => {
+    expect(await (await person['ex:myList2']).collection()).toBeInstanceOf(Array);
+    expect(await (await person['ex:myList2']).collection()).toHaveLength(5);
+    expect((await (await person['ex:myList2']).collection()).map(x => x.toPrimitive())).toEqual([1, 2, 3, 4, 5]);
+  });
+
+  it('.collection Should return a list in the correct order (with subject unresolved)', async () => {
+    expect(await person['ex:myList2'].collection()).toBeInstanceOf(Array);
+    expect(await person['ex:myList2'].collection()).toHaveLength(5);
+    expect((await person['ex:myList2'].collection()).map(x => x.toPrimitive())).toEqual([1, 2, 3, 4, 5]);
+  });
+
   it('.container Should return a list in the correct order (with subject resolved)', async () => {
     expect(await (await person['ex:mySeq']).container()).toBeInstanceOf(Array);
     expect(await (await person['ex:mySeq']).container()).toHaveLength(4);
@@ -89,13 +122,13 @@ describe('Testing .list', () => {
     expect(arr.sort()).toEqual([0, 1, 2, 3]);
   });
 
-  it('.collection Should return a list in the correct order (with subject resolved)', async () => {
+  it('.collection Should return a sequence in the correct order (with subject resolved)', async () => {
     expect(await (await person['ex:mySeq']).collection()).toBeInstanceOf(Array);
     expect(await (await person['ex:mySeq']).collection()).toHaveLength(4);
     expect((await (await person['ex:mySeq']).collection()).map(x => x.toPrimitive())).toEqual([0, 1, 2, 3]);
   });
 
-  it('.collection Should return a list in the correct order (with subject unresolved)', async () => {
+  it('.collection Should return a sequence in the correct order (with subject unresolved)', async () => {
     expect(await person['ex:mySeq'].collection()).toBeInstanceOf(Array);
     expect(await person['ex:mySeq'].collection()).toHaveLength(4);
     expect((await person['ex:mySeq'].collection()).map(x => x.toPrimitive())).toEqual([0, 1, 2, 3]);
@@ -133,5 +166,11 @@ describe('Testing .list', () => {
       arr.push(x.toPrimitive());
     });
     expect(arr.sort()).toEqual([0, 1, 2, 3]);
+  });
+
+  it('.collection Should return original object if no suitable collection is found', async () => {
+    expect(await person.collection()).toEqual(person);
+    expect(`${await person.collection()}`).toEqual('http://example.org/Jesse');
+    expect(await person['ex:undefined'].collection()).toEqual(undefined);
   });
 });

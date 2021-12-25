@@ -143,9 +143,14 @@ and then return their names.
 Handle `rdf:List`, `rdf:Bag`, `rdf:Alt`, `rdf:Seq` and `rdf:Container`.
 ```javascript
 (async publication => {
-  const authors = await publication['bibo:authorList'].list;
+  const authors = await publication['bibo:authorList'].list();
 })(ordonez_medellin_2014);
+```
 
+```javascript
+(async publication => {
+  const authors = await publication['bibo:authorList'].container();
+})(ordonez_medellin_2014);
 ```
 
 ## Additional Handlers

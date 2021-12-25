@@ -33,7 +33,6 @@ export function containerHandler(set) {
   });
 }
 
-// TODO: Discuss handling of setting values
 export function collectionHandler() {
   return handler((pathData, path) => async () => {
     // TODO: Handle cases where multiple classes may be present (e.g. if inferencing is on)
@@ -48,7 +47,7 @@ export function collectionHandler() {
       return containerHandler(false).handle(pathData, path)();
     default:
       // In this case none of the appropriate containers apply
-      return pathData.subject;
+      return path;
     }
   });
 }
