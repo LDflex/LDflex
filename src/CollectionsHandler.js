@@ -1,6 +1,6 @@
 import { handler } from './utils';
 
-const RDF = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#'
+const RDF = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#';
 
 // TODO: Handle non-list entities
 export function listHandler() {
