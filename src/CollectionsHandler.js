@@ -1,12 +1,15 @@
 import { handler } from './utils';
+
+const RDF = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#'
+
 // TODO: Handle non-list entities
 export function listHandler() {
   return handler(async (_, path) => {
     let _path = await path;
     const list = [];
-    while (`${_path}` !== 'http://www.w3.org/1999/02/22-rdf-syntax-ns#nil') {
-      list.push(_path['http://www.w3.org/1999/02/22-rdf-syntax-ns#first']);
-      _path = await _path['http://www.w3.org/1999/02/22-rdf-syntax-ns#rest'];
+    while (`${_path}` !== `${RDF}nil`) {
+      list.push(_path[`${RDF}first`]);
+      _path = await _path[`${RDF}rest`];
     }
     return Promise.all(list);
   });
@@ -22,7 +25,7 @@ export function containerHandler(set) {
     let elem;
     let count = 0;
     // eslint-disable-next-line no-cond-assign
-    while (elem = await path[`http://www.w3.org/1999/02/22-rdf-syntax-ns#_${++count}`])
+    while (elem = await path[`${RDF}_${++count}`])
       container.push(elem);
 
     container = await Promise.all(container);
@@ -34,14 +37,14 @@ export function containerHandler(set) {
 export function collectionHandler() {
   return handler(async (pathData, path) => {
     // TODO: Handle cases where multiple classes may be present (e.g. if inferencing is on)
-    switch (`${await path['http://www.w3.org/1999/02/22-rdf-syntax-ns#type']}`) {
-    case 'http://www.w3.org/1999/02/22-rdf-syntax-ns#List':
+    switch (`${await path[`${RDF}type`]}`) {
+    case `${RDF}List`:
       return listHandler().handle(pathData, path);
-    case 'http://www.w3.org/1999/02/22-rdf-syntax-ns#Bag':
+    case `${RDF}Bag`:
       return containerHandler(true).handle(pathData, path);
-    case 'http://www.w3.org/1999/02/22-rdf-syntax-ns#Alt':
-    case 'http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq':
-    case 'http://www.w3.org/1999/02/22-rdf-syntax-ns#Container':
+    case `${RDF}Alt`:
+    case `${RDF}Seq`:
+    case `${RDF}Container`:
       return containerHandler(false).handle(pathData, path);
     default:
       // In this case none of the appropriate containers apply
