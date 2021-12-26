@@ -7,7 +7,7 @@ export function listHandler() {
   return handler((_, path) => async () => {
     let _path = await path;
     const list = [];
-    while (`${_path}` !== `${RDF}nil`) {
+    while (_path.value !== `${RDF}nil`) {
       list.push(_path[`${RDF}first`]);
       _path = await _path[`${RDF}rest`];
     }
@@ -36,7 +36,7 @@ export function containerHandler(set) {
 export function collectionHandler() {
   return handler((pathData, path) => async () => {
     // TODO: Handle cases where multiple classes may be present (e.g. if inferencing is on)
-    switch (`${await path[`${RDF}type`]}`) {
+    switch ((await path[`${RDF}type`])?.value) {
     case `${RDF}List`:
       return listHandler().handle(pathData, path)();
     case `${RDF}Bag`:
