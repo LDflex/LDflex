@@ -7,11 +7,11 @@ export function listHandler() {
   return handler((_, path) => async () => {
     let _path = await path;
     const list = [];
-    while (_path.value !== `${RDF}nil`) {
+    while (_path && _path.value !== `${RDF}nil`) {
       list.push(_path[`${RDF}first`]);
       _path = await _path[`${RDF}rest`];
     }
-    return Promise.all(list);
+    return (await Promise.all(list)).filter(value => value !== undefined);
   });
 }
 

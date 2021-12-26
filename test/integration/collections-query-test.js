@@ -59,6 +59,25 @@ const store = new Store(
                   ] ;
                 ] ;
                ] ;
+               ex:myMalformedList2 [
+                a rdf:List ;
+                rdf:rest [
+                  a rdf:List ;
+                  rdf:first 2 ;
+                  rdf:rest [
+                    a rdf:List ;
+                    rdf:first 3 ;
+                    rdf:rest [
+                      a rdf:List ;
+                      rdf:first 4 ;
+                      rdf:rest [
+                        a rdf:List ;
+                        rdf:first 5 ;
+                      ] ;
+                    ] ;
+                  ] ;
+                ] ;
+               ] ;
                ex:mySeq [ a rdf:Seq ;
                 rdf:_1 0 ;
                 rdf:_2 1 ;
@@ -107,6 +126,30 @@ describe('Testing .list', () => {
     expect(await person['ex:myList2'].list()).toBeInstanceOf(Array);
     expect(await person['ex:myList2'].list()).toHaveLength(5);
     expect((await person['ex:myList2'].list()).map(x => x.toPrimitive())).toEqual([1, 2, 3, 4, 5]);
+  });
+
+  it('.list (with malformed list for no rdf:nil) Should return a list in the correct order (with subject resolved)', async () => {
+    expect(await (await person['ex:myMalformedList']).list()).toBeInstanceOf(Array);
+    expect(await (await person['ex:myMalformedList']).list()).toHaveLength(5);
+    expect((await (await person['ex:myMalformedList']).list()).map(x => x.toPrimitive())).toEqual([1, 2, 3, 4, 5]);
+  });
+
+  it('.list (with malformed list for no rdf:nil) Should return a list in the correct order (with subject unresolved)', async () => {
+    expect(await person['ex:myMalformedList'].list()).toBeInstanceOf(Array);
+    expect(await person['ex:myMalformedList'].list()).toHaveLength(5);
+    expect((await person['ex:myMalformedList'].list()).map(x => x.toPrimitive())).toEqual([1, 2, 3, 4, 5]);
+  });
+
+  it('.list (with malformed list for no rdf:first) Should return a list in the correct order (with subject resolved)', async () => {
+    expect(await (await person['ex:myMalformedList2']).list()).toBeInstanceOf(Array);
+    expect(await (await person['ex:myMalformedList2']).list()).toHaveLength(4);
+    expect((await (await person['ex:myMalformedList2']).list()).map(x => x.toPrimitive())).toEqual([2, 3, 4, 5]);
+  });
+
+  it('.list (with malformed list for no rdf:first) Should return a list in the correct order (with subject unresolved)', async () => {
+    expect(await person['ex:myMalformedList2'].list()).toBeInstanceOf(Array);
+    expect(await person['ex:myMalformedList2'].list()).toHaveLength(4);
+    expect((await person['ex:myMalformedList2'].list()).map(x => x.toPrimitive())).toEqual([2, 3, 4, 5]);
   });
 });
 
