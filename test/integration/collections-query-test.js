@@ -11,10 +11,9 @@ const context = {
   },
 };
 
-describe('Testing .list', () => {
-  const parser = new Parser();
-  const store = new Store(
-    parser.parse(`
+const parser = new Parser();
+const store = new Store(
+  parser.parse(`
       @prefix ex: <http://example.org/> .
       @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 
@@ -40,6 +39,26 @@ describe('Testing .list', () => {
                   ] ;
                 ] ;
                ] ;
+               ex:myMalformedList [
+                a rdf:List ;
+                rdf:first 1 ;
+                rdf:rest [
+                  a rdf:List ;
+                  rdf:first 2 ;
+                  rdf:rest [
+                    a rdf:List ;
+                    rdf:first 3 ;
+                    rdf:rest [
+                      a rdf:List ;
+                      rdf:first 4 ;
+                      rdf:rest [
+                        a rdf:List ;
+                        rdf:first 5 ;
+                      ] ;
+                    ] ;
+                  ] ;
+                ] ;
+               ] ;
                ex:mySeq [ a rdf:Seq ;
                 rdf:_1 0 ;
                 rdf:_2 1 ;
@@ -59,11 +78,13 @@ describe('Testing .list', () => {
                 rdf:_4 3 ;
                 ] .
     `)
-  );
-  const queryEngine = new ComunicaEngine(store);
+);
+const queryEngine = new ComunicaEngine(store);
 
-  const factory = new PathFactory({ context, queryEngine });
-  const person = factory.create({ subject: Jesse });
+const factory = new PathFactory({ context, queryEngine });
+const person = factory.create({ subject: Jesse });
+
+describe('Testing .list', () => {
   it('.list Should return a list in the correct order (with subject resolved)', async () => {
     expect(await (await person['ex:myList']).list()).toBeInstanceOf(Array);
     expect(await (await person['ex:myList']).list()).toHaveLength(5);
@@ -87,7 +108,9 @@ describe('Testing .list', () => {
     expect(await person['ex:myList2'].list()).toHaveLength(5);
     expect((await person['ex:myList2'].list()).map(x => x.toPrimitive())).toEqual([1, 2, 3, 4, 5]);
   });
+});
 
+describe('Testing .collection', () => {
   it('.collection Should return a list in the correct order (with subject resolved)', async () => {
     expect(await (await person['ex:myList2']).collection()).toBeInstanceOf(Array);
     expect(await (await person['ex:myList2']).collection()).toHaveLength(5);
