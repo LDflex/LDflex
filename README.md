@@ -139,6 +139,42 @@ The path can also continue after the sort:
 will sort the friends based on the label of their country,
 and then return their names.
 
+### Accessing collections
+Handle `rdf:List`, `rdf:Bag`, `rdf:Alt`, `rdf:Seq` and `rdf:Container`.
+
+For `rdf:List`s
+```javascript
+(async publication => {
+  // Returns an Array of Authors
+  const authors = await publication['bibo:authorList'].list();
+})(ordonez_medellin_2014);
+```
+
+For `rdf:Alt`, `rdf:Seq` and `rdf:Container`s
+```javascript
+(async data => {
+  // Returns an Array of elements
+  const elements = await data['ex:myContainer'].container();
+})(data);
+```
+
+For `rdf:Bag`s
+```javascript
+(async data => {
+  // Returns a Set of elements
+  const elements = await data['ex:myBag'].containerAsSet();
+})(data);
+```
+
+Alternatively, `.collection` can be used for *any* collection (i.e. `rdf:List`, `rdf:Bag`, `rdf:Alt`, `rdf:Seq` and `rdf:Container`) **provided the collection has the correct `rdf:type` annotation in the data source**
+
+```javascript
+(async publication => {
+  // Returns an Array of Authors
+  const authors = await publication['bibo:authorList'].collection();
+})(ordonez_medellin_2014);
+```
+
 ## Additional Handlers
 
 The following libraries provide handlers that extend the functionality of LDflex:
