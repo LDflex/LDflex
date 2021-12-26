@@ -35,7 +35,6 @@ export default {
   [Symbol.asyncIterator]: new AsyncIteratorHandler(),
 
   // Add utilities for collections
-  // collection: collectionHandler(),
   list: listHandler(),
   container: containerHandler(false),
   containerAsSet: containerHandler(true),
