@@ -2,7 +2,9 @@ import { handler } from './handlerUtil';
 
 const RDF = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#';
 
-// TODO: Handle non-list entities
+/**
+ * @returns An handler that returns an RDF list as an array
+ */
 export function listHandler() {
   return handler((_, path) => async () => {
     let _path = await path;
@@ -17,7 +19,7 @@ export function listHandler() {
 
 /**
  * @param {Boolean} set Emits set if True, array otherwise
- * @returns An RDF collection as an array or set
+ * @returns An handler that returns an RDF collection as an array or set
  */
 export function containerHandler(set) {
   return handler((_, path) => async () => {
@@ -33,6 +35,9 @@ export function containerHandler(set) {
   });
 }
 
+/**
+ * @returns An handler that returns an RDF collection according to its RDF:type
+ */
 export function collectionHandler() {
   return handler((pathData, path) => async () => {
     // TODO: Handle cases where multiple classes may be present (e.g. if inferencing is on)
