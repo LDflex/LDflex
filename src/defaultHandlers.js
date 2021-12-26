@@ -21,7 +21,7 @@ import SubjectsHandler from './SubjectsHandler';
 import ThenHandler from './ThenHandler';
 import ToArrayHandler from './ToArrayHandler';
 import { termToPrimitive } from './valueUtils';
-import { handler } from './utils';
+import { handler } from './handlerUtil';
 
 /**
  * A map with default property handlers.
