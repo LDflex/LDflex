@@ -64,6 +64,7 @@ const context = {
     "@vocab": "http://xmlns.com/foaf/0.1/",
     "friends": "knows",
     "label": "http://www.w3.org/2000/01/rdf-schema#label",
+    "rbn": "https://ruben.verborgh.org/profile/#"
   }
 };
 // The query engine and its source
@@ -173,6 +174,13 @@ Alternatively, `.collection` can be used for *any* collection (i.e. `rdf:List`, 
   // Returns an Array of Authors
   const authors = await publication['bibo:authorList'].collection();
 })(ordonez_medellin_2014);
+```
+
+### NamedNode URI utilities
+```js
+ruben.namespace // 'https://ruben.verborgh.org/profile/#'
+ruben.fragment // 'me'
+await ruben.prefix // 'rbn'
 ```
 
 ## Additional Handlers
