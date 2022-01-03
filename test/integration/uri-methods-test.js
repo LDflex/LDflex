@@ -27,7 +27,7 @@ describe('a query path with a path expression handler', () => {
     termType: DataHandler.sync('subject', 'termType'),
     prefix: prefixHandler,
     fragment: fragmentHandler,
-    namespace: namespaceHandler
+    namespace: namespaceHandler,
   };
   const contextProvider = new ContextProvider(context);
   const resolvers = [
@@ -65,7 +65,3 @@ describe('a query path with a path expression handler', () => {
     expect(await noSubject.prefix).toEqual(undefined);
   });
 });
-
-
-
-
