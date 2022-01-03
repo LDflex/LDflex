@@ -65,5 +65,5 @@ export {
   termToPrimitive,
   prefixHandler,
   namespaceHandler,
-  fragmentHandler
+  fragmentHandler,
 };
