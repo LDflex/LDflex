@@ -65,5 +65,5 @@ export {
   termToPrimitive,
   listHandler,
   containerHandler,
-  collectionHandler
+  collectionHandler,
 };
