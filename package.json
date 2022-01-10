@@ -21,7 +21,7 @@
     ".babelrc"
   ],
   "dependencies": {
-    "@rdfjs/data-model": "^2.0.0",
+    "@rdfjs/data-model": "^1.3.4",
     "jsonld-context-parser": "^2.1.5",
     "sparqlalgebrajs": "^4.0.1"
   },
