@@ -1,5 +1,5 @@
 import { fragmentHandler, namespaceHandler } from '../../src/URIHandler';
-import { blankNode, namedNode } from '@rdfjs/data-model'
+import { blankNode, namedNode } from '@rdfjs/data-model';
 
 describe('Testing namespace handler', () => {
   it('returns the namespace of a NamedNode subject', () => {
@@ -13,7 +13,7 @@ describe('Testing namespace handler', () => {
   it('Returns correct namespace for http://example.org#jesse/wright', () => {
     expect(namespaceHandler.handle({ subject: namedNode('http://example.org#jesse/wright') })).toBe('http://example.org#');
   });
-})
+});
 
 describe('Testing fragment handler', () => {
   it('returns the namespace of a NamedNode subject', () => {
@@ -27,5 +27,5 @@ describe('Testing fragment handler', () => {
   it('Returns correct namespace for http://example.org#jesse/wright', () => {
     expect(fragmentHandler.handle({ subject: namedNode('http://example.org#jesse/wright') })).toBe('jesse/wright');
   });
-})
+});
 

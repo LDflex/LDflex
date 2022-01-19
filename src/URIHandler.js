@@ -5,7 +5,8 @@ import { handler } from './handlerUtil';
  * occurs - then execute a callback with this index as the second arg
  */
 function breakIndex(term, cb) {
-  if (term?.termType !== 'NamedNode') return undefined;
+  if (term?.termType !== 'NamedNode')
+    return undefined;
   // Find the index of the last '#' or '/' if no '#' exists
   const hashIndex = term.value.lastIndexOf('#');
   return cb(term.value, hashIndex === -1 ? term.value.lastIndexOf('/') : hashIndex);
