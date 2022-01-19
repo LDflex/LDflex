@@ -1,26 +1,25 @@
 import { handler } from './handlerUtil';
 
-const NAMESPACE = /^[^#]*[#/]/;
-const FRAGMENT = /(?![/#])[^/#]*$/;
-
 /**
- * Match the value of a NamedNode against a regular expression
+ * Finds the index at which the break between the namespace and the
+ * occurs - then execute a callback with this index as the second arg
  */
-function match(term, pattern) {
-  return term?.termType === 'NamedNode' ?
-    pattern.exec(term.value)?.[0] :
-    undefined;
+function breakIndex(term, cb) {
+  if (term?.termType !== 'NamedNode') return undefined;
+  // Find the index of the last '#' or '/' if no '#' exists
+  const hashIndex = term.value.lastIndexOf('#');
+  return cb(term.value, hashIndex === -1 ? term.value.lastIndexOf('/') : hashIndex);
 }
 
 /**
  * Gets the namespace of a NamedNode subject
  */
-export const namespaceHandler = handler(({ subject }) => match(subject, NAMESPACE));
+export const namespaceHandler = handler(({ subject }) => breakIndex(subject, (str, index) => str.slice(0, index + 1)));
 
 /**
  * Gets the fragment of a NamedNode subject
  */
-export const fragmentHandler = handler(({ subject }) => match(subject, FRAGMENT));
+export const fragmentHandler = handler(({ subject }) => breakIndex(subject, (str, index) => str.slice(index + 1)));
 
 /**
  * Gets the prefix of a NamedNode subject
