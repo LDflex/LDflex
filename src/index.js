@@ -26,6 +26,7 @@ import defaultHandlers from './defaultHandlers';
 import { getFirstItem, iteratorFor } from './iterableUtils';
 import { lazyThenable, getThen, toIterablePromise } from './promiseUtils';
 import { isPlainObject, hasPlainObjectArgs, valueToTerm, termToPrimitive } from './valueUtils';
+import { prefixHandler, namespaceHandler, fragmentHandler } from './URIHandler';
 import { listHandler, containerHandler, collectionHandler } from './CollectionsHandler';
 
 export {
@@ -63,6 +64,9 @@ export {
   hasPlainObjectArgs,
   valueToTerm,
   termToPrimitive,
+  prefixHandler,
+  namespaceHandler,
+  fragmentHandler,
   listHandler,
   containerHandler,
   collectionHandler,

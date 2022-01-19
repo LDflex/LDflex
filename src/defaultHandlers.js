@@ -22,6 +22,7 @@ import ThenHandler from './ThenHandler';
 import ToArrayHandler from './ToArrayHandler';
 import { termToPrimitive } from './valueUtils';
 import { handler } from './handlerUtil';
+import { prefixHandler, namespaceHandler, fragmentHandler } from './URIHandler';
 
 /**
  * A map with default property handlers.
@@ -71,6 +72,11 @@ export default {
   toString:    DataHandler.syncFunction('subject', 'value'),
   valueOf:     subjectToPrimitiveHandler(),
   toPrimitive: subjectToPrimitiveHandler(),
+
+  // URI / namedNode handling
+  prefix: prefixHandler,
+  namespace: namespaceHandler,
+  fragment: fragmentHandler,
 
   // Add iteration helpers
   toArray: new ToArrayHandler(),
