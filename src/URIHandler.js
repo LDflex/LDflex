@@ -1,6 +1,6 @@
 import { handler } from './handlerUtil';
 
-const NAMESPACE = /^[^]*[#/]/;
+const NAMESPACE = /^[^#]*[#/]/;
 const FRAGMENT = /(?![/#])[^/#]*$/;
 
 /**
