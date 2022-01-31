@@ -116,6 +116,8 @@ async function showPerson(person) {
 
 ```
 
+
+
 ### Converting an LDflex expression into a SPARQL query
 ```javascript
 (async person => {
