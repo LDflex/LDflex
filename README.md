@@ -140,6 +140,25 @@ The path can also continue after the sort:
 will sort the friends based on the label of their country,
 and then return their names.
 
+### Modifying data
+
+```javascript
+// Add a new value
+await person['http://xmlns.com/foaf/0.1/name'].add(literal(name));
+await person['http://xmlns.com/foaf/0.1/nick'].add(literal(nickname));
+
+// Set a new value and override existing values
+await person['http://xmlns.com/foaf/0.1/name'].set(literal(name));
+await person['http://xmlns.com/foaf/0.1/nick'].set(literal(nickname));
+
+// Delete object values
+await person['http://xmlns.com/foaf/0.1/name'].delete();
+await person['http://xmlns.com/foaf/0.1/nick'].delete();
+
+// Replace object values
+await person['http://xmlns.com/foaf/0.1/name'].replace(literal(oldName), literal(name));
+```
+
 ### Accessing collections
 Handle `rdf:List`, `rdf:Bag`, `rdf:Alt`, `rdf:Seq` and `rdf:Container`.
 
