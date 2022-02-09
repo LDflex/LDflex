@@ -2,3 +2,5 @@ coverage
 lib
 module
 node_modules
+*-browser.js
+*-browser.js.*

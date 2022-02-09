@@ -33,12 +33,16 @@
     "@babel/preset-env": "^7.16.4",
     "@comunica/actor-init-sparql-file": "^1.22.3",
     "@ldflex/comunica": "^4.0.0",
+    "babel-loader": "^8.2.3",
     "eslint": "^8.4.0",
     "eslint-plugin-jest": "^26.0.0",
     "husky": "^7.0.4",
     "jest": "^27.4.3",
     "n3": "^1.12.2",
-    "semantic-release": "^19.0.2"
+    "node-polyfill-webpack-plugin": "^1.1.4",
+    "semantic-release": "^19.0.2",
+    "webpack": "^5.68.0",
+    "webpack-cli": "^4.9.2"
   },
   "scripts": {
     "build": "npm run build:lib && npm run build:module",
@@ -50,7 +54,8 @@
     "prepublishOnly": "npm run build",
     "test": "npm run jest -- --collectCoverage",
     "test:dev": "npm run jest -- --watch",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "browser": "npm run prepare && webpack --config webpack.config.js --mode production"
   },
   "release": {
     "branches": [
@@ -69,5 +74,8 @@
   },
   "publishConfig": {
     "access": "public"
+  },
+  "browser": {
+    "./index.js": "./index.js"
   }
 }
