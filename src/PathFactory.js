@@ -26,7 +26,7 @@ export default class PathFactory {
     if (settings.context) {
       const contextProvider = new ContextProvider(settings.context);
       resolvers.push(new ComplexPathResolver(contextProvider));
-      resolvers.push(new JSONLDResolver(contextProvider));
+      resolvers.push(this._jsonldResolver = new JSONLDResolver(contextProvider));
       settings.parsedContext = new ContextParser().parse(settings.context)
         .then(({ contextRaw }) => contextRaw);
     }
@@ -54,15 +54,19 @@ export default class PathFactory {
     if (typeof data === 'string')
       data = { subject: data };
 
-    // Apply defaults on settings and data
-    const _settings = { ...this._settings, ...settings };
+    // Apply defaults on data
     const _data = { ...this._data, ...data };
 
     // Resolve string subjects to namedNodes
-    if (typeof _data.subject === 'string')
-      _data.subject = new JSONLDResolver(_settings.context).lookupProperty(_data.subject);
+    if (typeof _data.subject === 'string') {
+      if (this._jsonldResolver)
+        _data.subject = this._jsonldResolver.lookupProperty(_data.subject);
+      else
+        throw new Error('Unable to resolve string subject - try providing a context to the PathFactory');
+    }
 
-    return this._pathProxy.createPath(_settings, _data);
+    // Apply defaults on settings
+    return this._pathProxy.createPath({ ...this._settings, ...settings }, _data);
   }
 }
 PathFactory.defaultHandlers = defaultHandlers;
