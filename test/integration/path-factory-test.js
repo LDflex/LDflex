@@ -130,3 +130,105 @@ describe('a PathFactory instance returning empty results', () => {
     });
   });
 });
+
+
+describe('a PathFactory instance resolveing timbl:#i', () => {
+  const queryEngine = createQueryEngine([]);
+  const factory = new PathFactory({ context, queryEngine });
+
+  let person;
+  beforeAll(() => {
+    person = factory.create('timbl:i');
+  });
+
+  describe('for a path with 1 link', () => {
+    it('resolves to the first result', async () => {
+      expect(`${await person}`)
+        .toBe('https://www.w3.org/People/Berners-Lee/card#i');
+    });
+
+    it('returns the first value', async () => {
+      expect(await person.value)
+        .toBe('https://www.w3.org/People/Berners-Lee/card#i');
+    });
+
+    it('returns an array of values', async () => {
+      expect(await person.values)
+        .toEqual(['https://www.w3.org/People/Berners-Lee/card#i']);
+    });
+  });
+
+  describe('for a path with 3 links', () => {
+    it('resolves to undefined', async () => {
+      expect(await person.friends.firstName)
+        .toBeUndefined();
+    });
+
+    it('returns undefined as value', async () => {
+      expect(await person.friends.firstName.value)
+        .toBeUndefined();
+    });
+
+    it('returns undefined as termType', async () => {
+      expect(await person.friends.firstName.termType)
+        .toBeUndefined();
+    });
+
+    it('returns an empty array of values', async () => {
+      expect(await person.friends.firstName.values)
+        .toEqual([]);
+    });
+  });
+});
+
+
+describe('a PathFactory instance resolving friends', () => {
+  const queryEngine = createQueryEngine([]);
+  const factory = new PathFactory({ context, queryEngine });
+
+  let person;
+  beforeAll(() => {
+    person = factory.create('friends');
+  });
+
+  describe('for a path with 1 link', () => {
+    it('resolves to the first result', async () => {
+      expect(`${await person}`)
+        .toBe('http://xmlns.com/foaf/0.1/knows');
+    });
+
+    it('returns the first value', async () => {
+      expect(await person.value)
+        .toBe('http://xmlns.com/foaf/0.1/knows');
+    });
+
+    it('returns an array of values', async () => {
+      expect(await person.values)
+        .toEqual(['http://xmlns.com/foaf/0.1/knows']);
+    });
+  });
+
+  describe('for a path with 3 links', () => {
+    it('resolves to undefined', async () => {
+      expect(await person.friends.firstName)
+        .toBeUndefined();
+    });
+
+    it('returns undefined as value', async () => {
+      expect(await person.friends.firstName.value)
+        .toBeUndefined();
+    });
+
+    it('returns undefined as termType', async () => {
+      expect(await person.friends.firstName.termType)
+        .toBeUndefined();
+    });
+
+    it('returns an empty array of values', async () => {
+      expect(await person.friends.firstName.values)
+        .toEqual([]);
+    });
+  });
+});
+
+

@@ -50,10 +50,17 @@ export default class PathFactory {
     if (!data)
       [data, settings] = [settings, null];
 
+    if (typeof data === 'string')
+      data = { subject: data };
+
+    const _settings = { ...this._settings, ...settings };
+    const _data = { ...this._data, ...data };
+
+    if (typeof _data.subject === 'string')
+      _data.subject = new JSONLDResolver(_settings.context).lookupProperty(_data.subject);
+
     // Apply defaults on settings and data
-    return this._pathProxy.createPath(
-      Object.assign(Object.create(null), this._settings, settings),
-      Object.assign(Object.create(null), this._data, data));
+    return this._pathProxy.createPath(_settings, _data);
   }
 }
 PathFactory.defaultHandlers = defaultHandlers;
