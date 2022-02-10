@@ -50,16 +50,18 @@ export default class PathFactory {
     if (!data)
       [data, settings] = [settings, null];
 
+    // Set data as subject if input as string
     if (typeof data === 'string')
       data = { subject: data };
 
+    // Apply defaults on settings and data
     const _settings = { ...this._settings, ...settings };
     const _data = { ...this._data, ...data };
 
+    // Resolve string subjects to namedNodes
     if (typeof _data.subject === 'string')
       _data.subject = new JSONLDResolver(_settings.context).lookupProperty(_data.subject);
 
-    // Apply defaults on settings and data
     return this._pathProxy.createPath(_settings, _data);
   }
 }

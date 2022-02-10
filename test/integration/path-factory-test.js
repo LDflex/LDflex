@@ -230,5 +230,3 @@ describe('a PathFactory instance resolving friends', () => {
     });
   });
 });
-
-
