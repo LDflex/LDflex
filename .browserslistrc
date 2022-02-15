@@ -1,5 +1,5 @@
-# Build for Node
-node >=10
+# Build for Node - commented out for webpack https://stackoverflow.com/questions/69443755/error-when-running-webpack-script-for-simple-project
+# node >=10
 
 # Build for most browsers
 >2%
