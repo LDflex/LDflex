@@ -31,7 +31,7 @@
     "@babel/eslint-parser": "^7.16.3",
     "@babel/plugin-proposal-class-properties": "^7.16.0",
     "@babel/preset-env": "^7.16.4",
-    "@comunica/actor-init-sparql-file": "^1.22.3",
+    "@comunica/actor-init-sparql-file": "^2.0.1",
     "@ldflex/comunica": "^4.0.0",
     "eslint": "^8.4.0",
     "eslint-plugin-jest": "^26.0.0",
