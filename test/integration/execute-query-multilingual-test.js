@@ -7,6 +7,8 @@ import defaultHandlers from '../../src/defaultHandlers';
 
 import context from '../context';
 
+context['@context']['@language'] = 'de';
+
 const subject = namedNode('https://example.org/#me');
 const queryEngine = createQueryEngine([
   literal('Tomato', 'en'),
@@ -26,8 +28,13 @@ describe('a query path with languages', () => {
     tomato = pathProxy.createPath({ queryEngine }, { subject });
   });
 
-  it('returns results in the current language', async () => {
+  it('returns results in the selected language', async () => {
     const dutchLabel = await tomato.label['@nl'];
     expect(`${dutchLabel}`).toEqual('Tomaat');
+  });
+
+  it('returns results in the current language from the context', async () => {
+    const germanLabel = await tomato.label;
+    expect(`${germanLabel}`).toEqual('Tomate');
   });
 });

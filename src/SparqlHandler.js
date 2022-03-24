@@ -38,6 +38,11 @@ export default class SparqlHandler {
       queryVar = this.createVar(pathData.property);
       ({ queryVar, sorts, clauses } = this.expressionToTriplePatterns(pathExpression, queryVar));
     }
+    if (pathData.defaultLanguage) {
+      queryVar = this.createVar(pathData.property);
+      clauses.push(`FILTER( langMatches(${queryVar}, "${pathData.defaultLanguage}") )`);
+    }
+
     if (pathData.finalClause)
       clauses.push(pathData.finalClause(queryVar));
 

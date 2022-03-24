@@ -15,6 +15,14 @@ export default class AbstractPathResolver {
   }
 
   async extendContext(...contexts) {
+    if (contexts.length) {
+      const defaultLanguages = contexts.map(context => context && context['@context'] && context['@context']['@language']).filter(Boolean);
+      if (defaultLanguages.length) {
+        this.defaultLanguage = defaultLanguages.pop();
+        if (defaultLanguages && defaultLanguages.some(language => language !== this.defaultLanguage))
+          throw new Error('Multiple default languages given');
+      }
+    }
     await this._contextProvider.extendContext(...contexts);
   }
 
@@ -50,7 +58,7 @@ export default class AbstractPathResolver {
     const reverse = lazyThenable(() => this._context.then(({ contextRaw }) =>
       contextRaw[property] && contextRaw[property]['@reverse']));
     const resultsCache = this.getResultsCache(pathData, predicate, reverse);
-    const newData = { property, predicate, resultsCache, reverse, apply: this.apply };
+    const newData = { property, predicate, resultsCache, reverse, apply: this.apply, defaultLanguage: this.defaultLanguage };
     return pathData.extendPath(newData);
   }
 

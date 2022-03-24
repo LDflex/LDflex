@@ -11,11 +11,11 @@ export function createQueryEngine(variableNames, results) {
   }
   return {
     execute: jest.fn(async function*(query) {
-      const regex = new RegExp('langMatches\\(\\?result, "([a-z]*)');
+      const regex = new RegExp('langMatches\\(\\?([a-z]*), "([a-z]*)');
       const matches = query.match(regex);
 
       if (matches && matches.length && matches[1]) {
-        const language = matches[1];
+        const language = matches[2];
         const languageResult = results.filter(result => result.language === language);
         const bindings = variableNames.map((name, i) => [name, languageResult[i]]);
         yield new Map(bindings);
