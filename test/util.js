@@ -16,9 +16,12 @@ export function createQueryEngine(variableNames, results) {
 
       if (matches && matches.length && matches[1]) {
         const language = matches[2];
-        const languageResult = results.filter(result => result.language === language);
-        const bindings = variableNames.map((name, i) => [name, languageResult[i]]);
-        yield new Map(bindings);
+        const languageResults = results
+          .filter(languageResult => languageResult.language === language)
+          .map(languageResult => [['?value', languageResult]]);
+
+        for (const languageResult of languageResults)
+          yield new Map(languageResult);
       }
       else {
         for (let result of results) {
