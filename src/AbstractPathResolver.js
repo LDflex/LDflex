@@ -16,10 +16,12 @@ export default class AbstractPathResolver {
 
   async extendContext(...contexts) {
     if (contexts.length) {
-      const defaultLanguages = contexts.map(context => context && context['@context'] && context['@context']['@language']).filter(Boolean);
+      const defaultLanguages = contexts.map(context => context?.['@context']?.['@language']).filter(Boolean);
+
       if (defaultLanguages.length) {
-        this.defaultLanguage = defaultLanguages.pop();
-        if (defaultLanguages && defaultLanguages.some(language => language !== this.defaultLanguage))
+        if (!this.defaultLanguage)
+          this.defaultLanguage = defaultLanguages.pop();
+        if (defaultLanguages.some(language => language !== this.defaultLanguage))
           throw new Error('Multiple default languages given');
       }
     }
