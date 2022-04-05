@@ -103,6 +103,16 @@ describe('language defaults', () => {
     }
   });
 
+  it('returns results in the selected language via the language handler also when a default is set', async () => {
+    const dutchLabel = await tomato.label.nl;
+    expect(`${dutchLabel}`).toEqual('Tomaat');
+
+    const englishLabel = await tomato.label.en;
+    expect(`${englishLabel}`).toEqual('Tomato');
+
+    const germanLabel = await tomato.label.de;
+    expect(`${germanLabel}`).toEqual('Tomate');
+  });
 
   it('returns results an async iterator for a default value', async () => {
     let counter = 0;

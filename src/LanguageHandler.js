@@ -63,6 +63,7 @@ export default class LanguageHandler {
   }
 
   async* _handle(pathData, path) {
+    pathData.skipDefaultLanguageFilter = true;
     for await (const item of path.results) {
       if (langMatches(await item.language, this.langCode))
         yield item;
