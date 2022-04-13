@@ -33,6 +33,7 @@
     "@babel/preset-env": "^7.16.4",
     "@comunica/actor-init-sparql-file": "^2.0.1",
     "@ldflex/comunica": "^4.0.0",
+    "@rdfjs/types": "^1.1.0",
     "eslint": "^8.4.0",
     "eslint-plugin-jest": "^26.0.0",
     "husky": "^7.0.4",
