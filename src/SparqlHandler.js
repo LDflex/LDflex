@@ -60,7 +60,7 @@ export default class SparqlHandler {
     let subject, where;
     // If the only condition is a subject, we need no WHERE clause
     if (conditions.length === 1) {
-      subject = this.termToString(conditions[0].subject);
+      subject = this.termToString(skolemize(conditions[0].subject));
       where = [];
     }
     // Otherwise, create a WHERE clause from all conditions
@@ -76,7 +76,7 @@ export default class SparqlHandler {
     for (const { predicate, reverse, objects } of predicateObjects) {
       // Mutate either only the specified objects, or all of them
       const objectStrings = objects ?
-        objects.map(o => this.termToString(o)) :
+        objects.map(o => this.termToString(skolemize(o))) :
         [this.createVar(predicate.value, scope)];
       // Generate a triple pattern for all subjects
       mutations.push(...this.triplePatterns(subject, predicate, objectStrings, reverse));
