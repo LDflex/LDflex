@@ -1,10 +1,11 @@
 import { handler } from './handlerUtil';
+import { Term } from '@rdfjs/types'
 
 /**
  * Finds the index at which the break between the namespace and the
  * occurs - then execute a callback with this index as the second arg
  */
-function breakIndex(term, cb) {
+function breakIndex(term: Term | undefined, cb: (str: string, i: number) => string): string | undefined {
   if (term?.termType !== 'NamedNode')
     return undefined;
   // Find the index of the last '#' or '/' if no '#' exists

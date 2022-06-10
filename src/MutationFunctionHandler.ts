@@ -4,6 +4,7 @@ import {
   ensureArray, joinArrays,
   valueToTerm, hasPlainObjectArgs, isAsyncIterable,
 } from './valueUtils';
+import { PathData } from './types';
 
 /**
  * Returns a function that, when called with arguments,
@@ -21,16 +22,17 @@ import {
  * - a pathExpression property on the path proxy and all non-raw arguments.
  */
 export default class MutationFunctionHandler {
-  constructor(mutationType, allowZeroArgs) {
-    this._mutationType = mutationType;
-    this._allowZeroArgs = allowZeroArgs;
+  constructor(
+    private mutationType?: 'INSERT' | 'DELETE',
+    private allowZeroArgs?: boolean
+  ) {
   }
 
   // Creates a function that performs a mutation
-  handle(pathData, path) {
+  handle(pathData: PathData, path) {
     return (...args) => {
       // Check if the given arguments are valid
-      if (!this._allowZeroArgs && !args.length)
+      if (!this.allowZeroArgs && !args.length)
         throw new Error('Mutation cannot be invoked without arguments');
 
       // Create a lazy Promise to the mutation expressions
@@ -75,14 +77,14 @@ export default class MutationFunctionHandler {
 
     // Create a mutation, unless no objects are affected (`null` means all)
     return objects !== null && objects.length === 0 ? {} : {
-      mutationType: this._mutationType,
+      mutationType: this.mutationType,
       conditions: conditions.slice(0, -1),
       predicateObjects: [{ predicate, reverse, objects }],
     };
   }
 
   // Extracts individual objects from a set of values passed to a mutation function
-  async extractObjects(pathData, path, values) {
+  async extractObjects(pathData: PathData, path, values) {
     // If no specific values are specified, match all (represented by `null`)
     if (values.length === 0)
       return null;

@@ -1,3 +1,5 @@
+import { PathData } from "./types";
+
 const EMPTY = Object.create(null);
 
 /**
@@ -30,7 +32,7 @@ export default class PathProxy {
   /**
    * Creates a path Proxy with the given settings and internal data fields.
    */
-  createPath(settings = {}, data) {
+  createPath(settings = {}, data): PathData {
     // The settings parameter is optional
     if (data === undefined)
       [data, settings] = [settings, {}];
@@ -60,7 +62,7 @@ export default class PathProxy {
   /**
    * Handles access to a property
    */
-  get(pathData, property) {
+  get(pathData: PathData, property: string) {
     // Handlers provide functionality for a specific property,
     // so check if we find a handler first
     const handler = this._handlers[property];

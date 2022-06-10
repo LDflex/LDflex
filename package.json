@@ -39,7 +39,8 @@
     "husky": "^8.0.1",
     "jest": "^28.0.3",
     "n3": "^1.12.2",
-    "semantic-release": "^19.0.2"
+    "semantic-release": "^19.0.2",
+    "typescript": "^4.7.3"
   },
   "scripts": {
     "build": "npm run build:lib && npm run build:module",

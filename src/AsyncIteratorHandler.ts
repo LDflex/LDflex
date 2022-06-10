@@ -1,4 +1,5 @@
 import { iteratorFor } from './iterableUtils';
+import type { PathData } from './types'
 
 /**
  * AsyncIterator handler that yields either the subject or all results.
@@ -9,7 +10,7 @@ import { iteratorFor } from './iterableUtils';
  *  - (optional) results on the path proxy
  */
 export default class AsyncIteratorHandler {
-  handle({ subject }, pathProxy) {
+  handle({ subject }: PathData, pathProxy) {
     // Return a one-item iterator of the subject if present;
     // otherwise, return all results of this path
     return subject ?

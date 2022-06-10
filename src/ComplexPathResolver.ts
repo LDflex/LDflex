@@ -1,11 +1,12 @@
-import { translate, toSparql } from 'sparqlalgebrajs';
+import { translate, toSparql, Algebra, Factory } from 'sparqlalgebrajs';
 import AbstractPathResolver from './AbstractPathResolver';
 import { namedNode } from '@rdfjs/data-model';
+const factory = new Factory();
 
 /**
  * Writes SPARQL algebra a complex SPARQL path
  */
-function writePathAlgebra(algebra) {
+function writePathAlgebra(algebra: Algebra.Join | Algebra.Bgp | Algebra.Operation): string {
   if (algebra.type === 'join')
     return algebra.input.map(x => writePathAlgebra(x)).join('/');
   // The algebra library turns sequential path expressions like
@@ -27,7 +28,7 @@ function writePathAlgebra(algebra) {
   if (algebra.type === 'path') {
     // Note - this could be made cleaner if sparqlalgebrajs exported
     // the translatePathComponent function
-    let query = toSparql({ type: 'project', input: algebra });
+    let query = toSparql(factory.createProject(algebra, []));
     query = query.replace(/^SELECT WHERE \{ \?[0-9a-z]+ \(|\) \?[0-9a-z]+\. \}$/ig, '');
     return query;
   }
@@ -48,7 +49,7 @@ export default class ComplexPathResolver extends AbstractPathResolver {
    * 4. /((^[(<])|([)>]$))/
    *    Tests for '(', '<', at the start of a string and ')', '>' at the end of a string
    */
-  supports(property) {
+  supports(property: any): boolean {
     return super.supports(property) &&
       (/((^|[/|])[\^])|(([a-z:>)])[*+?])|([)>*+?]|[a-z]*[:][a-z]*)[|/]([<(^]|[a-z]*[:][a-z]*)|(((^[(<])|([)>]$)))/i)
         .test(property);

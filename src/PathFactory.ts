@@ -4,6 +4,7 @@ import ComplexPathResolver from './ComplexPathResolver';
 import defaultHandlers from './defaultHandlers';
 import { ContextParser } from 'jsonld-context-parser';
 import ContextProvider from './ContextProvider';
+import {  } from './types';
 
 /**
  * A PathFactory creates paths with default settings.

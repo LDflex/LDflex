@@ -12,7 +12,7 @@ import PredicatesHandler from './PredicatesHandler';
 import PreloadHandler from './PreloadHandler';
 import PropertiesHandler from './PropertiesHandler';
 import ReplaceFunctionHandler from './ReplaceFunctionHandler';
-import SetFunctionHandler from './SetFunctionHandler.ts';
+import SetFunctionHandler from './SetFunctionHandler';
 import SortHandler from './SortHandler';
 import SparqlHandler from './SparqlHandler';
 import StringToLDflexHandler from './StringToLDflexHandler';

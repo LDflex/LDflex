@@ -1,3 +1,4 @@
+import { PathData } from './types';
 import { isAsyncIterable } from './valueUtils';
 
 /**
@@ -7,7 +8,7 @@ import { isAsyncIterable } from './valueUtils';
  * - (optional) an iterable path
  */
 export default class ToArrayHandler {
-  handle(pathData, path) {
+  handle(pathData: PathData, path) {
     return async map => {
       const items = [];
       if (isAsyncIterable(path)) {

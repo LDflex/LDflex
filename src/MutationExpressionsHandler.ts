@@ -1,3 +1,5 @@
+import { PathData } from "./types";
+
 /**
  * Traverses a path to collect mutationExpressions into an expression.
  * This is needed because mutations can be chained.
@@ -6,7 +8,7 @@
  * - a mutationExpressions property on the path proxy
  */
 export default class MutationExpressionsHandler {
-  async handle(pathData) {
+  async handle(pathData: PathData) {
     const mutationExpressions = [];
 
     // Add all mutationExpressions to the path

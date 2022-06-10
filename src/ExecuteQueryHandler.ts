@@ -1,3 +1,7 @@
+import { Bindings, Term } from '@rdfjs/types';
+import { streamToAsyncIterable } from './iterableUtils';
+import { PathData } from './types';
+
 /**
  * Executes the query represented by a path.
  *
@@ -7,7 +11,7 @@
  * - (optional) a resultsCache property on the path data
  */
 export default class ExecuteQueryHandler {
-  async *handle(pathData, path) {
+  async *handle(pathData: PathData, path) {
     // Try to retrieve the result from cache
     const resultsCache = await pathData.resultsCache;
     if (resultsCache) {
@@ -28,20 +32,18 @@ export default class ExecuteQueryHandler {
       return;
 
     // Extract the term from every query result
-    for await (const bindings of queryEngine.execute(query))
-      yield this.extractTerm(bindings, pathData);
-  }
+    const resultsStream = streamToAsyncIterable(await queryEngine.queryBindings(query));
 
-  /**
-   * Extracts the first term from a query result binding as a new path.
-   */
-  extractTerm(binding, pathData) {
-    // Extract the first term from the binding map
-    if (binding.size !== 1)
-      throw new Error('Only single-variable queries are supported');
-    const subject = binding.values().next().value;
+    for await (const bindings of resultsStream)
+      yield pathData.extendPath({ subject: getSingleTerm(bindings) }, null);  }
 
-    // Each result is a new path that starts from the term as subject
-    return pathData.extendPath({ subject }, null);
-  }
+}
+
+function getSingleTerm(binding: Bindings): Term {
+  // Extract the first term from the binding map
+  if (binding.size === 1)
+    for (const subject of binding.values())
+      return subject;
+
+  throw new Error('Only single-variable queries are supported');
 }

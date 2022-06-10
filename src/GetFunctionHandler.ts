@@ -1,5 +1,6 @@
 import { isPlainObject, isAsyncIterable } from './valueUtils';
 import { iterableToArray } from './iterableUtils';
+import { PathData } from './types';
 
 /**
  * Returns a function that requests the values of multiple properties.
@@ -13,7 +14,7 @@ import { iterableToArray } from './iterableUtils';
  * Combinations of the above are possible by passing them in arrays.
  */
 export default class GetFunctionHandler {
-  handle(pathData, path) {
+  handle(pathData: PathData, path) {
     return (...args) => this.readProperties(path,
       args.length === 1 ? args[0] : args, true);
   }

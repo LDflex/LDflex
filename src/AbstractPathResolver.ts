@@ -1,6 +1,8 @@
 import ContextProvider from './ContextProvider';
 import { lazyThenable } from './promiseUtils';
 import { valueToTerm } from './valueUtils';
+import type { PathData } from './types'
+import { JsonLdContext } from 'jsonld-context-parser'
 
 /**
  * Resolves property names of a path
@@ -14,7 +16,7 @@ export default class AbstractPathResolver {
     return this._contextProvider._context;
   }
 
-  async extendContext(...contexts) {
+  async extendContext(...contexts: JsonLdContext[]) {
     await this._contextProvider.extendContext(...contexts);
   }
 
@@ -22,7 +24,7 @@ export default class AbstractPathResolver {
    * Creates a new resolver for the given context(s).
    * @param arg Either a context provider *or* a context
    */
-  constructor(arg, ...contexts) {
+  constructor(arg: JsonLdContext | ContextProvider, ...contexts: JsonLdContext[]) {
     if (arg instanceof ContextProvider) {
       this._contextProvider = arg;
       this.extendContext(...contexts);
@@ -35,7 +37,7 @@ export default class AbstractPathResolver {
   /**
    * The JSON-LD resolver supports all string properties.
    */
-  supports(property) {
+  supports(property: any): boolean {
     return typeof property === 'string';
   }
 
@@ -45,7 +47,7 @@ export default class AbstractPathResolver {
    *
    * Example usage: person.friends.firstName
    */
-  resolve(property, pathData) {
+  resolve(property: string, pathData: PathData) {
     const predicate = lazyThenable(() => this.expandProperty(property));
     const reverse = lazyThenable(() => this._context.then(({ contextRaw }) =>
       contextRaw[property] && contextRaw[property]['@reverse']));
@@ -60,7 +62,7 @@ export default class AbstractPathResolver {
    *
    * Example usage: person.friends.location(place).firstName
    */
-  apply(args, pathData, path) {
+  apply(args, pathData: PathData, path) {
     if (args.length === 0) {
       const { property } = pathData;
       throw new Error(`Specify at least one term when calling .${property}() on a path`);
@@ -85,7 +87,7 @@ export default class AbstractPathResolver {
     return propertyCache && lazyThenable(async () => {
       // Preloading does not work with reversed predicates
       propertyCache = !(await reverse) && await propertyCache;
-      return propertyCache && propertyCache[(await predicate).value];
+      return propertyCache?.[(await predicate).value];
     });
   }
 }
