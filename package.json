@@ -22,6 +22,7 @@
   ],
   "dependencies": {
     "@rdfjs/data-model": "^1.3.4",
+    "@rdfjs/types": "^1.1.0",
     "jsonld-context-parser": "^2.1.5",
     "sparqlalgebrajs": "^4.0.1"
   },

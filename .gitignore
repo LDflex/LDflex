@@ -2,3 +2,4 @@ coverage
 lib
 module
 node_modules
+src/**.js
