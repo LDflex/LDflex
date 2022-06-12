@@ -1,6 +1,6 @@
 import { Bindings, Term } from '@rdfjs/types';
 import { streamToAsyncIterable } from './iterableUtils';
-import { PathData } from './types';
+import { Handler, PathData } from './types';
 
 /**
  * Executes the query represented by a path.
@@ -10,7 +10,7 @@ import { PathData } from './types';
  * - a sparql property on the path proxy
  * - (optional) a resultsCache property on the path data
  */
-export default class ExecuteQueryHandler {
+export default class ExecuteQueryHandler implements Handler {
   async *handle(pathData: PathData, path) {
     // Try to retrieve the result from cache
     const resultsCache = await pathData.resultsCache;

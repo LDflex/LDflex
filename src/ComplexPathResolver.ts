@@ -2,6 +2,7 @@ import { translate, toSparql, Algebra, Factory } from 'sparqlalgebrajs';
 import AbstractPathResolver from './AbstractPathResolver';
 import { namedNode } from '@rdfjs/data-model';
 import { IJsonLdContextNormalizedRaw } from 'jsonld-context-parser';
+import { Resolver } from './types';
 const factory = new Factory();
 
 /**
@@ -36,7 +37,7 @@ function writePathAlgebra(algebra: Algebra.Join | Algebra.Bgp | Algebra.Operatio
   throw new Error(`Unhandled algebra ${algebra.type}`);
 }
 
-export default class ComplexPathResolver extends AbstractPathResolver {
+export default class ComplexPathResolver extends AbstractPathResolver implements Resolver {
   /**
    * Supports all strings that contain path modifiers. The regular
    * expression is testing for 4 main properties:
@@ -61,7 +62,7 @@ export default class ComplexPathResolver extends AbstractPathResolver {
    */
   async lookupProperty(property: string) {
     // Expand the property to a full IRI
-    const context = (await this._context).getContextRaw();
+    const context = await this.getContextRaw();
     const prefixes: Record<string, string> = {};
     for (const key in context) {
       if (typeof context[key] === 'string')

@@ -4,7 +4,7 @@ import {
   ensureArray, joinArrays,
   valueToTerm, hasPlainObjectArgs, isAsyncIterable,
 } from './valueUtils';
-import { PathData } from './types';
+import { Handler, PathData } from './types';
 
 /**
  * Returns a function that, when called with arguments,
@@ -21,7 +21,7 @@ import { PathData } from './types';
  * Requires:
  * - a pathExpression property on the path proxy and all non-raw arguments.
  */
-export default class MutationFunctionHandler {
+export default class MutationFunctionHandler implements Handler {
   constructor(
     private mutationType?: 'INSERT' | 'DELETE',
     private allowZeroArgs?: boolean

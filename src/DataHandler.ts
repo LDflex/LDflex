@@ -1,3 +1,5 @@
+import { Handler } from "./types";
+
 /**
  * Resolves to the given item in the path data.
  * For example, new DataHandler({}, 'foo', 'bar')
@@ -6,7 +8,7 @@
  * Resolution can optionally be async,
  * and/or be behind a function call.
  */
-export default class DataHandler {
+export default class DataHandler implements Handler {
   constructor(options, ...dataProperties) {
     this._isAsync = options.async;
     this._isFunction = options.function;

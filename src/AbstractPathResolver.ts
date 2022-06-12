@@ -1,22 +1,27 @@
 import ContextProvider from './ContextProvider';
 import { lazyThenable } from './promiseUtils';
 import { valueToTerm } from './valueUtils';
-import type { PathData } from './types'
-import { JsonLdContext } from 'jsonld-context-parser'
+import type { MaybePromise, PathData, Resolver } from './types'
+import { IExpandOptions, JsonLdContext } from 'jsonld-context-parser'
+import * as RDF from '@rdfjs/types';
 
 /**
  * Resolves property names of a path
  * to their corresponding IRIs through a JSON-LD context.
  * @abstract
  */
-export default class AbstractPathResolver {
+export default abstract class AbstractPathResolver implements Resolver {
   private _contextProvider = new ContextProvider();
 
-  get _context() {
-    return this._contextProvider._context;
+  expandTerm(term: string, expandVocab?: boolean, options?: IExpandOptions) {
+    return this._contextProvider.expandTerm(term, expandVocab, options);
   }
 
-  async extendContext(...contexts: JsonLdContext[]) {
+  getContextRaw() {
+    return this._contextProvider.getContextRaw();
+  }
+
+  extendContext(...contexts: JsonLdContext[]) {
     return this._contextProvider.extendContext(...contexts);
   }
 
@@ -49,7 +54,7 @@ export default class AbstractPathResolver {
    */
   resolve(property: string, pathData: PathData) {
     const predicate = lazyThenable(() => this.expandProperty(property));
-    const reverse = lazyThenable(() => this._context.then(({ contextRaw }) =>  contextRaw[property]?.['@reverse']));
+    const reverse = lazyThenable(() => this.getContextRaw().then(context => context[property]?.['@reverse']))
     const resultsCache = this.getResultsCache(pathData, predicate, reverse);
     const newData = { property, predicate, resultsCache, reverse, apply: this.apply };
     return pathData.extendPath(newData);
@@ -71,7 +76,9 @@ export default class AbstractPathResolver {
     return path;
   }
 
-  async expandProperty(property: string) {
+  abstract lookupProperty(property: string): Promise<RDF.Term>;
+
+  expandProperty(property: string): Promise<RDF.Term> {
     // JavaScript requires keys containing colons to be quoted,
     // so prefixed names would need to written as path['foaf:knows'].
     // We thus allow writing path.foaf_knows or path.foaf$knows instead.
@@ -81,7 +88,7 @@ export default class AbstractPathResolver {
   /**
    * Gets the results cache for the given predicate.
    */
-  getResultsCache(pathData, predicate, reverse) {
+  getResultsCache(pathData, predicate, reverse: MaybePromise<boolean>) {
     let { propertyCache } = pathData;
     return propertyCache && lazyThenable(async () => {
       // Preloading does not work with reversed predicates

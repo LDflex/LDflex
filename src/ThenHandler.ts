@@ -1,5 +1,6 @@
 import { getThen } from './promiseUtils';
 import { getFirstItem } from './iterableUtils';
+import { Handler } from './types';
 
 /**
  * Thenable handler that resolves to either the subject
@@ -10,7 +11,7 @@ import { getFirstItem } from './iterableUtils';
  *  - (optional) a subject on the path proxy
  *  - (optional) results on the path proxy
  */
-export default class ThenHandler {
+export default class ThenHandler implements Handler {
   handle({ subject }, pathProxy) {
     // Resolve to either the subject (zero-length path) or the first result
     return subject ?

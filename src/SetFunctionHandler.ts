@@ -1,4 +1,5 @@
 import MutationFunctionHandler from './MutationFunctionHandler';
+import { Handler } from './types';
 import { hasPlainObjectArgs } from './valueUtils';
 
 /**
@@ -9,7 +10,7 @@ import { hasPlainObjectArgs } from './valueUtils';
  * - a delete function on the path proxy.
  * - an add function on the path proxy.
  */
-export default class SetFunctionHandler extends MutationFunctionHandler {
+export default class SetFunctionHandler extends MutationFunctionHandler implements Handler {
   handle(pathData, path) {
     return (...args) => {
       // First, delete all existing values for the property/properties

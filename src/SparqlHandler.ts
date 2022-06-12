@@ -1,9 +1,10 @@
 import { namedNode } from '@rdfjs/data-model';
 import * as RDF from '@rdfjs/types';
+import { Handler } from './types';
 
 const NEEDS_ESCAPE = /["\\\t\n\r\b\f\u0000-\u0019\ud800-\udbff]/,
       ESCAPE_ALL = /["\\\t\n\r\b\f\u0000-\u0019]|[\ud800-\udbff][\udc00-\udfff]/g,
-      ESCAPED_CHARS = {
+      ESCAPED_CHARS: Record<string, string | undefined> = {
         '\\': '\\\\', '"': '\\"', '\t': '\\t',
         '\n': '\\n', '\r': '\\r', '\b': '\\b', '\f': '\\f',
       };
@@ -14,7 +15,7 @@ const NEEDS_ESCAPE = /["\\\t\n\r\b\f\u0000-\u0019\ud800-\udbff]/,
  * Requires:
  * - a mutationExpressions or pathExpression property on the path proxy
  */
-export default class SparqlHandler {
+export default class SparqlHandler implements Handler {
   async handle(pathData, path) {
     // First check if we have a mutation expression
     const mutationExpressions = await path.mutationExpressions;
@@ -138,7 +139,7 @@ export default class SparqlHandler {
   // Creates a unique query variable within the given scope, based on the suggestion
   createVar(suggestion = '', scope) {
     let counter = 0;
-    let label = `?${suggestion.match(/[a-z0-9]*$/i)[0] || 'result'}`;
+    let label = `?${suggestion.match(/[a-z0-9]*$/i)?.[0] ?? 'result'}`;
     if (scope) {
       suggestion = label;
       while (scope[label])
@@ -189,9 +190,9 @@ export default class SparqlHandler {
 
 // Replaces a character by its escaped version
 // (borrowed from https://www.npmjs.com/package/n3)
-function escapeCharacter(character) {
+function escapeCharacter(character: string) {
   // Replace a single character by its escaped version
-  let result = ESCAPED_CHARS[character];
+  let result: string | undefined = ESCAPED_CHARS[character];
   if (result === undefined) {
     // Replace a single character with its 4-bit unicode escape sequence
     if (character.length === 1) {

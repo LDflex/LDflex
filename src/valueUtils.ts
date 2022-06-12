@@ -29,7 +29,7 @@ const xsdPrimitives = {
 };
 
 // Checks whether the value is asynchronously iterable
-export function isAsyncIterable(value) {
+export function isAsyncIterable(value: any): value is AsyncIterator<any> {
   return value && typeof value[Symbol.asyncIterator] === 'function';
 }
 

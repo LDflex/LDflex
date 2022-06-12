@@ -1,7 +1,9 @@
+import { Handler } from "./types";
+
 /**
  * Yields a function that interprets a string expression as an LDflex path.
  */
-export default class StringToLDflexHandler {
+export default class StringToLDflexHandler implements Handler {
   handle(pathData, path) {
     // Resolves the given string expression against the LDflex object
     return (expression = '', ldflex = path) => {

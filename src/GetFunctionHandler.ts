@@ -1,6 +1,6 @@
 import { isPlainObject, isAsyncIterable } from './valueUtils';
 import { iterableToArray } from './iterableUtils';
-import { PathData } from './types';
+import { Handler, PathData } from './types';
 
 /**
  * Returns a function that requests the values of multiple properties.
@@ -13,7 +13,7 @@ import { PathData } from './types';
  * - fn({ p1: null, p2: null }) returns { p1: path[p1], p2: path[p2] }
  * Combinations of the above are possible by passing them in arrays.
  */
-export default class GetFunctionHandler {
+export default class GetFunctionHandler implements Handler {
   handle(pathData: PathData, path) {
     return (...args) => this.readProperties(path,
       args.length === 1 ? args[0] : args, true);

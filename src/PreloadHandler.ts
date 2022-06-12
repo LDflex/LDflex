@@ -1,3 +1,5 @@
+import { Handler } from "./types";
+
 const VARIABLE = /(SELECT\s+)(\?\S+)/;
 const QUERY_TAIL = /\}[^}]*$/;
 
@@ -12,7 +14,7 @@ const QUERY_TAIL = /\}[^}]*$/;
  * Creates:
  * - a resultsCache property on the path data
  */
-export default class PreloadHandler {
+export default class PreloadHandler implements Handler {
   /**
    * Creates a preload function.
    */

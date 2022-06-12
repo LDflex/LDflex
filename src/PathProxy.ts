@@ -1,4 +1,4 @@
-import { PathData } from "./types";
+import { Handlers, PathData, Resolvers } from "./types";
 
 const EMPTY = Object.create(null);
 
@@ -24,8 +24,8 @@ const EMPTY = Object.create(null);
  * - extendPath, a method to create a child path with this path as parent
  */
 export default class PathProxy {
-  private _handlers;
-  private _resolvers;
+  private _handlers: Handlers;
+  private _resolvers: Resolvers;
 
   constructor({ handlers = EMPTY, resolvers = [] } = {}) {
     this._handlers = handlers;
