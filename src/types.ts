@@ -3,13 +3,13 @@ import { JsonLdContext, IJsonLdContextNormalizedRaw } from "jsonld-context-parse
 
 export type MaybePromise<T> = T | Promise<T>
 
-export type HandlerFunction = (pathData: PathData, path: any) => any;
+export type HandlerFunction = (pathData: PathData, path?: PathData['proxy']) => any;
 export type Handler<T extends HandlerFunction = HandlerFunction> = { handle: T };
 export type Handlers = Record<string | symbol, Handler>;
 
 export interface Resolver {
   supports(...args: any[]): boolean;
-  resolve(property: string, pathData: PathData): PathData;
+  resolve(property: string, pathData: PathData, proxy: PathData['proxy']): PathData;
 }
 
 export type Resolvers = Resolver[];
@@ -24,11 +24,18 @@ export interface Settings {
 
 export interface PathData {
   settings: Settings;
-  resultsCache?: MaybePromise<Map<string, Term>>;
-  extendPath: HandlerFunction; // TODO: Check this
-  // extendPath(pathData: PathData, path?: Data): Data;
+  // resultsCache?: MaybePromise<Map<string, Term>>;
+  // extendPath: HandlerFunction; // TODO: Check this
+  extendPath(pathData: PathData, path?: PathData): PathData; // TODO: Check this
+  proxy: any;
+  apply: any;
+  parent?: PathData;
 }
-
+// * - settings, an object that is passed on as-is to child paths
+// * - proxy, a reference to the proxied object the user sees
+// * - parent, a reference to the parent path
+// * - apply, a function the will be invoked when the path is called as a function
+// * - extendPath, a method to create a child path with this path as parent
 
 // export interface Data {
 //   property: string | undefined;

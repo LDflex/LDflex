@@ -178,7 +178,7 @@ export default class SparqlHandler implements Handler {
   }
 
   // Creates triple patterns for the given subject, predicate, and objects
-  triplePatterns(subjectString, predicateTerm, objectStrings, reverse = false) {
+  triplePatterns(subjectString: string, predicateTerm: RDF.Term, objectStrings: string[], reverse = false) {
     let subjectStrings = [subjectString];
     if (reverse)
       [subjectStrings, objectStrings] = [objectStrings, subjectStrings];

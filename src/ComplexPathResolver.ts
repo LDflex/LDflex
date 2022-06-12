@@ -3,6 +3,7 @@ import AbstractPathResolver from './AbstractPathResolver';
 import { namedNode } from '@rdfjs/data-model';
 import { IJsonLdContextNormalizedRaw } from 'jsonld-context-parser';
 import { Resolver } from './types';
+import * as RDF from '@rdfjs/types';
 const factory = new Factory();
 
 /**
@@ -60,7 +61,7 @@ export default class ComplexPathResolver extends AbstractPathResolver implements
   /**
    * Takes string and resolves it to a predicate or SPARQL path
    */
-  async lookupProperty(property: string) {
+  async lookupProperty(property: string): Promise<RDF.Term> {
     // Expand the property to a full IRI
     const context = await this.getContextRaw();
     const prefixes: Record<string, string> = {};

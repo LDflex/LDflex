@@ -53,7 +53,7 @@ export default class PathProxy {
     // Add an extendPath method to create child paths
     if (!path.extendPath) {
       const pathProxy = this;
-      path.extendPath = function extendPath(newData, parent = this) {
+      path.extendPath = function extendPath(newData: PathData, parent = this) {
         return pathProxy.createPath(settings, { parent, extendPath, ...newData });
       };
     }
@@ -74,6 +74,9 @@ export default class PathProxy {
 
     // Resolvers provide functionality for arbitrary properties,
     // so find a resolver that can handle this property
+    return this._resolvers.find(resolver => resolver.supports(property))
+      ?.resolve(property, pathData, pathData.proxy)
+
     for (const resolver of this._resolvers) {
       if (resolver.supports(property))
         return resolver.resolve(property, pathData, pathData.proxy);

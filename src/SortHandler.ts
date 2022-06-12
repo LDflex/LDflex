@@ -1,4 +1,4 @@
-import { Handler } from "./types";
+import { Handler, PathData } from "./types";
 
 /**
  * Returns a function that creates a new path with the same values,
@@ -12,8 +12,8 @@ import { Handler } from "./types";
 export default class SortHandler implements Handler {
   constructor(private order: 'ASC' | 'DESC' = 'ASC') {}
 
-  handle(pathData, pathProxy) {
-    return (...properties) => {
+  handle(pathData: PathData, pathProxy: PathData['proxy']) {
+    return (...properties: string[]) => {
       // Do nothing if no sort properties were given
       if (properties.length === 0)
         return pathProxy;
@@ -23,8 +23,8 @@ export default class SortHandler implements Handler {
       const { predicate } = pathProxy[property];
 
       // Sort on the first property, and create paths for the next one
-      const childData = { property, predicate, sort: this.order };
-      const childPath = pathData.extendPath(childData);
+      // const childData = { property, predicate, sort: this.order };
+      const childPath = pathData.extendPath({ property, predicate, sort: this.order });
       return rest.length === 0 ? childPath : childPath.sort(...rest);
     };
   }
