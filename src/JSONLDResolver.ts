@@ -10,7 +10,7 @@ export default class JSONLDResolver extends AbstractPathResolver {
   /**
    * Expands a JSON property key into a full IRI.
    */
-  async lookupProperty(property) {
+  async lookupProperty(property: string) {
     const context = await this._context;
     const expandedProperty = context.expandTerm(property, true);
     if (!ContextUtil.isValidIri(expandedProperty))

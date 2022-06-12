@@ -24,6 +24,9 @@ const EMPTY = Object.create(null);
  * - extendPath, a method to create a child path with this path as parent
  */
 export default class PathProxy {
+  private _handlers;
+  private _resolvers;
+
   constructor({ handlers = EMPTY, resolvers = [] } = {}) {
     this._handlers = handlers;
     this._resolvers = resolvers;

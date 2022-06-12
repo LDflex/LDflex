@@ -21,7 +21,7 @@ export function listHandler() {
  * @param {Boolean} set Emits set if True, array otherwise
  * @returns An handler that returns an RDF collection as an array or set
  */
-export function containerHandler(set) {
+export function containerHandler(set?: boolean) {
   return handler((_, path) => async () => {
     let container = [];
     let elem;

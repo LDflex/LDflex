@@ -1,4 +1,5 @@
 import { namedNode, literal } from '@rdfjs/data-model';
+import * as RDF from '@rdfjs/types';
 
 const xsd = 'http://www.w3.org/2001/XMLSchema#';
 
@@ -65,12 +66,12 @@ export function ensureArray(value) {
 }
 
 // Joins the arrays into a single array
-export function joinArrays(arrays) {
-  return [].concat(...arrays);
+export function joinArrays<T>(arrays: T[][]): T[] {
+  return ([] as T[]).concat(...arrays);
 }
 
 // Ensures the value is an RDF/JS term
-export function valueToTerm(value) {
+export function valueToTerm(value: string | boolean | number | Date | RDF.Term): RDF.Term {
   switch (typeof value) {
   // strings
   case 'string':
@@ -95,12 +96,12 @@ export function valueToTerm(value) {
   // other objects
   default:
     if (value) {
-      // RDF/JS Term
-      if (typeof value.termType === 'string')
-        return value;
       // Date
       if (value instanceof Date)
         return literal(value.toISOString(), xsdDateTimeTerm);
+      // RDF/JS Term
+      if (typeof value.termType === 'string')
+        return value;
     }
   }
 
@@ -109,7 +110,9 @@ export function valueToTerm(value) {
 }
 
 // Converts the term into a primitive value
-export function termToPrimitive(term) {
+export function termToPrimitive(term: RDF.Literal): string | boolean | number | Date;
+export function termToPrimitive(term: Exclude<RDF.Term, RDF.Literal>): string;
+export function termToPrimitive(term: RDF.Term): string | boolean | number | Date {
   const { termType, value } = term;
 
   // Some literals convert into specific primitive values

@@ -1,20 +1,32 @@
 import type { Bindings, Term, StringSparqlQueryable, BindingsResultSupport } from '@rdfjs/types';
-import { JsonLdContext, JsonLdContextNormalized } from "jsonld-context-parser";
+import { JsonLdContext, IJsonLdContextNormalizedRaw } from "jsonld-context-parser";
 
 export type MaybePromise<T> = T | Promise<T>
 
+export type HandlerFunction = (pathData: PathData, path: any) => any;
+export type Handler<T extends HandlerFunction = HandlerFunction> = { handle: T };
+export type Handlers = Record<string | symbol, Handler>;
+
+export interface Resolver {
+  supports(...args: any[]): boolean;
+  resolve(property: string, pathData: PathData): PathData;
+}
+
+export type Resolvers = Resolver[];
+
 export interface Settings {
   context: JsonLdContext,
-  handlers?: LDflexProxyHandlers,
-  parsedContext?: MaybePromise<JsonLdContextNormalized['contextRaw']>,
+  handlers?: Handlers,
+  parsedContext?: MaybePromise<IJsonLdContextNormalizedRaw>,
   resolvers?: Resolver[],
   queryEngine: StringSparqlQueryable<BindingsResultSupport>;
 }
 
 export interface PathData {
   settings: Settings;
-  resultsCache: MaybePromise<Map<string, Term>>;
-  extendPath(pathData: PathData, path?: Data): Data;
+  resultsCache?: MaybePromise<Map<string, Term>>;
+  extendPath: HandlerFunction; // TODO: Check this
+  // extendPath(pathData: PathData, path?: Data): Data;
 }
 
 
@@ -37,11 +49,6 @@ export interface PathData {
 // }
 
 
-
-export interface Resolver {
-  supports(...args: any[]): boolean;
-  resolve(property: string, pathData: PathData): PathData;
-}
 
 
 // export type MaybePromise<T> = Promise<T> | T

@@ -1,4 +1,5 @@
 import { namedNode } from '@rdfjs/data-model';
+import * as RDF from '@rdfjs/types';
 
 const NEEDS_ESCAPE = /["\\\t\n\r\b\f\u0000-\u0019\ud800-\udbff]/,
       ESCAPE_ALL = /["\\\t\n\r\b\f\u0000-\u0019]|[\ud800-\udbff][\udc00-\udfff]/g,
@@ -209,7 +210,7 @@ function escapeCharacter(character) {
 
 // Skolemizes the given term if it is a blank node
 let skolemId = 0;
-function skolemize(term) {
+function skolemize(term: RDF.Term) {
   if (term.termType !== 'BlankNode')
     return term;
   if (!term.skolemized)

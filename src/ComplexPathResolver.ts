@@ -1,17 +1,18 @@
 import { translate, toSparql, Algebra, Factory } from 'sparqlalgebrajs';
 import AbstractPathResolver from './AbstractPathResolver';
 import { namedNode } from '@rdfjs/data-model';
+import { IJsonLdContextNormalizedRaw } from 'jsonld-context-parser';
 const factory = new Factory();
 
 /**
  * Writes SPARQL algebra a complex SPARQL path
  */
 function writePathAlgebra(algebra: Algebra.Join | Algebra.Bgp | Algebra.Operation): string {
-  if (algebra.type === 'join')
+  if (algebra.type === Algebra.types.JOIN)
     return algebra.input.map(x => writePathAlgebra(x)).join('/');
   // The algebra library turns sequential path expressions like
   // foaf:friend/foaf:givenName into a bgp token rather than a path token
-  if (algebra.type === 'bgp' &&
+  if (algebra.type === Algebra.types.BGP &&
       algebra.patterns.every(quad => quad.predicate.termType === 'NamedNode') &&
       algebra.patterns.length >= 0) {
     let lastObject = 's';
@@ -25,7 +26,7 @@ function writePathAlgebra(algebra: Algebra.Join | Algebra.Bgp | Algebra.Operatio
       return predicate;
     }).join('/');
   }
-  if (algebra.type === 'path') {
+  if (algebra.type === Algebra.types.PATH) {
     // Note - this could be made cleaner if sparqlalgebrajs exported
     // the translatePathComponent function
     let query = toSparql(factory.createProject(algebra, []));
@@ -58,13 +59,13 @@ export default class ComplexPathResolver extends AbstractPathResolver {
   /**
    * Takes string and resolves it to a predicate or SPARQL path
    */
-  async lookupProperty(property) {
+  async lookupProperty(property: string) {
     // Expand the property to a full IRI
-    const context = await this._context;
-    const prefixes = {};
-    for (const key in context.contextRaw) {
-      if (typeof context.contextRaw[key] === 'string')
-        prefixes[key] = context.contextRaw[key];
+    const context = (await this._context).getContextRaw();
+    const prefixes: Record<string, string> = {};
+    for (const key in context) {
+      if (typeof context[key] === 'string')
+        prefixes[key] = context[key];
     }
     // Wrap inside try/catch as 'translate' throws error on invalid paths
     let algebra;
@@ -77,7 +78,7 @@ export default class ComplexPathResolver extends AbstractPathResolver {
       throw new Error(`The Complex Path Resolver cannot expand the '${property}' path`);
     }
 
-    if (algebra.input.type === 'bgp' &&
+    if (algebra.input.type === Algebra.types.BGP &&
       algebra.input.patterns.length === 1 &&
       algebra.input.patterns[0].predicate.termType === 'NamedNode' &&
       // Test to make sure the path is not an inverse path

@@ -4,13 +4,18 @@ import ComplexPathResolver from './ComplexPathResolver';
 import defaultHandlers from './defaultHandlers';
 import { ContextParser } from 'jsonld-context-parser';
 import ContextProvider from './ContextProvider';
-import {  } from './types';
+import { handler } from './handlerUtil'
+import { Handler, HandlerFunction, Settings } from './types';
 
 /**
  * A PathFactory creates paths with default settings.
  */
 export default class PathFactory {
-  constructor(settings, data) {
+  private _jsonldResolver?: JSONLDResolver;
+  private _settings: Settings;
+  public static defaultHandlers = defaultHandlers;
+
+  constructor(settings: Partial<Settings>, data) {
     // Store settings and data
     this._settings = settings = { ...settings };
     this._data = data = { ...data };
@@ -28,8 +33,8 @@ export default class PathFactory {
       const contextProvider = new ContextProvider(settings.context);
       resolvers.push(new ComplexPathResolver(contextProvider));
       resolvers.push(this._jsonldResolver = new JSONLDResolver(contextProvider));
-      settings.parsedContext = new ContextParser().parse(settings.context)
-        .then(({ contextRaw }) => contextRaw);
+      // TODO: See why this isn't dealy with by the context provider
+      settings.parsedContext = new ContextParser().parse(settings.context).then(context => context.getContextRaw());
     }
     else {
       settings.context = settings.parsedContext = {};
@@ -70,13 +75,12 @@ export default class PathFactory {
     return this._pathProxy.createPath({ ...this._settings, ...settings }, _data);
   }
 }
-PathFactory.defaultHandlers = defaultHandlers;
 
 /**
  * Converts a handler function into a handler object.
  */
-export function toHandler(handle) {
-  return typeof handle.handle === 'function' ? handle : { handle };
+export function toHandler(handle: Handler | HandlerFunction): Handler {
+  return typeof handle.handle === 'function' ? handle : handler(handle);
 }
 
 /**

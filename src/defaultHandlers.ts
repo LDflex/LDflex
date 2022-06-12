@@ -23,6 +23,7 @@ import ToArrayHandler from './ToArrayHandler';
 import { termToPrimitive } from './valueUtils';
 import { handler } from './handlerUtil';
 import { prefixHandler, namespaceHandler, fragmentHandler } from './URIHandler';
+import { Handler } from './types';
 
 /**
  * A map with default property handlers.
@@ -90,17 +91,20 @@ export default {
 };
 
 // Creates a handler for the given RDF/JS Term property
-function termPropertyHandler(property) {
+function termPropertyHandler(property: string): Handler {
   // If a resolved subject is present,
   // behave as an RDF/JS term and synchronously expose the property;
   // otherwise, return a promise to the property value
-  return handler(({ subject }, path) =>
-    subject && (property in subject) ? subject[property] :
-      path.then && path.then(term => term?.[property]));
+  return handler(({ subject }, path) => subject?.[property] ?? path.then?.(term => term?.[property]))
+  
+  // TODO: Delete this
+  // return handler(({ subject }, path) =>
+  //   subject && (property in subject) ? subject[property] :
+  //     path.then && path.then(term => term?.[property]));
 }
 
 // Creates a handler that converts the subject into a primitive
-function subjectToPrimitiveHandler() {
+function subjectToPrimitiveHandler(): Handler {
   return handler(({ subject }) => () =>
     typeof subject?.termType !== 'string' ?
       undefined : termToPrimitive(subject));
