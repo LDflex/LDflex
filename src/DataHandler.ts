@@ -9,6 +9,9 @@ import { Handler } from "./types";
  * and/or be behind a function call.
  */
 export default class DataHandler implements Handler {
+  private _isAsync: boolean;
+  private _isFunction: boolean;
+
   constructor(options, ...dataProperties) {
     this._isAsync = options.async;
     this._isFunction = options.function;

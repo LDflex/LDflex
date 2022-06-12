@@ -9,7 +9,7 @@ const factory = new Factory();
 /**
  * Writes SPARQL algebra a complex SPARQL path
  */
-function writePathAlgebra(algebra: Algebra.Join | Algebra.Bgp | Algebra.Operation): string {
+function writePathAlgebra(algebra: Algebra.Join | Algebra.Bgp | Algebra.Operation | Algebra.Path): string {
   if (algebra.type === Algebra.types.JOIN)
     return algebra.input.map(x => writePathAlgebra(x)).join('/');
   // The algebra library turns sequential path expressions like

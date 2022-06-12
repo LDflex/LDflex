@@ -92,7 +92,7 @@ export default abstract class AbstractPathResolver implements Resolver {
     let { propertyCache } = pathData;
     return propertyCache && lazyThenable(async () => {
       // Preloading does not work with reversed predicates
-      propertyCache = !(await reverse) && await propertyCache;
+      // propertyCache = !(await reverse) && await propertyCache;
       return !(await reverse) && (await propertyCache)?.[(await predicate).value];
     });
   }
