@@ -1,4 +1,4 @@
-import { Handlers, PathData, Resolvers } from "./types";
+import { Handlers, PathData, Resolvers, Settings } from "./types";
 
 const EMPTY = Object.create(null);
 
@@ -35,7 +35,7 @@ export default class PathProxy {
   /**
    * Creates a path Proxy with the given settings and internal data fields.
    */
-  createPath(settings = {}, data): PathData {
+  createPath(settings: Settings = {}, data): PathData {
     // The settings parameter is optional
     if (data === undefined)
       [data, settings] = [settings, {}];

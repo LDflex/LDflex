@@ -9,6 +9,7 @@ export function listHandler() {
   return handler((_, path) => async () => {
     let _path = await path;
     const list = [];
+    // TODO: Should also be doing a NamedNode termType check here
     while (_path && _path.value !== `${RDF}nil`) {
       list.push(_path[`${RDF}first`]);
       _path = await _path[`${RDF}rest`];
@@ -41,6 +42,7 @@ export function containerHandler(set?: boolean) {
 export function collectionHandler() {
   return handler((pathData, path) => async () => {
     // TODO: Handle cases where multiple classes may be present (e.g. if inferencing is on)
+    // can probably be done via. and ask query
     switch ((await path[`${RDF}type`])?.value) {
     case `${RDF}List`:
       return listHandler().handle(pathData, path)();

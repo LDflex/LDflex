@@ -1,10 +1,150 @@
 import { namedNode } from '@rdfjs/data-model';
-import * as RDF from '@rdfjs/types';
-import { Handler } from './types';
+import { Data, order } from '../types';
+import { variable } from '@rdfjs/data-model'
+import * as RDF from 'rdf-js'
+import { toSparql, Algebra, translate, Factory } from 'sparqlalgebrajs'
+
+
+const factory = new Factory()
+
+enum order {
+    ASC = 'asc',
+    DESC = 'desc'
+}
+
+function makeVariable(input: string | RDF.Variable): RDF.Variable
+function makeVariable(input: string | RDF.Term): RDF.Term {
+  return typeof input === 'string' ? variable(input) : input
+}
+
+class OperationBuilder {
+  private expressions: Algebra.Expression[] = []
+  //private filter = []
+  //private limit = []
+  //private offset = []
+  private patterns: Algebra.Pattern[] = []
+  private variables: RDF.Variable[] = []
+  distinct: boolean = false;
+
+  algebra(): Algebra.Operation {
+    const bgp = factory.createBgp(this.patterns)
+    const project = factory.createProject(factory.createOrderBy(bgp, this.expressions), this.variables)
+    return translate(toSparql(this.distinct ? factory.createDistinct(project) : project))
+  }
+
+  sparql() {
+    return toSparql(this.algebra())
+  }
+  // @ts-ignore
+  addPattern(subject: RDF.Quad_Subject, predicate: RDF.Quad_Predicate, object: RDF.Quad_Object, graph?: RDF.Quad_Graph, reverse: boolean = false) {
+    this.patterns.push(factory.createPattern(
+      reverse ? object : subject, 
+      predicate, 
+      reverse ? subject : object, 
+      graph
+      )
+    )
+  }
+
+  addVariable(variable: string | RDF.Variable) {
+    this.variables.push(makeVariable(variable))
+  }
+
+  addOrderBy(variable: string | RDF.Variable, ordering: order = order.ASC) {
+      // @ts-ignore
+    this.expressions.push(
+        ordering === order.DESC ?
+        // @ts-ignore
+        factory.createOperatorExpression(ordering, [factory.createTermExpression(makeVariable(variable))]) :
+        // @ts-ignore
+        factory.createTermExpression(makeVariable(variable))
+        )
+  }
+  // @ts-ignore
+  addFilter(filter, expression) {
+      // @ts-ignore
+      this.expressions.push(factory.createFilter(
+        filter,
+        expression
+      ))
+  }
+
+}
+
+
+
+// class SparqlBuilder {
+//   private _algebra: Algebra.Operation
+//   constructor(query: string | Algebra.Operation) {
+//     this._algebra = typeof query === 'string' ? translate(query) : query
+//   }
+
+//   sparql() {
+//     return toSparql(this._algebra)
+//   }
+
+//   algebra() {
+//     return this._algebra
+//   }
+
+// // }
+// const factory = new Factory()
+
+// function makeVariable(input: string | RDF.Variable) {
+//   return typeof input === 'string' ? variable(input) : input
+// }
+
+// class OperationBuilder {
+//   private expressions: Algebra.Expression[] = []
+//   //private filter = []
+//   //private limit = []
+//   //private offset = []
+//   private patterns: Algebra.Pattern[] = []
+//   private variables: RDF.Variable[] = []
+
+
+//   algebra(): Algebra.Operation {
+//     const bgp = factory.createBgp(this.patterns)
+//     // const filter = factory.createFilter(null, bgp)
+//     const orderBy = factory.createOrderBy(bgp, this.expressions)
+//   }
+
+//   sparql() {
+//     toSparql(this.algebra())
+//   }
+
+//   addPattern(subject: RDF.Quad_Subject, predicate: RDF.Quad_Predicate, object: RDF.Quad_Object, graph?: RDF.Quad_Graph) {
+//     this.patterns.push(factory.createPattern(subject, predicate, object, graph))
+//   }
+
+//   addVariables(variable: string | RDF.Variable) {
+//     this.variables.push(makeVariable(variable))
+//   }
+
+//   addOrderBy(variable: string | RDF.Variable, ordering: order = order.ASC) {
+//     this.expressions.push(factory.createOperatorExpression(ordering, [factory.createTermExpression(makeVariable(variable))])
+//   }
+// }
+
+
+// class OperationsHanlder {
+//   constructor(private operation: Algebra.Operation) {}
+
+//   addExpression({
+//     type, expression, operator, args
+//   }: {
+//     expression: Algebra.Expression
+//   }) {
+//     Algebra.expressionTypes
+//   }
+
+// }
+
+
 
 const NEEDS_ESCAPE = /["\\\t\n\r\b\f\u0000-\u0019\ud800-\udbff]/,
       ESCAPE_ALL = /["\\\t\n\r\b\f\u0000-\u0019]|[\ud800-\udbff][\udc00-\udfff]/g,
-      ESCAPED_CHARS: Record<string, string | undefined> = {
+      ESCAPED_CHARS = {
         '\\': '\\\\', '"': '\\"', '\t': '\\t',
         '\n': '\\n', '\r': '\\r', '\b': '\\b', '\f': '\\f',
       };
@@ -15,8 +155,8 @@ const NEEDS_ESCAPE = /["\\\t\n\r\b\f\u0000-\u0019\ud800-\udbff]/,
  * Requires:
  * - a mutationExpressions or pathExpression property on the path proxy
  */
-export default class SparqlHandler implements Handler {
-  async handle(pathData, path) {
+export default class SparqlHandler {
+  async handle(pathData: Data, path: Data) {
     // First check if we have a mutation expression
     const mutationExpressions = await path.mutationExpressions;
     if (Array.isArray(mutationExpressions) && mutationExpressions.length)
@@ -30,11 +170,60 @@ export default class SparqlHandler implements Handler {
     return this.pathExpressionToQuery(pathData, path, pathExpression);
   }
 
-  pathExpressionToQuery(pathData, path, pathExpression) {
+  pathExpressionToQuery(pathData: Data, path: Data, pathExpression) {
+    const builder = new OperationBuilder()
+    let queryVar = '?subject'
+
     if (pathExpression.length < 2 && !pathData.finalClause)
       throw new Error(`${pathData} should at least contain a subject and a predicate`);
 
     // Create triple patterns
+    if (pathExpression.length > 1) {
+      queryVar = this.createVar(pathData.property);
+      const lastIndex = pathExpression.length - 1;
+      let object = skolemize(root.subject);
+      let queryVar = object;
+      let allowValues = false;
+      pathExpression.forEach(({ predicate, reverse, sort, values }, index) => {
+        // Obtain components and generate triple pattern
+        const subject = object;
+  
+        // Use fixed object values values if they were specified
+        let objects;
+        if (values && values.length > 0) {
+          if (!allowValues)
+            throw new Error('Specifying fixed values is not allowed here');
+          objects.forEach(obj => { builder.addPattern(subject, predicate, obj, null, reverse) })
+          
+          objects = values.map(this.termToString);
+          allowValues = false; // disallow subsequent fixed values for this predicate
+        }
+        // Otherwise, use a variable subject
+        else {
+          object = index < lastIndex ? this.createVar(`v${index}`, scope) : lastVar;
+          objects = [object];
+          allowValues = true;
+        }
+
+
+        // If the sort option was not set, use this object as a query variable
+        if (!sort)
+          queryVar = object;
+        // If sort was set, use this object as a sorting variable
+        else {
+          // TODO: handle when an object is used for sorting, and later also for querying
+          builder.addOrderBy(object, sort)
+          // TODO: use a descriptive lastVar in case of sorting
+          object = queryVar;
+        }
+      });
+    }
+
+    builder.addVariable(pathData.select ?? queryVar)
+    builder.distinct = pathData.distinct ?? false
+
+    
+
     let queryVar = '?subject', sorts = [], clauses = [];
     if (pathExpression.length > 1) {
       queryVar = this.createVar(pathData.property);
@@ -42,6 +231,64 @@ export default class SparqlHandler implements Handler {
     }
     if (pathData.finalClause)
       clauses.push(pathData.finalClause(queryVar));
+
+    builder.addVariable()
+
+
+
+      const factory = new Factory()
+    
+    factory.createBgp([
+      factory.createPattern()
+    ])
+    
+    
+    
+    
+    
+    factory.createOrderBy({
+
+    })
+
+    factory.createTermExpression(RDF.variable())
+
+    let algebra: Algebra.Operation = {
+      type: Algebra.types.PROJECT,
+      variables: [pathData.select ?? queryVar],
+      input: { 
+        type: Algebra.types.ORDER_BY,
+        input: {
+          type: Algebra.types.BGP,
+
+        },
+        expressions: sorts.map(({order, variable}) => factory.createOrderBy({
+          type: Algebra.types.,
+          
+        }, [{
+          expressionType: Algebra.expressionTypes.TERM,
+          type: Algebra.types.EXPRESSION
+        }])
+        
+        
+      //   ({
+      //     type: Algebra.types.EXPRESSION,
+      //     expressionType: Algebra.expressionTypes.OPERATOR,
+      //     operator: order,
+      //     args: [{
+      //       type: Algebra.types.EXPRESSION,
+      //       expressionType: Algebra.expressionTypes.TERM,
+      //       term: variable
+      //     }]
+      // })
+      
+      
+      ) }
+    }
+    
+    
+    
+    algebra = pathData.distinct ? {type: Algebra.types.DISTINCT, input: algebra } : algebra
+
 
     // Create SPARQL query body
     const distinct = pathData.distinct ? 'DISTINCT ' : '';
@@ -137,9 +384,9 @@ export default class SparqlHandler implements Handler {
   }
 
   // Creates a unique query variable within the given scope, based on the suggestion
-  createVar(suggestion = '', scope?: Record<string, boolean | undefined>) {
+  createVar(suggestion = '', scope?) {
     let counter = 0;
-    let label = `?${suggestion.match(/[a-z0-9]*$/i)?.[0] ?? 'result'}`;
+    let label = `?${suggestion.match(/[a-z0-9]*$/i)[0] || 'result'}`;
     if (scope) {
       suggestion = label;
       while (scope[label])
@@ -150,7 +397,7 @@ export default class SparqlHandler implements Handler {
   }
 
   // Converts an RDFJS term to a string that we can use in a query
-  termToString(term: RDF.Term) {
+  termToString(term) {
     // Determine escaped value
     let { value } = term;
     if (NEEDS_ESCAPE.test(value))
@@ -178,21 +425,20 @@ export default class SparqlHandler implements Handler {
   }
 
   // Creates triple patterns for the given subject, predicate, and objects
-  triplePatterns(subjectString: string, predicateTerm: RDF.Term, objectStrings: string[], reverse = false) {
+  triplePatterns(subjectString, predicateTerm, objectStrings, reverse = false) {
     let subjectStrings = [subjectString];
     if (reverse)
       [subjectStrings, objectStrings] = [objectStrings, subjectStrings];
     const objects = objectStrings.join(', ');
-    const predicate = predicateTerm.termType === 'path' ? predicateTerm.value : `<${predicateTerm.value}>`;
-    return subjectStrings.map(s => `${s} ${predicate} ${objects}.`);
+    return subjectStrings.map(s => `${s} <${predicateTerm.value}> ${objects}.`);
   }
 }
 
 // Replaces a character by its escaped version
 // (borrowed from https://www.npmjs.com/package/n3)
-function escapeCharacter(character: string) {
+function escapeCharacter(character) {
   // Replace a single character by its escaped version
-  let result: string | undefined = ESCAPED_CHARS[character];
+  let result = ESCAPED_CHARS[character];
   if (result === undefined) {
     // Replace a single character with its 4-bit unicode escape sequence
     if (character.length === 1) {
@@ -211,7 +457,7 @@ function escapeCharacter(character: string) {
 
 // Skolemizes the given term if it is a blank node
 let skolemId = 0;
-function skolemize(term: RDF.Term) {
+function skolemize(term: RDF.Term): RDF.Term {
   if (term.termType !== 'BlankNode')
     return term;
   if (!term.skolemized)

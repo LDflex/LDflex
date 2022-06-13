@@ -4,6 +4,10 @@ import { valueToTerm } from './valueUtils';
 import type { MaybePromise, PathData, Resolver } from './types'
 import { IExpandOptions, JsonLdContext } from 'jsonld-context-parser'
 import * as RDF from '@rdfjs/types';
+import { Parser } from 'sparqljs';
+const parser = new Parser()
+
+parser.parse
 
 /**
  * Resolves property names of a path
@@ -82,17 +86,19 @@ export default abstract class AbstractPathResolver implements Resolver {
     // JavaScript requires keys containing colons to be quoted,
     // so prefixed names would need to written as path['foaf:knows'].
     // We thus allow writing path.foaf_knows or path.foaf$knows instead.
+    // TODO: Make sure this can be captured by the types system that we develop - or not
     return this.lookupProperty(property.replace(/^([a-z][a-z0-9]*)[_$]/i, '$1:'));
   }
 
   /**
    * Gets the results cache for the given predicate.
+   * TODO: If anything results cache's should be per SPARQL algebra
+   * rather than per predicate - furthermore this, in general, is better
+   * handled by the query engine.
    */
-  getResultsCache(pathData, predicate, reverse: MaybePromise<boolean>) {
-    let { propertyCache } = pathData;
+  getResultsCache({ propertyCache }: PathData, predicate: MaybePromise<RDF.Term>, reverse: MaybePromise<boolean>) {
     return propertyCache && lazyThenable(async () => {
       // Preloading does not work with reversed predicates
-      // propertyCache = !(await reverse) && await propertyCache;
       return !(await reverse) && (await propertyCache)?.[(await predicate).value];
     });
   }

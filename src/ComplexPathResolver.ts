@@ -4,7 +4,7 @@ import { namedNode } from '@rdfjs/data-model';
 import { IJsonLdContextNormalizedRaw } from 'jsonld-context-parser';
 import { Resolver } from './types';
 import * as RDF from '@rdfjs/types';
-const factory = new Factory();
+const {  } = new Factory();
 
 /**
  * Writes SPARQL algebra a complex SPARQL path

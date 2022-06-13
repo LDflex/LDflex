@@ -4,7 +4,7 @@ import {
   ensureArray, joinArrays,
   valueToTerm, hasPlainObjectArgs, isAsyncIterable,
 } from './valueUtils';
-import { Handler, PathData } from './types';
+import { Handler, MaybePromise, PathData } from './types';
 
 /**
  * Returns a function that, when called with arguments,
@@ -93,7 +93,7 @@ export default class MutationFunctionHandler implements Handler {
     const objects = [];
     for (const value of values) {
       if (!isAsyncIterable(value))
-      // Add a (promise to) a single value
+        // Add a (promise to) a single value
         objects.push(await value);
       // Add multiple values from a path
       else
@@ -101,4 +101,31 @@ export default class MutationFunctionHandler implements Handler {
     }
     return objects.map(valueToTerm);
   }
+}
+
+async function extract<T>(values: (MaybePromise<AsyncIterable<T>> | MaybePromise<T>)[]): Promise<T[] | null> {
+  // If no specific values are specified, match all (represented by `null`)
+  if (values.length === 0)
+    return null;
+
+  // Otherwise, expand singular values, promises, and paths
+  const objects: T[] = [];
+  for (const value of values) {
+    if (!isAsyncIterable(value))
+      // Add a (promise to) a single value
+      objects.push(await value);
+    // Add multiple values from a path
+    else
+      objects.push(...(await iterableToArray(value)));
+  }
+
+  return objects;
+}
+
+
+export async function iterableToArray<T>(iterable: AsyncIterable<T>): Promise<T[]> {
+  const items: T[] = [];
+  for await (const item of iterable)
+    items.push(item);
+  return items;
 }

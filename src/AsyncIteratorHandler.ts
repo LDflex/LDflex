@@ -10,7 +10,7 @@ import type { Handler, PathData } from './types'
  *  - (optional) results on the path proxy
  */
 export default class AsyncIteratorHandler implements Handler {
-  handle({ subject }: PathData, pathProxy) {
+  handle({ subject }: PathData, pathProxy: PathData['proxy']) {
     // Return a one-item iterator of the subject if present;
     // otherwise, return all results of this path
     return subject ?

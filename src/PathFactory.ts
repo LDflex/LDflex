@@ -15,7 +15,7 @@ export default class PathFactory {
   private _settings: Settings;
   public static defaultHandlers = defaultHandlers;
 
-  constructor(settings: Partial<Settings>, data) {
+  constructor(settings?: Partial<Settings>, data) {
     // Store settings and data
     this._settings = settings = { ...settings };
     this._data = data = { ...data };
