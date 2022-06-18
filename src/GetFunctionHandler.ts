@@ -19,7 +19,7 @@ export default class GetFunctionHandler implements Handler {
       args.length === 1 ? args[0] : args, true);
   }
 
-  async readProperties(path, properties, wrapSingleValues = false) {
+  async readProperties(path, properties: string | AsyncIterable<string> | string[], wrapSingleValues = false) {
     // Convert an async iterable to an array
     if (isAsyncIterable(properties))
       properties = await iterableToArray(properties);

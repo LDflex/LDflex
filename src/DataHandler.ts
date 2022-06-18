@@ -1,5 +1,10 @@
 import { Handler } from "./types";
 
+interface Options {
+  async?: boolean;
+  function?: boolean;
+}
+
 /**
  * Resolves to the given item in the path data.
  * For example, new DataHandler({}, 'foo', 'bar')
@@ -11,35 +16,36 @@ import { Handler } from "./types";
 export default class DataHandler implements Handler {
   private _isAsync: boolean;
   private _isFunction: boolean;
+  private _dataProperties: string[]
 
-  constructor(options, ...dataProperties) {
-    this._isAsync = options.async;
-    this._isFunction = options.function;
+  constructor(options: Options, ...dataProperties: string[]) {
+    this._isAsync = Boolean(options.async);
+    this._isFunction = Boolean(options.function);
     this._dataProperties = dataProperties;
   }
 
-  static sync(...dataProperties) {
+  static sync(...dataProperties: string[]) {
     return new DataHandler({ async: false }, ...dataProperties);
   }
 
-  static syncFunction(...dataProperties) {
+  static syncFunction(...dataProperties: string[]) {
     return new DataHandler({ async: false, function: true }, ...dataProperties);
   }
 
-  static async(...dataProperties) {
+  static async(...dataProperties: string[]) {
     return new DataHandler({ async: true }, ...dataProperties);
   }
 
-  static asyncFunction(...dataProperties) {
+  static asyncFunction(...dataProperties: string[]) {
     return new DataHandler({ async: true, function: true }, ...dataProperties);
   }
 
 
   // Resolves the data path, or returns a function that does so
   handle(pathData) {
-    return !this._isFunction ?
-      this._resolveDataPath(pathData) :
-      () => this._resolveDataPath(pathData);
+    return this._isFunction ?
+      () => this._resolveDataPath(pathData) :
+      this._resolveDataPath(pathData);
   }
 
   // Resolves the data path
@@ -51,15 +57,16 @@ export default class DataHandler implements Handler {
 
   // Resolves synchronous property access
   _resolveSyncDataPath(data) {
+    return this._dataProperties.reduce(prop => data?.[prop])
     for (const property of this._dataProperties)
-      data = data && data[property];
+      data &&= data[property];
     return data;
   }
 
   // Resolves asynchronous property access
   async _resolveAsyncDataPath(data) {
     for (const property of this._dataProperties)
-      data = data && await data[property];
+      data &&= await data[property];
     return data;
   }
 }

@@ -24,6 +24,7 @@ export interface Settings {
 
 export interface PathData {
   settings: Settings;
+  subject: Term;
   // resultsCache?: MaybePromise<Map<string, Term>>;
   // extendPath: HandlerFunction; // TODO: Check this
   extendPath(pathData: PathData, path?: PathData): PathData; // TODO: Check this

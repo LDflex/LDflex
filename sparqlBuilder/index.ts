@@ -14,12 +14,12 @@ const path = createPath(
 path.subject
 
 class SparqlBuilder {
-  private factory: Factory;
   private _variables?: RDF.Variable[];
+  private _template?: Algebra.Pattern[];
+
   distinct = false;
 
-  constructor(factory?: Factory) {
-    this.factory = factory || new Factory();
+  constructor(private factory = new Factory()) {
   }
 
   get variables(): RDF.Variable[] {
@@ -31,8 +31,20 @@ class SparqlBuilder {
     throw new Error('Not Implemented');
   }
 
-  get operation(): Algebra.Operation {
+  get template(): Algebra.Pattern[] {
+    if (this._template)
+      return this._template;
 
+    const { operation } = this;
+    if (operation.type === Algebra.types.BGP) {
+      return operation.patterns;
+    }
+
+    throw new Error('Not Implemented');
+  }
+
+  get operation(): Algebra.Operation {
+    throw new Error('Not Implemented');
   }
 
   get select(): Algebra.Project {
@@ -40,7 +52,7 @@ class SparqlBuilder {
   }
 
   get construct(): Algebra.Construct {
-
+    return this.factory.createConstruct(this.operation, this.template);
   }
 
   get ask() {

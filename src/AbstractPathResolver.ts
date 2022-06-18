@@ -58,7 +58,8 @@ export default abstract class AbstractPathResolver implements Resolver {
    */
   resolve(property: string, pathData: PathData) {
     const predicate = lazyThenable(() => this.expandProperty(property));
-    const reverse = lazyThenable(() => this.getContextRaw().then(context => context[property]?.['@reverse']))
+    const reverse = this.getContextRaw().then(context => context[property]?.['@reverse']);
+    // const reverse = lazyThenable(() => this.getContextRaw().then(context => context[property]?.['@reverse']))
     const resultsCache = this.getResultsCache(pathData, predicate, reverse);
     const newData = { property, predicate, resultsCache, reverse, apply: this.apply };
     return pathData.extendPath(newData);

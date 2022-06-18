@@ -1,4 +1,4 @@
-import { Handler } from "./types";
+import { Handler, PathData } from "./types";
 
 const VARIABLE = /(SELECT\s+)(\?\S+)/;
 const QUERY_TAIL = /\}[^}]*$/;
@@ -37,11 +37,11 @@ export default class PreloadHandler implements Handler {
    * Creates a cache for the results of
    * resolving the given predicates against the path.
    */
-  async createResultsCache(predicates, pathData, path) {
+  async createResultsCache(predicates, pathData: PathData, path) {
     // Execute the preloading query
     const { query, vars, resultVar } = await this.createQuery(predicates, path);
     const { settings: { queryEngine } } = pathData;
-    const bindings = queryEngine.execute(query);
+    const bindings = await queryEngine.queryBindings(query);
 
     // Extract all results and their preloaded property values
     const resultsCache = {};
@@ -75,7 +75,7 @@ export default class PreloadHandler implements Handler {
   /**
    * Creates the query for preloading the given predicates on the path
    */
-  async createQuery(predicates, path) {
+  async createQuery(predicates, path: PathData['proxy']) {
     // Obtain the query for the current path, and its main variable
     const parentQuery = await path.sparql;
     const variableMatch = VARIABLE.exec(parentQuery);
