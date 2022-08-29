@@ -34,7 +34,7 @@
     "@comunica/actor-init-sparql-file": "^2.0.1",
     "@ldflex/comunica": "^4.0.0",
     "eslint": "^8.4.0",
-    "eslint-plugin-jest": "^26.0.0",
+    "eslint-plugin-jest": "^27.0.1",
     "husky": "^8.0.1",
     "jest": "^28.0.3",
     "n3": "^1.12.2",
