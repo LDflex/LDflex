@@ -33,10 +33,10 @@ export default class SparqlHandler {
       throw new Error(`${pathData} should at least contain a subject and a predicate`);
 
     // Create triple patterns
-    let queryVar = '?subject', sorts = [], clauses = [];
+    let queryVar = '?subject', sorts = [], clauses = [], filters = [];
     if (pathExpression.length > 1) {
       queryVar = this.createVar(pathData.property);
-      ({ queryVar, sorts, clauses } = this.expressionToTriplePatterns(pathExpression, queryVar));
+      ({ queryVar, sorts, clauses, filters } = this.expressionToTriplePatterns(pathExpression, queryVar));
     }
     if (pathData.finalClause)
       clauses.push(pathData.finalClause(queryVar));
@@ -44,7 +44,8 @@ export default class SparqlHandler {
     // Create SPARQL query body
     const distinct = pathData.distinct ? 'DISTINCT ' : '';
     const select = `SELECT ${distinct}${pathData.select ? pathData.select : queryVar}`;
-    const where = ` WHERE {\n  ${clauses.join('\n  ')}\n}`;
+    const filter = filters.map(({ expect, value }) => `  FILTER(${expect} = ${value})`).join('\n');
+    const where = ` WHERE {\n  ${clauses.join('\n  ')}\n${filter ? `${filter}\n` : ''}}`;
     const orderClauses = sorts.map(({ order, variable }) => `${order}(${variable})`);
     const orderBy = orderClauses.length === 0 ? '' : `\nORDER BY ${orderClauses.join(' ')}`;
     return `${select}${where}${orderBy}`;
@@ -60,7 +61,7 @@ export default class SparqlHandler {
     let subject, where;
     // If the only condition is a subject, we need no WHERE clause
     if (conditions.length === 1) {
-      subject = this.termToString(conditions[0].subject);
+      subject = this.termToString(skolemize(conditions[0].subject));
       where = [];
     }
     // Otherwise, create a WHERE clause from all conditions
@@ -76,7 +77,7 @@ export default class SparqlHandler {
     for (const { predicate, reverse, objects } of predicateObjects) {
       // Mutate either only the specified objects, or all of them
       const objectStrings = objects ?
-        objects.map(o => this.termToString(o)) :
+        objects.map(o => this.termToString(skolemize(o))) :
         [this.createVar(predicate.value, scope)];
       // Generate a triple pattern for all subjects
       mutations.push(...this.triplePatterns(subject, predicate, objectStrings, reverse));
@@ -95,13 +96,18 @@ export default class SparqlHandler {
     const lastIndex = pathExpression.length - 1;
     const clauses = [];
     const sorts = [];
+    const filters = [];
     let object = this.termToString(skolemize(root.subject));
     let queryVar = object;
     let allowValues = false;
     pathExpression.forEach((segment, index) => {
       // Obtain components and generate triple pattern
       const subject = object;
-      const { predicate, reverse, sort, values } = segment;
+      let { predicate, reverse, sort, values } = segment;
+
+      const languageFilters = values?.filter(item => item.value === undefined && item.language) ?? [];
+      values = values?.filter(item => !languageFilters.includes(item));
+      const langcodes = languageFilters.map(item => item.language);
 
       // Use fixed object values values if they were specified
       let objects;
@@ -115,6 +121,9 @@ export default class SparqlHandler {
       else {
         object = index < lastIndex ? this.createVar(`v${index}`, scope) : lastVar;
         objects = [object];
+        for (const langcode of langcodes)
+          filters.push({ expect: `lang(${object})`, value: `'${langcode}'` });
+
         allowValues = true;
       }
       clauses.push(...this.triplePatterns(subject, predicate, objects, reverse));
@@ -131,7 +140,7 @@ export default class SparqlHandler {
         object = queryVar;
       }
     });
-    return { queryVar, sorts, clauses };
+    return { queryVar, sorts, clauses, filters };
   }
 
   // Creates a unique query variable within the given scope, based on the suggestion
