@@ -2,10 +2,11 @@ import PathProxy from '../../src/PathProxy';
 import PathExpressionHandler from '../../src/PathExpressionHandler';
 import InsertFunctionHandler from '../../src/InsertFunctionHandler';
 import DeleteFunctionHandler from '../../src/DeleteFunctionHandler';
+import SparqlHandler from '../../src/SparqlHandler';
 import MutationExpressionsHandler from '../../src/MutationExpressionsHandler';
 import JSONLDResolver from '../../src/JSONLDResolver';
 import context from '../context';
-import { namedNode, literal } from '@rdfjs/data-model';
+import { namedNode, literal, blankNode } from '@rdfjs/data-model';
 
 describe('a query path with a path expression handler', () => {
   const handlers = {
@@ -13,6 +14,7 @@ describe('a query path with a path expression handler', () => {
     add: new InsertFunctionHandler(),
     delete: new DeleteFunctionHandler(),
     mutationExpressions: new MutationExpressionsHandler(),
+    sparql: new SparqlHandler(),
     [Symbol.asyncIterator]: {
       handle() {
         const iterable = (async function *() {
@@ -223,5 +225,11 @@ describe('a query path with a path expression handler', () => {
         ],
       },
     ]);
+  });
+
+  it('skolemizes blank nodes inside mutationExpressions', async () => {
+    const blank = blankNode();
+    const query = await person.friends['http://xmlns.com/foaf/0.1/name'].add(blank).sparql;
+    expect(query).toContain('urn:ldflex:sk');
   });
 });
