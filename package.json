@@ -35,8 +35,8 @@
     "@ldflex/comunica": "^4.0.0",
     "eslint": "^8.4.0",
     "eslint-plugin-jest": "^26.0.0",
-    "husky": "^7.0.4",
-    "jest": "^27.4.3",
+    "husky": "^8.0.1",
+    "jest": "^28.0.3",
     "n3": "^1.12.2",
     "semantic-release": "^19.0.2"
   },
