@@ -1,4 +1,5 @@
 import { namedNode, literal } from '@rdfjs/data-model';
+import { Filter } from './SparqlHandler';
 
 const xsd = 'http://www.w3.org/2001/XMLSchema#';
 
@@ -97,6 +98,9 @@ export function valueToTerm(value) {
     if (value) {
       // RDF/JS Term
       if (typeof value.termType === 'string')
+        return value;
+      // Filters for FILTER()
+      if (value instanceof Filter)
         return value;
       // Date
       if (value instanceof Date)

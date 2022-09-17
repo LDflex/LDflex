@@ -44,7 +44,7 @@ export default class SparqlHandler {
     // Create SPARQL query body
     const distinct = pathData.distinct ? 'DISTINCT ' : '';
     const select = `SELECT ${distinct}${pathData.select ? pathData.select : queryVar}`;
-    const filter = filters.map(({ expect, value }) => `  FILTER(${expect} = ${value})`).join('\n');
+    const filter = filters.length ? `FILTER(${filters.join(' || ')})` : '';
     const where = ` WHERE {\n  ${clauses.join('\n  ')}\n${filter ? `${filter}\n` : ''}}`;
     const orderClauses = sorts.map(({ order, variable }) => `${order}(${variable})`);
     const orderBy = orderClauses.length === 0 ? '' : `\nORDER BY ${orderClauses.join(' ')}`;
@@ -105,9 +105,8 @@ export default class SparqlHandler {
       const subject = object;
       let { predicate, reverse, sort, values } = segment;
 
-      const languageFilters = values?.filter(item => item.value === undefined && item.language) ?? [];
-      values = values?.filter(item => !languageFilters.includes(item));
-      const langcodes = languageFilters.map(item => item.language);
+      const givenFilters = values?.filter(item => item instanceof Filter) ?? [];
+      values = values?.filter(item => !givenFilters.includes(item));
 
       // Use fixed object values values if they were specified
       let objects;
@@ -121,8 +120,8 @@ export default class SparqlHandler {
       else {
         object = index < lastIndex ? this.createVar(`v${index}`, scope) : lastVar;
         objects = [object];
-        for (const langcode of langcodes)
-          filters.push({ expect: `lang(${object})`, value: `'${langcode}'` });
+        for (const filter of givenFilters)
+          filters.push(filter.toString(object));
 
         allowValues = true;
       }
@@ -224,4 +223,15 @@ function skolemize(term) {
   if (!term.skolemized)
     term.skolemized = namedNode(`urn:ldflex:sk${skolemId++}`);
   return term.skolemized;
+}
+
+export class Filter {
+  constructor(functionName, value) {
+    this.value = value;
+    this.functionName = functionName;
+  }
+
+  toString(variable) {
+    return `${this.functionName}(${variable}) = '${this.value}'`;
+  }
 }

@@ -3,6 +3,7 @@ import JSONLDResolver from '../../src/JSONLDResolver';
 import { createQueryEngine } from '../util';
 import { namedNode, literal } from '@rdfjs/data-model';
 import defaultHandlers from '../../src/defaultHandlers';
+import { Filter } from '../../src/SparqlHandler';
 
 import context from '../context';
 
@@ -39,13 +40,9 @@ const queryEngine = createQueryEngine([
   literal('zweite Tomate', 'de'),
 ]);
 
-function language(langcode) {
-  return literal(undefined, langcode);
-}
-
-const fr = language('fr');
-const nl = language('nl');
-// const de = language('de');
+const fr = new Filter('lang', 'fr');
+const nl = new Filter('lang', 'nl');
+const de = new Filter('lang', 'de');
 
 describe('create a query while filtering on langcode', () => {
   let tomato;
@@ -64,6 +61,9 @@ describe('create a query while filtering on langcode', () => {
 
     const query2 = await tomato.label(fr).sparql;
     expect(query2).toContain('FILTER(lang(?label) = \'fr\')');
+
+    const query3 = await tomato.label(fr, de).sparql;
+    expect(query3).toContain('FILTER(lang(?label) = \'fr\' || lang(?label) = \'de\')');
 
     const queryWithout = await tomato.label.sparql;
     expect(queryWithout).not.toContain('FILTER(lang(');
