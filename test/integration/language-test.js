@@ -1,5 +1,5 @@
 import { namedNode } from '@rdfjs/data-model';
-import { Filter } from '../../src/SparqlHandler';
+import { lang, langMatches } from '../../src/SparqlHandler';
 import context from '../context';
 import ComunicaEngine from '@ldflex/comunica';
 import { Store, Parser } from 'n3';
@@ -12,7 +12,7 @@ const store = new Store(
       @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
       @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 
-      ex:tomato rdfs:label "Tomate"@en .
+      ex:tomato rdfs:label "Tomato"@en .
       ex:tomato rdfs:label "Second Tomato"@en-gb .
       ex:tomato rdfs:label "Tomaat"@nl .
       ex:tomato rdfs:label "Tomate"@de .
@@ -24,9 +24,12 @@ const queryEngine = new ComunicaEngine(store);
 const factory = new PathFactory({ context, queryEngine });
 const tomato = factory.create({ subject: namedNode('http://example.org/tomato') });
 
-const fr = new Filter('lang', 'fr');
-const nl = new Filter('lang', 'nl');
-const de = new Filter('lang', 'de');
+const fr = lang('fr');
+const nl = lang('nl');
+const de = lang('de');
+const en = lang('en');
+
+const english = langMatches('en');
 
 describe('create a query while filtering on langcode', () => {
   it('returns a query with the selected language', async () => {
@@ -48,5 +51,13 @@ describe('getting the right results when filtering on langcode', () => {
   it('returns results in the selected language', async () => {
     const nlLabel = await tomato.label(nl).value;
     expect(nlLabel).toBe('Tomaat');
+  });
+
+  it('returns results in the that match the language', async () => {
+    const englishLabels = await tomato.label(english).values;
+    expect(englishLabels).toStrictEqual(['Tomato', 'Second Tomato']);
+
+    const enLabel = await tomato.label(en).values;
+    expect(enLabel).toStrictEqual(['Tomato']);
   });
 });

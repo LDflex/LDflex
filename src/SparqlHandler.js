@@ -45,7 +45,7 @@ export default class SparqlHandler {
     const distinct = pathData.distinct ? 'DISTINCT ' : '';
     const select = `SELECT ${distinct}${pathData.select ? pathData.select : queryVar}`;
     const filter = filters.length ? `FILTER(${filters.join(' || ')})` : '';
-    const where = ` WHERE {\n  ${clauses.join('\n  ')}\n${filter ? `${filter}\n` : ''}}`;
+    const where = ` WHERE {\n  ${clauses.join('\n  ')}\n${filter ? `  ${filter}\n` : ''}}`;
     const orderClauses = sorts.map(({ order, variable }) => `${order}(${variable})`);
     const orderBy = orderClauses.length === 0 ? '' : `\nORDER BY ${orderClauses.join(' ')}`;
     return `${select}${where}${orderBy}`;
@@ -226,12 +226,19 @@ function skolemize(term) {
 }
 
 export class Filter {
-  constructor(functionName, value) {
-    this.value = value;
-    this.functionName = functionName;
+  constructor(templateCallback) {
+    this.templateCallback = templateCallback;
   }
 
   toString(variable) {
-    return `${this.functionName}(${variable}) = '${this.value}'`;
+    return this.templateCallback(variable);
   }
+}
+
+export function lang(langcode) {
+  return new Filter(variable => `lang(${variable}) = '${langcode}'`);
+}
+
+export function langMatches(langcode) {
+  return new Filter(variable => `langMatches(lang(${variable}), '${langcode}')`);
 }
