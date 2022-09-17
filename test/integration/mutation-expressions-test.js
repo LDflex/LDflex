@@ -14,7 +14,6 @@ describe('a query path with a path expression handler', () => {
     add: new InsertFunctionHandler(),
     delete: new DeleteFunctionHandler(),
     mutationExpressions: new MutationExpressionsHandler(),
-    sparql: new SparqlHandler(),
     [Symbol.asyncIterator]: {
       handle() {
         const iterable = (async function *() {
@@ -228,8 +227,21 @@ describe('a query path with a path expression handler', () => {
   });
 
   it('skolemizes blank nodes inside mutationExpressions', async () => {
-    const blank = blankNode();
-    const query = await person.friends['http://xmlns.com/foaf/0.1/name'].add(blank).sparql;
-    expect(query).toContain('urn:ldflex:sk');
+    const handler = new SparqlHandler();
+    const mutationExpressions = [
+      {
+        mutationType: 'INSERT',
+        conditions: [{ subject: blankNode('a') }],
+        predicateObjects: [{
+          predicate: namedNode('https://example.org/p'),
+          objects: [blankNode('b')],
+        }],
+      },
+    ];
+
+    const query = await handler.handle({}, { mutationExpressions });
+
+    expect(query).toContain('urn:ldflex:sk0');
+    expect(query).toContain('urn:ldflex:sk1');
   });
 });
