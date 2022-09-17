@@ -1,12 +1,6 @@
-import PathProxy from '../../src/PathProxy';
-import JSONLDResolver from '../../src/JSONLDResolver';
-import { createQueryEngine } from '../util';
-import { namedNode, literal } from '@rdfjs/data-model';
-import defaultHandlers from '../../src/defaultHandlers';
+import { namedNode } from '@rdfjs/data-model';
 import { Filter } from '../../src/SparqlHandler';
-
 import context from '../context';
-
 import ComunicaEngine from '@ldflex/comunica';
 import { Store, Parser } from 'n3';
 import PathFactory from '../../src/PathFactory';
@@ -23,38 +17,18 @@ const store = new Store(
       ex:tomato rdfs:label "Tomaat"@nl .
       ex:tomato rdfs:label "Tomate"@de .
       ex:tomato rdfs:label "Zweite Tomate"@de .
-
     `)
 );
-const realQueryEngine = new ComunicaEngine(store);
 
-const factory = new PathFactory({ context, queryEngine: realQueryEngine });
-const myTomato = factory.create({ subject: namedNode('http://example.org/tomato') });
-
-const subject = namedNode('https://example.org/tomato');
-const queryEngine = createQueryEngine([
-  literal('Tomato', 'en'),
-  literal('Second Tomato', 'en-gb'),
-  literal('Tomaat', 'nl'),
-  literal('Tomate', 'de'),
-  literal('zweite Tomate', 'de'),
-]);
+const queryEngine = new ComunicaEngine(store);
+const factory = new PathFactory({ context, queryEngine });
+const tomato = factory.create({ subject: namedNode('http://example.org/tomato') });
 
 const fr = new Filter('lang', 'fr');
 const nl = new Filter('lang', 'nl');
 const de = new Filter('lang', 'de');
 
 describe('create a query while filtering on langcode', () => {
-  let tomato;
-  beforeAll(() => {
-    const resolvers = [
-      new JSONLDResolver(context),
-    ];
-
-    const pathProxy = new PathProxy({ handlers: defaultHandlers, resolvers });
-    tomato = pathProxy.createPath({ queryEngine }, { subject });
-  });
-
   it('returns a query with the selected language', async () => {
     const query1 = await tomato.label(nl).sparql;
     expect(query1).toContain('FILTER(lang(?label) = \'nl\')');
@@ -72,7 +46,7 @@ describe('create a query while filtering on langcode', () => {
 
 describe('getting the right results when filtering on langcode', () => {
   it('returns results in the selected language', async () => {
-    const nlLabel = await myTomato.label(nl).value;
+    const nlLabel = await tomato.label(nl).value;
     expect(nlLabel).toBe('Tomaat');
   });
 });
