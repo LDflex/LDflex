@@ -1,4 +1,5 @@
 import ContextProvider from './ContextProvider';
+import { Filter } from './filters';
 import { lazyThenable } from './promiseUtils';
 import { valueToTerm } from './valueUtils';
 
@@ -65,8 +66,10 @@ export default class AbstractPathResolver {
       const { property } = pathData;
       throw new Error(`Specify at least one term when calling .${property}() on a path`);
     }
+
     // With the property constraint added, continue from the previous path
-    pathData.values = args.map(valueToTerm);
+    pathData.filters = args.filter(object => object instanceof Filter);
+    pathData.values = args.filter(object => !pathData.filters.includes(object)).map(valueToTerm);
     return path;
   }
 

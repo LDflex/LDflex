@@ -96,17 +96,14 @@ export default class SparqlHandler {
     const lastIndex = pathExpression.length - 1;
     const clauses = [];
     const sorts = [];
-    const filters = [];
+    const allFilters = [];
     let object = this.termToString(skolemize(root.subject));
     let queryVar = object;
     let allowValues = false;
     pathExpression.forEach((segment, index) => {
       // Obtain components and generate triple pattern
       const subject = object;
-      let { predicate, reverse, sort, values } = segment;
-
-      const givenFilters = values?.filter(item => item instanceof Filter) ?? [];
-      values = values?.filter(item => !givenFilters.includes(item));
+      const { predicate, reverse, sort, values, filters } = segment;
 
       // Use fixed object values values if they were specified
       let objects;
@@ -120,8 +117,10 @@ export default class SparqlHandler {
       else {
         object = index < lastIndex ? this.createVar(`v${index}`, scope) : lastVar;
         objects = [object];
-        for (const filter of givenFilters)
-          filters.push(filter.toString(object));
+        if (filters) {
+          for (const filter of filters)
+            allFilters.push(filter.toString(object));
+        }
 
         allowValues = true;
       }
@@ -139,7 +138,7 @@ export default class SparqlHandler {
         object = queryVar;
       }
     });
-    return { queryVar, sorts, clauses, filters };
+    return { queryVar, sorts, clauses, filters: allFilters };
   }
 
   // Creates a unique query variable within the given scope, based on the suggestion
@@ -223,22 +222,4 @@ function skolemize(term) {
   if (!term.skolemized)
     term.skolemized = namedNode(`urn:ldflex:sk${skolemId++}`);
   return term.skolemized;
-}
-
-export class Filter {
-  constructor(templateCallback) {
-    this.templateCallback = templateCallback;
-  }
-
-  toString(variable) {
-    return this.templateCallback(variable);
-  }
-}
-
-export function lang(langcode) {
-  return new Filter(variable => `lang(${variable}) = '${langcode}'`);
-}
-
-export function langMatches(langcode) {
-  return new Filter(variable => `langMatches(lang(${variable}), '${langcode}')`);
 }
