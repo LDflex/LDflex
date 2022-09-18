@@ -46,7 +46,7 @@ export default class PreloadHandler {
     const propertyCaches = {};
     for await (const binding of bindings) {
       // Initialize the result's cache if needed
-      const result = binding.get(resultVar), hash = hashTerm(result);
+      const result = binding.get(resultVar) ?? binding.get(resultVar.substring(1)), hash = hashTerm(result);
       if (!(hash in resultsCache)) {
         // Create the property cache
         const propertyCache = propertyCaches[hash] = {};
@@ -60,7 +60,7 @@ export default class PreloadHandler {
       // Create and cache a possible property value path from the binding
       const propertyCache = propertyCaches[hash];
       for (let i = 0; i < vars.length; i++) {
-        const value = binding.get(vars[i]);
+        const value = binding.get(vars[i]) ?? binding.get(vars[i].substring(1));
         if (value) {
           const valuePath = pathData.extendPath({ subject: value }, null);
           propertyCache[predicates[i]].push(valuePath);
