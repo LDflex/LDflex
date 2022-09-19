@@ -2,10 +2,11 @@ import PathProxy from '../../src/PathProxy';
 import PathExpressionHandler from '../../src/PathExpressionHandler';
 import InsertFunctionHandler from '../../src/InsertFunctionHandler';
 import DeleteFunctionHandler from '../../src/DeleteFunctionHandler';
+import SparqlHandler from '../../src/SparqlHandler';
 import MutationExpressionsHandler from '../../src/MutationExpressionsHandler';
 import JSONLDResolver from '../../src/JSONLDResolver';
 import context from '../context';
-import { namedNode, literal } from '@rdfjs/data-model';
+import { namedNode, literal, blankNode } from '@rdfjs/data-model';
 
 describe('a query path with a path expression handler', () => {
   const handlers = {
@@ -223,5 +224,24 @@ describe('a query path with a path expression handler', () => {
         ],
       },
     ]);
+  });
+
+  it('skolemizes blank nodes inside mutationExpressions', async () => {
+    const handler = new SparqlHandler();
+    const mutationExpressions = [
+      {
+        mutationType: 'INSERT',
+        conditions: [{ subject: blankNode('a') }],
+        predicateObjects: [{
+          predicate: namedNode('https://example.org/p'),
+          objects: [blankNode('b')],
+        }],
+      },
+    ];
+
+    const query = await handler.handle({}, { mutationExpressions });
+
+    expect(query).toContain('urn:ldflex:sk0');
+    expect(query).toContain('urn:ldflex:sk1');
   });
 });
