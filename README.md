@@ -115,6 +115,28 @@ async function showPerson(person) {
 })(ruben);
 
 ```
+### Setting the language default
+```javascript
+(async subject => {
+  const englishSubject = subject.withLangPrefs('en');
+  const labelEnglish = await englishSubject['org:memberOf'].label
+  // Ghent University
+  
+  const dutchSubject = subject.withLangPrefs('nl');
+  const labelDutch = dutchSubject['org:memberOf'].label
+  // Universiteit Gent
+})(ruben);
+
+```
+
+### Getting objects with a specific language
+```javascript
+(async subject => {
+  const subject['org:memberOf'].label.lang('en')
+  // Ghent University
+})(ruben);
+
+```
 
 ### Converting an LDflex expression into a SPARQL query
 ```javascript
