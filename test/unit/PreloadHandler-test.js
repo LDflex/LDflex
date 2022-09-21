@@ -14,7 +14,7 @@ describe('a PreloadHandler instance', () => {
     [literal('http://example.org/#Alice'), undefined, undefined],
     [blankNode('x'), undefined, undefined],
   ];
-  const queryEngine = createQueryEngine(variables, results);
+  const queryEngine = createQueryEngine(variables, results, true);
   const pathData = {
     extendPath: jest.fn(data => data),
     settings: { queryEngine },

@@ -4,7 +4,7 @@ export function deindent(string) {
   return string.trim().replace(indent, '');
 }
 
-export function createQueryEngine(variableNames, results) {
+export function createQueryEngine(variableNames, results, removeQuestionmark = false) {
   if (!results) {
     results = variableNames;
     variableNames = ['?value'];
@@ -14,7 +14,7 @@ export function createQueryEngine(variableNames, results) {
       for (let result of results) {
         if (!Array.isArray(result))
           result = [result];
-        const bindings = variableNames.map((name, i) => [name, result[i]]);
+        const bindings = variableNames.map((name, i) => [removeQuestionmark ? name.substring(1) : name, result[i]]);
         yield new Map(bindings);
       }
     }),
