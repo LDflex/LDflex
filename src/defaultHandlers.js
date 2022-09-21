@@ -13,6 +13,7 @@ import PreloadHandler from './PreloadHandler';
 import PropertiesHandler from './PropertiesHandler';
 import ReplaceFunctionHandler from './ReplaceFunctionHandler';
 import SetFunctionHandler from './SetFunctionHandler';
+import LangHandler from './LangHandler';
 import SortHandler from './SortHandler';
 import SparqlHandler from './SparqlHandler';
 import StringToLDflexHandler from './StringToLDflexHandler';
@@ -51,6 +52,7 @@ export default {
   sparql: new SparqlHandler(),
   subjects: new SubjectsHandler(),
   results: new ExecuteQueryHandler(),
+  lang: new LangHandler(),
   sort: new SortHandler('ASC'),
   sortDesc: new SortHandler('DESC'),
   preload: new PreloadHandler(),

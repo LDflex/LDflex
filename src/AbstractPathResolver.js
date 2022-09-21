@@ -1,5 +1,4 @@
 import ContextProvider from './ContextProvider';
-import { Filter } from './filters';
 import { lazyThenable } from './promiseUtils';
 import { valueToTerm } from './valueUtils';
 
@@ -68,8 +67,7 @@ export default class AbstractPathResolver {
     }
 
     // With the property constraint added, continue from the previous path
-    pathData.filters = args.filter(object => object instanceof Filter);
-    pathData.values = args.filter(object => !pathData.filters.includes(object)).map(valueToTerm);
+    pathData.values = args.map(valueToTerm);
     return path;
   }
 
