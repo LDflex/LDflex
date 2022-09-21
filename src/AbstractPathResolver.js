@@ -65,7 +65,6 @@ export default class AbstractPathResolver {
       const { property } = pathData;
       throw new Error(`Specify at least one term when calling .${property}() on a path`);
     }
-
     // With the property constraint added, continue from the previous path
     pathData.values = args.map(valueToTerm);
     return path;
