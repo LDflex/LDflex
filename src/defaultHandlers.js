@@ -53,6 +53,7 @@ export default {
   subjects: new SubjectsHandler(),
   results: new ExecuteQueryHandler(),
   lang: new LangHandler(),
+  withLangPrefs: new LangHandler(),
   sort: new SortHandler('ASC'),
   sortDesc: new SortHandler('DESC'),
   preload: new PreloadHandler(),

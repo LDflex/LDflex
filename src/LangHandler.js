@@ -2,10 +2,10 @@
  * Sets a language filter and returns the previous path.
  */
 export default class LangHandler {
-  handle(pathData, path) {
+  handle(pathData) {
     return (...languageRanges) => {
-      pathData.languageRanges = languageRanges;
-      return path;
+      const newPathData = { ...pathData, languageRanges };
+      return pathData.extendPath(newPathData, pathData.parent ?? pathData);
     };
   }
 }

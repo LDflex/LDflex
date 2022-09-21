@@ -4,8 +4,6 @@ import ComunicaEngine from '@ldflex/comunica';
 import { Store, Parser } from 'n3';
 import PathFactory from '../../src/PathFactory';
 import { deindent } from '../util';
-import defaultHandlers from '../../src/defaultHandlers';
-import LangHandler from '../../src/LangHandler';
 
 const parser = new Parser();
 const store = new Store(
@@ -23,13 +21,10 @@ const store = new Store(
 );
 
 const queryEngine = new ComunicaEngine(store);
-const factory = new PathFactory({ context, queryEngine, handlers: {
-  ...defaultHandlers,
-  lang: new LangHandler(),
-} });
+const factory = new PathFactory({ context, queryEngine });
 const tomato = factory.create({ subject: namedNode('http://example.org/tomato') });
 
-describe('create a query while filtering on langcode', () => {
+describe('create a query while matching on langcode', () => {
   it('returns a query with the selected language', async () => {
     const query1 = await tomato.label.lang('nl').sparql;
     expect(query1).toBe(deindent(`
@@ -39,16 +34,8 @@ describe('create a query while filtering on langcode', () => {
       }`)
     );
 
-    const query2 = await tomato.label.lang('fr').sparql;
+    const query2 = await tomato.label.lang('fr', 'de').sparql;
     expect(query2).toBe(deindent(`
-      SELECT ?label WHERE {
-        <http://example.org/tomato> <http://www.w3.org/2000/01/rdf-schema#label> ?label.
-        FILTER (isLiteral(?label) && langMatches(lang(?label), 'fr') || !isLiteral(?label))
-      }`)
-    );
-
-    const query3 = await tomato.label.lang('fr', 'de').sparql;
-    expect(query3).toBe(deindent(`
       SELECT ?label WHERE {
         <http://example.org/tomato> <http://www.w3.org/2000/01/rdf-schema#label> ?label.
         FILTER (isLiteral(?label) && (langMatches(lang(?label), 'fr') || langMatches(lang(?label), 'de')) || !isLiteral(?label))
@@ -60,9 +47,40 @@ describe('create a query while filtering on langcode', () => {
   });
 });
 
+describe('create a query while filtering on exact langcode', () => {
+  it('returns a query with the selected language', async () => {
+    const query = await tomato.label.lang({ exact: 'fr' }).sparql;
+    expect(query).toBe(deindent(`
+      SELECT ?label WHERE {
+        <http://example.org/tomato> <http://www.w3.org/2000/01/rdf-schema#label> ?label.
+        FILTER (isLiteral(?label) && lang(?label) = 'fr' || !isLiteral(?label))
+      }`)
+    );
+
+    const query2 = await tomato.label.lang('fr', { exact: 'de' }).sparql;
+    expect(query2).toBe(deindent(`
+      SELECT ?label WHERE {
+        <http://example.org/tomato> <http://www.w3.org/2000/01/rdf-schema#label> ?label.
+        FILTER (isLiteral(?label) && (langMatches(lang(?label), 'fr') || lang(?label) = 'de') || !isLiteral(?label))
+      }`)
+    );
+  });
+});
+
 describe('getting the right results when filtering on langcode', () => {
   it('returns results in the selected language', async () => {
     const nlLabel = await tomato.label.lang('nl').value;
     expect(nlLabel).toBe('Tomaat');
+  });
+});
+
+describe('getting the right results when filtering on langcode with a set language', () => {
+  it('returns results in the selected language', async () => {
+    const dutchTomato = tomato.withLangPrefs('nl');
+    const nlLabel = await dutchTomato.label.value;
+    expect(nlLabel).toBe('Tomaat');
+
+    const label = await tomato.label.value;
+    expect(label).toBe('Tomato');
   });
 });
