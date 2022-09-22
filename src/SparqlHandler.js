@@ -56,7 +56,7 @@ export default class SparqlHandler {
     const select = `SELECT ${distinct}${pathData.select ? pathData.select : queryVar}`;
     const languageFilter = languageFilters.length ? languageFilters.map(({ languageRanges, object }) => {
       const languageRangesAsSparql = languageRanges.map(languageRange => languageRange.exact ? `lang(${object}) = '${languageRange.exact}'` : `langMatches(lang(${object}), '${languageRange}')`);
-      return `FILTER (isLiteral(?label) && ${languageRangesAsSparql.length === 1 ? languageRangesAsSparql[0] : `(${languageRangesAsSparql.join(' || ')})`} || !isLiteral(?label))`;
+      return `FILTER ((isLiteral(?label) && ${languageRangesAsSparql.length === 1 ? languageRangesAsSparql[0] : `(${languageRangesAsSparql.join(' || ')})`}) || !isLiteral(?label))`;
     }).join('') : '';
     const where = ` WHERE {\n  ${clauses.join('\n  ')}\n${languageFilter ? `  ${languageFilter}\n` : ''}}`;
     const orderClauses = sorts.map(({ order, variable }) => `${order}(${variable})`);

@@ -132,7 +132,7 @@ async function showPerson(person) {
 ### Getting objects with a specific language
 ```javascript
 (async subject => {
-  const subject['org:memberOf'].label.lang('en')
+  const subject['org:memberOf'].label.withLangPrefs('en')
   // Ghent University
 })(ruben);
 

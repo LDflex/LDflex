@@ -26,19 +26,19 @@ const tomato = factory.create({ subject: namedNode('http://example.org/tomato') 
 
 describe('create a query while matching on langcode', () => {
   it('returns a query with the selected language', async () => {
-    const query1 = await tomato.label.lang('nl').sparql;
+    const query1 = await tomato.label.withLangPrefs('nl').sparql;
     expect(query1).toBe(deindent(`
       SELECT ?label WHERE {
         <http://example.org/tomato> <http://www.w3.org/2000/01/rdf-schema#label> ?label.
-        FILTER (isLiteral(?label) && langMatches(lang(?label), 'nl') || !isLiteral(?label))
+        FILTER ((isLiteral(?label) && langMatches(lang(?label), 'nl')) || !isLiteral(?label))
       }`)
     );
 
-    const query2 = await tomato.label.lang('fr', 'de').sparql;
+    const query2 = await tomato.label.withLangPrefs('fr', 'de').sparql;
     expect(query2).toBe(deindent(`
       SELECT ?label WHERE {
         <http://example.org/tomato> <http://www.w3.org/2000/01/rdf-schema#label> ?label.
-        FILTER (isLiteral(?label) && (langMatches(lang(?label), 'fr') || langMatches(lang(?label), 'de')) || !isLiteral(?label))
+        FILTER ((isLiteral(?label) && (langMatches(lang(?label), 'fr') || langMatches(lang(?label), 'de'))) || !isLiteral(?label))
       }`)
     );
 
@@ -49,19 +49,19 @@ describe('create a query while matching on langcode', () => {
 
 describe('create a query while filtering on exact langcode', () => {
   it('returns a query with the selected language', async () => {
-    const query = await tomato.label.lang({ exact: 'fr' }).sparql;
+    const query = await tomato.label.withLangPrefs({ exact: 'fr' }).sparql;
     expect(query).toBe(deindent(`
       SELECT ?label WHERE {
         <http://example.org/tomato> <http://www.w3.org/2000/01/rdf-schema#label> ?label.
-        FILTER (isLiteral(?label) && lang(?label) = 'fr' || !isLiteral(?label))
+        FILTER ((isLiteral(?label) && lang(?label) = 'fr') || !isLiteral(?label))
       }`)
     );
 
-    const query2 = await tomato.label.lang('fr', { exact: 'de' }).sparql;
+    const query2 = await tomato.label.withLangPrefs('fr', { exact: 'de' }).sparql;
     expect(query2).toBe(deindent(`
       SELECT ?label WHERE {
         <http://example.org/tomato> <http://www.w3.org/2000/01/rdf-schema#label> ?label.
-        FILTER (isLiteral(?label) && (langMatches(lang(?label), 'fr') || lang(?label) = 'de') || !isLiteral(?label))
+        FILTER ((isLiteral(?label) && (langMatches(lang(?label), 'fr') || lang(?label) = 'de')) || !isLiteral(?label))
       }`)
     );
   });
@@ -69,7 +69,7 @@ describe('create a query while filtering on exact langcode', () => {
 
 describe('getting the right results when filtering on langcode', () => {
   it('returns results in the selected language', async () => {
-    const nlLabel = await tomato.label.lang('nl').value;
+    const nlLabel = await tomato.label.withLangPrefs('nl').value;
     expect(nlLabel).toBe('Tomaat');
   });
 });
