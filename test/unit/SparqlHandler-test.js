@@ -490,4 +490,18 @@ describe('a SparqlHandler instance', () => {
       expect(variableScope).toEqual({ '?a': true, '?a_0': true, '?a_1': true, '?a_2': true, '?a_3': true });
     });
   });
+
+  describe('expressionToTriplePatterns', () => {
+    it('returns filters when given closestLanguageRanges', () => {
+      const pathExpression = [
+        { subject: namedNode('https://example.org/#me') },
+        { predicate: namedNode('https://ex.org/p1') },
+      ];
+      const result = handler.expressionToTriplePatterns(pathExpression, '?subject', {}, ['en']);
+      expect(result.languageFilters[0].languageRanges[0]).toBe('en');
+
+      const result2 = handler.expressionToTriplePatterns(pathExpression, '?subject');
+      expect(result2.languageFilters.length).toBe(0);
+    });
+  });
 });
