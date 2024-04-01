@@ -236,6 +236,6 @@ describe('a PathFactory instance resolving friends with no context', () => {
   const factory = new PathFactory({ queryEngine });
 
   it('Should throw an error when trying to create the path', () => {
-    expect(() => factory.create('friends')).toThrowError();
+    expect(() => factory.create('friends')).toThrow();
   });
 });

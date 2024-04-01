@@ -44,7 +44,7 @@ describe('a JSONLDResolver instance with a context', () => {
     beforeEach(() => result = resolver.resolve('knows', pathData));
 
     it('extends the path', () => {
-      expect(pathData.extendPath).toBeCalledTimes(1);
+      expect(pathData.extendPath).toHaveBeenCalledTimes(1);
       const args = pathData.extendPath.mock.calls[0];
       expect(args).toHaveLength(1);
       expect(args[0]).toBeInstanceOf(Object);
@@ -119,7 +119,7 @@ describe('a JSONLDResolver instance with a context', () => {
     beforeEach(() => result = resolver.resolve('foaf:knows', pathData));
 
     it('extends the path', () => {
-      expect(pathData.extendPath).toBeCalledTimes(1);
+      expect(pathData.extendPath).toHaveBeenCalledTimes(1);
       const args = pathData.extendPath.mock.calls[0];
       expect(args).toHaveLength(1);
       expect(args[0]).toBeInstanceOf(Object);
@@ -148,7 +148,7 @@ describe('a JSONLDResolver instance with a context', () => {
     beforeEach(() => result = resolver.resolve('foaf_knows', pathData));
 
     it('extends the path', () => {
-      expect(pathData.extendPath).toBeCalledTimes(1);
+      expect(pathData.extendPath).toHaveBeenCalledTimes(1);
       const args = pathData.extendPath.mock.calls[0];
       expect(args).toHaveLength(1);
       expect(args[0]).toBeInstanceOf(Object);
@@ -177,7 +177,7 @@ describe('a JSONLDResolver instance with a context', () => {
     beforeEach(() => result = resolver.resolve('foaf$knows', pathData));
 
     it('extends the path', () => {
-      expect(pathData.extendPath).toBeCalledTimes(1);
+      expect(pathData.extendPath).toHaveBeenCalledTimes(1);
       const args = pathData.extendPath.mock.calls[0];
       expect(args).toHaveLength(1);
       expect(args[0]).toBeInstanceOf(Object);
@@ -206,7 +206,7 @@ describe('a JSONLDResolver instance with a context', () => {
     beforeEach(() => result = resolver.resolve('foaf:topic_interest', pathData));
 
     it('extends the path', () => {
-      expect(pathData.extendPath).toBeCalledTimes(1);
+      expect(pathData.extendPath).toHaveBeenCalledTimes(1);
       const args = pathData.extendPath.mock.calls[0];
       expect(args).toHaveLength(1);
       expect(args[0]).toBeInstanceOf(Object);
@@ -235,7 +235,7 @@ describe('a JSONLDResolver instance with a context', () => {
     beforeEach(() => result = resolver.resolve('makerOf', pathData));
 
     it('extends the path', () => {
-      expect(pathData.extendPath).toBeCalledTimes(1);
+      expect(pathData.extendPath).toHaveBeenCalledTimes(1);
       const args = pathData.extendPath.mock.calls[0];
       expect(args).toHaveLength(1);
       expect(args[0]).toBeInstanceOf(Object);
@@ -307,7 +307,7 @@ describe('a JSONLDResolver instance with a context', () => {
       beforeEach(() => result = resolver.resolve('foaf:givenName', pathData));
 
       it('extends the path without a results cache', async () => {
-        expect(pathData.extendPath).toBeCalledTimes(1);
+        expect(pathData.extendPath).toHaveBeenCalledTimes(1);
         const args = pathData.extendPath.mock.calls[0];
         expect(args).toHaveLength(1);
         await expect(args[0].resultsCache).resolves.toBeUndefined();
@@ -323,7 +323,7 @@ describe('a JSONLDResolver instance with a context', () => {
       beforeEach(() => result = resolver.resolve('foaf:knows', pathData));
 
       it('extends the path with a results cache', async () => {
-        expect(pathData.extendPath).toBeCalledTimes(1);
+        expect(pathData.extendPath).toHaveBeenCalledTimes(1);
         const args = pathData.extendPath.mock.calls[0];
         expect(args).toHaveLength(1);
         await expect(args[0].resultsCache).resolves.toBe(
@@ -340,7 +340,7 @@ describe('a JSONLDResolver instance with a context', () => {
       beforeEach(() => result = resolver.resolve('friendOf', pathData));
 
       it('extends the path without a results cache', async () => {
-        expect(pathData.extendPath).toBeCalledTimes(1);
+        expect(pathData.extendPath).toHaveBeenCalledTimes(1);
         const args = pathData.extendPath.mock.calls[0];
         expect(args).toHaveLength(1);
         await expect(args[0].resultsCache).resolves.toBeFalsy();
