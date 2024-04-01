@@ -32,7 +32,7 @@ describe('a MutationFunctionHandler instance not allowing 0 args', () => {
       beforeEach(async () => functionResult = await result('Ruben'));
 
       it('extends the path', () => {
-        expect(pathData.extendPath).toBeCalledTimes(1);
+        expect(pathData.extendPath).toHaveBeenCalledTimes(1);
         const args = pathData.extendPath.mock.calls[0];
         expect(args).toHaveLength(1);
         expect(args[0]).toBeInstanceOf(Object);
@@ -62,7 +62,7 @@ describe('a MutationFunctionHandler instance not allowing 0 args', () => {
       beforeEach(async () => functionResult = await result(namedNode('http://example.org/')));
 
       it('extends the path', () => {
-        expect(pathData.extendPath).toBeCalledTimes(1);
+        expect(pathData.extendPath).toHaveBeenCalledTimes(1);
         const args = pathData.extendPath.mock.calls[0];
         expect(args).toHaveLength(1);
         expect(args[0]).toBeInstanceOf(Object);

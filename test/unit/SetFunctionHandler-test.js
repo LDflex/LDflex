@@ -24,13 +24,13 @@ describe('a SetFunctionHandler instance', () => {
       beforeEach(() => functionResult = result('Arg1', 'Arg2'));
 
       it('calls delete with 0 args', () => {
-        expect(proxy.delete).toBeCalledTimes(1);
+        expect(proxy.delete).toHaveBeenCalledTimes(1);
         const args = proxy.delete.mock.calls[0];
         expect(args).toHaveLength(0);
       });
 
       it('calls add with the original args', () => {
-        expect(proxy.add).toBeCalledTimes(1);
+        expect(proxy.add).toHaveBeenCalledTimes(1);
         const args = proxy.add.mock.calls[0];
         expect(args).toHaveLength(2);
         expect(args[0]).toEqual('Arg1');
@@ -45,12 +45,12 @@ describe('a SetFunctionHandler instance', () => {
     describe('with a map as function parameter', () => {
       it('errors if there is more than 1 argument', () => {
         expect(() => result({ a: 'b' }, 'c'))
-          .toThrowError('Expected only 1 plain object, but got 2 arguments');
+          .toThrow('Expected only 1 plain object, but got 2 arguments');
       });
 
       it('executes a delete for every key', () => {
         result({ a: 'b', c: 'd' });
-        expect(proxy.delete).toBeCalledTimes(2);
+        expect(proxy.delete).toHaveBeenCalledTimes(2);
         const args0 = proxy.delete.mock.calls[0];
         const args1 = proxy.delete.mock.calls[1];
         expect(args0).toEqual([{ a: [] }]);
@@ -59,7 +59,7 @@ describe('a SetFunctionHandler instance', () => {
 
       it('executes an add with the original arguments', () => {
         result({ a: 'b', c: 'd' });
-        expect(proxy.add).toBeCalledTimes(1);
+        expect(proxy.add).toHaveBeenCalledTimes(1);
         const args = proxy.add.mock.calls[0];
         expect(args).toEqual([{ a: 'b', c: 'd' }]);
       });

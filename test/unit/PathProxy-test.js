@@ -65,11 +65,11 @@ describe('a PathProxy with two handlers', () => {
       beforeEach(() => result = path.other);
 
       it('does not execute the first handler', () => {
-        expect(handlers.foo.handle).toBeCalledTimes(0);
+        expect(handlers.foo.handle).toHaveBeenCalledTimes(0);
       });
 
       it('does not execute the second handler', () => {
-        expect(handlers.bar.handle).toBeCalledTimes(0);
+        expect(handlers.bar.handle).toHaveBeenCalledTimes(0);
       });
 
       it('returns undefined', () => {
@@ -82,14 +82,14 @@ describe('a PathProxy with two handlers', () => {
       beforeEach(() => result = path.foo);
 
       it('executes the first handler', () => {
-        expect(handlers.foo.handle).toBeCalledTimes(1);
+        expect(handlers.foo.handle).toHaveBeenCalledTimes(1);
         const [data, proxy] = handlers.foo.handle.mock.calls[0];
         expect(data).toHaveProperty('settings');
         expect(proxy).toBe(data.proxy);
       });
 
       it('does not execute the second handler', () => {
-        expect(handlers.bar.handle).toBeCalledTimes(0);
+        expect(handlers.bar.handle).toHaveBeenCalledTimes(0);
       });
 
       it('returns the result of the first handler', () => {
@@ -102,11 +102,11 @@ describe('a PathProxy with two handlers', () => {
       beforeEach(() => result = path.bar);
 
       it('does not execute the first handler', () => {
-        expect(handlers.foo.handle).toBeCalledTimes(0);
+        expect(handlers.foo.handle).toHaveBeenCalledTimes(0);
       });
 
       it('executes the second handler', () => {
-        expect(handlers.bar.handle).toBeCalledTimes(1);
+        expect(handlers.bar.handle).toHaveBeenCalledTimes(1);
         const [data, proxy] = handlers.bar.handle.mock.calls[0];
         expect(data).toHaveProperty('settings');
         expect(proxy).toBe(data.proxy);
@@ -142,21 +142,21 @@ describe('a PathProxy with two resolvers', () => {
       beforeEach(() => result = path.other);
 
       it('tests the first resolver', () => {
-        expect(resolvers[0].supports).toBeCalledTimes(1);
+        expect(resolvers[0].supports).toHaveBeenCalledTimes(1);
         expect(resolvers[0].supports).toHaveBeenCalledWith('other');
       });
 
       it('tests the second resolver', () => {
-        expect(resolvers[1].supports).toBeCalledTimes(1);
+        expect(resolvers[1].supports).toHaveBeenCalledTimes(1);
         expect(resolvers[1].supports).toHaveBeenCalledWith('other');
       });
 
       it('does not use the first resolver', () => {
-        expect(resolvers[0].resolve).toBeCalledTimes(0);
+        expect(resolvers[0].resolve).toHaveBeenCalledTimes(0);
       });
 
       it('does not use the second resolver', () => {
-        expect(resolvers[1].resolve).toBeCalledTimes(0);
+        expect(resolvers[1].resolve).toHaveBeenCalledTimes(0);
       });
 
       it('returns undefined', () => {
@@ -169,16 +169,16 @@ describe('a PathProxy with two resolvers', () => {
       beforeEach(() => result = path.foo);
 
       it('tests the first resolver', () => {
-        expect(resolvers[0].supports).toBeCalledTimes(1);
+        expect(resolvers[0].supports).toHaveBeenCalledTimes(1);
         expect(resolvers[0].supports).toHaveBeenCalledWith('foo');
       });
 
       it('does not test the second resolver', () => {
-        expect(resolvers[1].supports).toBeCalledTimes(0);
+        expect(resolvers[1].supports).toHaveBeenCalledTimes(0);
       });
 
       it('uses the first resolver', () => {
-        expect(resolvers[0].resolve).toBeCalledTimes(1);
+        expect(resolvers[0].resolve).toHaveBeenCalledTimes(1);
         const [property, data, proxy] = resolvers[0].resolve.mock.calls[0];
         expect(property).toBe('foo');
         expect(data).toHaveProperty('settings');
@@ -186,7 +186,7 @@ describe('a PathProxy with two resolvers', () => {
       });
 
       it('does not use the second resolver', () => {
-        expect(resolvers[1].resolve).toBeCalledTimes(0);
+        expect(resolvers[1].resolve).toHaveBeenCalledTimes(0);
       });
 
       it('returns the result of the first resolver', () => {
@@ -199,21 +199,21 @@ describe('a PathProxy with two resolvers', () => {
       beforeEach(() => result = path.bar);
 
       it('tests the first resolver', () => {
-        expect(resolvers[0].supports).toBeCalledTimes(1);
+        expect(resolvers[0].supports).toHaveBeenCalledTimes(1);
         expect(resolvers[0].supports).toHaveBeenCalledWith('bar');
       });
 
       it('does not test the second resolver', () => {
-        expect(resolvers[1].supports).toBeCalledTimes(1);
+        expect(resolvers[1].supports).toHaveBeenCalledTimes(1);
         expect(resolvers[1].supports).toHaveBeenCalledWith('bar');
       });
 
       it('does not use the first resolver', () => {
-        expect(resolvers[0].resolve).toBeCalledTimes(0);
+        expect(resolvers[0].resolve).toHaveBeenCalledTimes(0);
       });
 
       it('uses the second resolver', () => {
-        expect(resolvers[1].resolve).toBeCalledTimes(1);
+        expect(resolvers[1].resolve).toHaveBeenCalledTimes(1);
         const [property, data, proxy] = resolvers[1].resolve.mock.calls[0];
         expect(property).toBe('bar');
         expect(data).toHaveProperty('settings');
@@ -251,16 +251,16 @@ describe('a PathProxy with a handler and a resolver', () => {
       beforeEach(() => result = path.other);
 
       it('does not execute the handler', () => {
-        expect(handlers.foo.handle).toBeCalledTimes(0);
+        expect(handlers.foo.handle).toHaveBeenCalledTimes(0);
       });
 
       it('tests the resolver', () => {
-        expect(resolvers[0].supports).toBeCalledTimes(1);
+        expect(resolvers[0].supports).toHaveBeenCalledTimes(1);
         expect(resolvers[0].supports).toHaveBeenCalledWith('other');
       });
 
       it('does not use the resolver', () => {
-        expect(resolvers[0].resolve).toBeCalledTimes(0);
+        expect(resolvers[0].resolve).toHaveBeenCalledTimes(0);
       });
 
       it('returns undefined', () => {
@@ -273,15 +273,15 @@ describe('a PathProxy with a handler and a resolver', () => {
       beforeEach(() => result = path.foo);
 
       it('executes the handler', () => {
-        expect(handlers.foo.handle).toBeCalledTimes(1);
+        expect(handlers.foo.handle).toHaveBeenCalledTimes(1);
       });
 
       it('does not test the resolver', () => {
-        expect(resolvers[0].supports).toBeCalledTimes(0);
+        expect(resolvers[0].supports).toHaveBeenCalledTimes(0);
       });
 
       it('does not use the resolver', () => {
-        expect(resolvers[0].resolve).toBeCalledTimes(0);
+        expect(resolvers[0].resolve).toHaveBeenCalledTimes(0);
       });
 
       it('returns the result of the handler', () => {

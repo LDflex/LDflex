@@ -185,7 +185,7 @@ describe('a ComplexPathResolver instance with a context', () => {
       beforeEach(() => result = resolver.resolve('<http://xmlns.com/foaf/0.1/givenName>', pathData));
 
       it('extends the path without a results cache', async () => {
-        expect(pathData.extendPath).toBeCalledTimes(1);
+        expect(pathData.extendPath).toHaveBeenCalledTimes(1);
         const args = pathData.extendPath.mock.calls[0];
         expect(args).toHaveLength(1);
         await expect(args[0].resultsCache).resolves.toBeUndefined();
@@ -201,7 +201,7 @@ describe('a ComplexPathResolver instance with a context', () => {
       beforeEach(() => result = resolver.resolve('<http://xmlns.com/foaf/0.1/knows>', pathData));
 
       it('extends the path with a results cache', async () => {
-        expect(pathData.extendPath).toBeCalledTimes(1);
+        expect(pathData.extendPath).toHaveBeenCalledTimes(1);
         const args = pathData.extendPath.mock.calls[0];
         expect(args).toHaveLength(1);
         await expect(args[0].resultsCache).resolves.toBe(
@@ -218,7 +218,7 @@ describe('a ComplexPathResolver instance with a context', () => {
       beforeEach(() => result = resolver.resolve('foaf:knows/(foaf:friend)', pathData));
 
       it('extends the path with a results cache', async () => {
-        expect(pathData.extendPath).toBeCalledTimes(1);
+        expect(pathData.extendPath).toHaveBeenCalledTimes(1);
         const args = pathData.extendPath.mock.calls[0];
         expect(args).toHaveLength(1);
         await expect(args[0].resultsCache).resolves.toBe(
@@ -237,7 +237,7 @@ describe('a ComplexPathResolver instance with a context', () => {
       beforeEach(() => result = resolver.resolve('foaf:knows/(foaf:friend*)', pathData));
 
       it('extends the path with a results cache', async () => {
-        expect(pathData.extendPath).toBeCalledTimes(1);
+        expect(pathData.extendPath).toHaveBeenCalledTimes(1);
         const args = pathData.extendPath.mock.calls[0];
         expect(args).toHaveLength(1);
         await expect(args[0].resultsCache).resolves.toBe(
@@ -256,7 +256,7 @@ describe('a ComplexPathResolver instance with a context', () => {
       beforeEach(() => result = resolver.resolve('foaf:knows/(foaf:friend?)', pathData));
 
       it('extends the path with a results cache', async () => {
-        expect(pathData.extendPath).toBeCalledTimes(1);
+        expect(pathData.extendPath).toHaveBeenCalledTimes(1);
         const args = pathData.extendPath.mock.calls[0];
         expect(args).toHaveLength(1);
         await expect(args[0].resultsCache).resolves.toBe(
@@ -275,7 +275,7 @@ describe('a ComplexPathResolver instance with a context', () => {
       beforeEach(() => result = resolver.resolve('foaf:knows/(foaf:friend+)', pathData));
 
       it('extends the path with a results cache', async () => {
-        expect(pathData.extendPath).toBeCalledTimes(1);
+        expect(pathData.extendPath).toHaveBeenCalledTimes(1);
         const args = pathData.extendPath.mock.calls[0];
         expect(args).toHaveLength(1);
         await expect(args[0].resultsCache).resolves.toBe(
@@ -294,7 +294,7 @@ describe('a ComplexPathResolver instance with a context', () => {
       beforeEach(() => result = resolver.resolve('foaf:knows/(foaf:friend*)', pathData));
 
       it('extends the path with a results cache', async () => {
-        expect(pathData.extendPath).toBeCalledTimes(1);
+        expect(pathData.extendPath).toHaveBeenCalledTimes(1);
         const args = pathData.extendPath.mock.calls[0];
         expect(args).toHaveLength(1);
         await expect(args[0].resultsCache).resolves.toBe(
@@ -313,7 +313,7 @@ describe('a ComplexPathResolver instance with a context', () => {
       beforeEach(() => result = resolver.resolve('foaf:knows/(foaf:friend*)', pathData));
 
       it('extends the path with a results cache', async () => {
-        expect(pathData.extendPath).toBeCalledTimes(1);
+        expect(pathData.extendPath).toHaveBeenCalledTimes(1);
         const args = pathData.extendPath.mock.calls[0];
         expect(args).toHaveLength(1);
         await expect(args[0].resultsCache).resolves.toBe(
@@ -332,7 +332,7 @@ describe('a ComplexPathResolver instance with a context', () => {
       beforeEach(() => result = resolver.resolve('foaf:knows/(foaf:friend?)', pathData));
 
       it('extends the path with a results cache', async () => {
-        expect(pathData.extendPath).toBeCalledTimes(1);
+        expect(pathData.extendPath).toHaveBeenCalledTimes(1);
         const args = pathData.extendPath.mock.calls[0];
         expect(args).toHaveLength(1);
         await expect(args[0].resultsCache).resolves.toBe(
@@ -351,7 +351,7 @@ describe('a ComplexPathResolver instance with a context', () => {
       beforeEach(() => result = resolver.resolve('foaf:knows|(foaf:friend+)', pathData));
 
       it('extends the path with a results cache', async () => {
-        expect(pathData.extendPath).toBeCalledTimes(1);
+        expect(pathData.extendPath).toHaveBeenCalledTimes(1);
         const args = pathData.extendPath.mock.calls[0];
         expect(args).toHaveLength(1);
         await expect(args[0].resultsCache).resolves.toBe(
@@ -370,7 +370,7 @@ describe('a ComplexPathResolver instance with a context', () => {
       beforeEach(() => result = resolver.resolve('foaf:friend+', pathData));
 
       it('extends the path with a results cache', async () => {
-        expect(pathData.extendPath).toBeCalledTimes(1);
+        expect(pathData.extendPath).toHaveBeenCalledTimes(1);
         const args = pathData.extendPath.mock.calls[0];
         expect(args).toHaveLength(1);
         await expect(args[0].resultsCache).resolves.toBe(
@@ -389,7 +389,7 @@ describe('a ComplexPathResolver instance with a context', () => {
       beforeEach(() => result = resolver.resolve('foaf:friend?', pathData));
 
       it('extends the path with a results cache', async () => {
-        expect(pathData.extendPath).toBeCalledTimes(1);
+        expect(pathData.extendPath).toHaveBeenCalledTimes(1);
         const args = pathData.extendPath.mock.calls[0];
         expect(args).toHaveLength(1);
         await expect(args[0].resultsCache).resolves.toBe(
@@ -408,7 +408,7 @@ describe('a ComplexPathResolver instance with a context', () => {
       beforeEach(() => result = resolver.resolve('foaf:knows/(foaf:friend)/foaf:employer', pathData));
 
       it('extends the path with a results cache', async () => {
-        expect(pathData.extendPath).toBeCalledTimes(1);
+        expect(pathData.extendPath).toHaveBeenCalledTimes(1);
         const args = pathData.extendPath.mock.calls[0];
         expect(args).toHaveLength(1);
         await expect(args[0].resultsCache).resolves.toBe(
@@ -427,7 +427,7 @@ describe('a ComplexPathResolver instance with a context', () => {
       beforeEach(() => result = resolver.resolve('foaf:knows/(foaf:friend*)/foaf:employer', pathData));
 
       it('extends the path with a results cache', async () => {
-        expect(pathData.extendPath).toBeCalledTimes(1);
+        expect(pathData.extendPath).toHaveBeenCalledTimes(1);
         const args = pathData.extendPath.mock.calls[0];
         expect(args).toHaveLength(1);
         await expect(args[0].resultsCache).resolves.toBe(
@@ -446,7 +446,7 @@ describe('a ComplexPathResolver instance with a context', () => {
       beforeEach(() => result = resolver.resolve('foaf:knows/(foaf:friend?)/foaf:employer', pathData));
 
       it('extends the path with a results cache', async () => {
-        expect(pathData.extendPath).toBeCalledTimes(1);
+        expect(pathData.extendPath).toHaveBeenCalledTimes(1);
         const args = pathData.extendPath.mock.calls[0];
         expect(args).toHaveLength(1);
         await expect(args[0].resultsCache).resolves.toBe(
@@ -465,7 +465,7 @@ describe('a ComplexPathResolver instance with a context', () => {
       beforeEach(() => result = resolver.resolve('foaf:knows/(foaf:friend+)/foaf:employer', pathData));
 
       it('extends the path with a results cache', async () => {
-        expect(pathData.extendPath).toBeCalledTimes(1);
+        expect(pathData.extendPath).toHaveBeenCalledTimes(1);
         const args = pathData.extendPath.mock.calls[0];
         expect(args).toHaveLength(1);
         await expect(args[0].resultsCache).resolves.toBe(

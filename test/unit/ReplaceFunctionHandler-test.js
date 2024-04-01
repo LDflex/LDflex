@@ -32,14 +32,14 @@ describe('a ReplaceFunctionHandler instance', () => {
       beforeEach(async () => functionResult = await result('Arg1', 'Arg2'));
 
       it('calls delete with 1 arg', () => {
-        expect(proxy.delete).toBeCalledTimes(1);
+        expect(proxy.delete).toHaveBeenCalledTimes(1);
         const args = proxy.delete.mock.calls[0];
         expect(args).toHaveLength(1);
         expect(args[0]).toEqual('Arg1');
       });
 
       it('calls add with the remaining args', () => {
-        expect(proxy.add).toBeCalledTimes(1);
+        expect(proxy.add).toHaveBeenCalledTimes(1);
         const args = proxy.add.mock.calls[0];
         expect(args).toHaveLength(1);
         expect(args[0]).toEqual('Arg2');
@@ -55,14 +55,14 @@ describe('a ReplaceFunctionHandler instance', () => {
       beforeEach(async () => functionResult = await result('Arg1', 'Arg2', 'Arg3'));
 
       it('calls delete with 1 arg', () => {
-        expect(proxy.delete).toBeCalledTimes(1);
+        expect(proxy.delete).toHaveBeenCalledTimes(1);
         const args = proxy.delete.mock.calls[0];
         expect(args).toHaveLength(1);
         expect(args[0]).toEqual('Arg1');
       });
 
       it('calls add with the remaining args', () => {
-        expect(proxy.add).toBeCalledTimes(1);
+        expect(proxy.add).toHaveBeenCalledTimes(1);
         const args = proxy.add.mock.calls[0];
         expect(args).toHaveLength(2);
         expect(args[0]).toEqual('Arg2');

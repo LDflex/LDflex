@@ -108,7 +108,7 @@ describe('a query path with a subjects handler', () => {
 
   it('returns results, with executeQuery being called with the right query', async () => {
     const subjects = await iterableToArray(person.subjects);
-    expect(queryEngine.execute).toBeCalledWith(deindent(`
+    expect(queryEngine.execute).toHaveBeenCalledWith(deindent(`
       SELECT DISTINCT ?subject WHERE {
         ?subject ?predicate ?object.
       }`));
