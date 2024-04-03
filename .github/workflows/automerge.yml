@@ -16,4 +16,4 @@ jobs:
       - uses: actions/checkout@v4
       - run: gh pr merge ${{ github.event.pull_request.html_url }} --auto --squash
     env:
-      GH_TOKEN: ${{ github.token }
+      GH_TOKEN: ${{ github.token }}
