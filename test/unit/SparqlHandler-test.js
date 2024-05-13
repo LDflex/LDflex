@@ -5,7 +5,9 @@ import { deindent } from '../util';
 
 describe('a SparqlHandler instance', () => {
   let handler;
-  beforeAll(() => handler = new SparqlHandler());
+  beforeAll(() => {
+    handler = new SparqlHandler();
+  });
 
   it('errors with empty mutationExpressions and when no pathExpression is present', async () => {
     const mutationExpressions = [];

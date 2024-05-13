@@ -19,7 +19,9 @@ const dataEmpty = {};
 describe('a DataHandler instance', () => {
   describe('that is synchronous', () => {
     let handler;
-    beforeAll(() => handler = DataHandler.sync('a', 'b', 'c'));
+    beforeAll(() => {
+      handler = DataHandler.sync('a', 'b', 'c');
+    });
 
     it('returns the existing path value on synchronous data', () => {
       expect(handler.handle(dataSync)).toEqual('d');
@@ -36,7 +38,9 @@ describe('a DataHandler instance', () => {
 
   describe('that is asynchronous', () => {
     let handler;
-    beforeAll(() => handler = DataHandler.async('a', 'b', 'c'));
+    beforeAll(() => {
+      handler = DataHandler.async('a', 'b', 'c');
+    });
 
     it('returns the existing path value on synchronous data', async () => {
       await expect(handler.handle(dataSync)).resolves.toEqual('d');
@@ -53,7 +57,9 @@ describe('a DataHandler instance', () => {
 
   describe('that is synchronous behind a function', () => {
     let handler;
-    beforeAll(() => handler = DataHandler.syncFunction('a', 'b', 'c'));
+    beforeAll(() => {
+      handler = DataHandler.syncFunction('a', 'b', 'c');
+    });
 
     it('returns the existing path value on synchronous data', () => {
       expect(handler.handle(dataSync)()).toEqual('d');
@@ -70,7 +76,9 @@ describe('a DataHandler instance', () => {
 
   describe('that is asynchronous behind a function', () => {
     let handler;
-    beforeAll(() => handler = DataHandler.asyncFunction('a', 'b', 'c'));
+    beforeAll(() => {
+      handler = DataHandler.asyncFunction('a', 'b', 'c');
+    });
 
     it('returns the existing path value on synchronous data', async () => {
       await expect(handler.handle(dataSync)()).resolves.toEqual('d');

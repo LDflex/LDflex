@@ -2,7 +2,9 @@ import ToArrayHandler from '../../src/ToArrayHandler';
 
 describe('a ToArrayHandler instance', () => {
   let handler;
-  beforeAll(() => handler = new ToArrayHandler());
+  beforeAll(() => {
+    handler = new ToArrayHandler();
+  });
 
   describe('when calling the returned function without arguments', () => {
     it('returns the empty array if the path is null', async () => {

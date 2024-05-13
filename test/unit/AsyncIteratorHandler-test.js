@@ -3,7 +3,9 @@ import { iterableToArray } from '../../src/iterableUtils';
 
 describe('a AsyncIteratorHandler instance', () => {
   let handler;
-  beforeAll(() => handler = new AsyncIteratorHandler());
+  beforeAll(() => {
+    handler = new AsyncIteratorHandler();
+  });
 
   describe('on a path with a subject', () => {
     const subject = 'https://example.org/#Alice';
@@ -11,9 +13,9 @@ describe('a AsyncIteratorHandler instance', () => {
     const path = { subject };
 
     const iterable = {};
-    beforeAll(() =>
-      iterable[Symbol.asyncIterator] = handler.handle(pathData, path)
-    );
+    beforeAll(() => {
+      iterable[Symbol.asyncIterator] = handler.handle(pathData, path);
+    });
 
     it('returns an iterator for the subject', async () => {
       expect(await iterableToArray(iterable)).toEqual([subject]);
@@ -33,9 +35,9 @@ describe('a AsyncIteratorHandler instance', () => {
     };
 
     const iterable = {};
-    beforeAll(() =>
-      iterable[Symbol.asyncIterator] = handler.handle(pathData, path)
-    );
+    beforeAll(() => {
+      iterable[Symbol.asyncIterator] = handler.handle(pathData, path);
+    });
 
     it('returns an iterator for the results', async () => {
       expect(await iterableToArray(iterable)).toEqual(results);

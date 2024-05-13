@@ -131,7 +131,9 @@ describe('a PathFactory instance with a Term as subject', () => {
 
   describe('its asyncIterator', () => {
     let items;
-    beforeAll(async () => items = await iterableToArray(path));
+    beforeAll(async () => {
+      items = await iterableToArray(path);
+    });
 
     it('has one element', () => {
       expect(items).toHaveLength(1);
@@ -237,7 +239,9 @@ describe('a PathFactory instance with a promise to a Term as subject', () => {
 
     describe('its asyncIterator', () => {
       let items;
-      beforeAll(async () => items = await iterableToArray(path));
+      beforeAll(async () => {
+        items = await iterableToArray(path);
+      });
 
       it('has one element', () => {
         expect(items).toHaveLength(1);
@@ -268,7 +272,9 @@ describe('a PathFactory instance with a promise to a Term as subject', () => {
 
   describe('its asyncIterator', () => {
     let items;
-    beforeAll(async () => items = await iterableToArray(path));
+    beforeAll(async () => {
+      items = await iterableToArray(path);
+    });
 
     it('has one element', () => {
       expect(items).toHaveLength(1);
@@ -351,14 +357,16 @@ describe('a PathFactory instance without empty handlers and resolvers', () => {
 
 describe('a PathFactory instance with initial settings and data', () => {
   let factory;
-  beforeAll(() => factory = new PathFactory({
-    foo: 'bar',
-    handlers: {
-      internal: { handle: pathProxy => pathProxy },
-    },
-  }, {
-    a: 1,
-  }));
+  beforeAll(() => {
+    factory = new PathFactory({
+      foo: 'bar',
+      handlers: {
+        internal: { handle: pathProxy => pathProxy },
+      },
+    }, {
+      a: 1,
+    });
+  });
 
   describe('creating path without parameters', () => {
     let path;
@@ -421,15 +429,17 @@ describe('a PathFactory instance with initial settings and data', () => {
 
 describe('a PathFactory instance with functions as handlers and resolvers', () => {
   let factory;
-  beforeAll(() => factory = new PathFactory({
-    handlers: {
-      foo: () => 'foo',
-    },
-    resolvers: [
-      () => 'bar',
-      { supports: () => true, resolve: () => 'baz' },
-    ],
-  }));
+  beforeAll(() => {
+    factory = new PathFactory({
+      handlers: {
+        foo: () => 'foo',
+      },
+      resolvers: [
+        () => 'bar',
+        { supports: () => true, resolve: () => 'baz' },
+      ],
+    });
+  });
 
   it('creates a handler', () => {
     expect(factory.create().foo).toBe('foo');

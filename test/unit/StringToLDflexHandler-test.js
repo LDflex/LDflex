@@ -8,6 +8,7 @@ describe('a StringToLDflexHandler instance', () => {
     foo,
     'http://example.org/#this': 'this',
   };
+  // eslint-disable-next-line no-undef
   global.globalVar = 'foo';
 
   let handler, parseLDflex;

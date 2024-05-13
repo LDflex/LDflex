@@ -3,7 +3,9 @@ import { namedNode } from '@rdfjs/data-model';
 
 describe('a PathExpressionHandler instance', () => {
   let handler;
-  beforeAll(() => handler = new PathExpressionHandler());
+  beforeAll(() => {
+    handler = new PathExpressionHandler();
+  });
 
   it('ignores an immediate link has no predicate', async () => {
     const parent = { subject: namedNode('abc') };

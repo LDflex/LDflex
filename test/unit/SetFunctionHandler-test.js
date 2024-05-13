@@ -13,7 +13,9 @@ describe('a SetFunctionHandler instance', () => {
 
   describe('resolving a property', () => {
     let result;
-    beforeEach(async () => result = await handler.handle({}, proxy));
+    beforeEach(async () => {
+      result = await handler.handle({}, proxy);
+    });
 
     it('returns a function', async () => {
       expect(typeof result).toEqual('function');
@@ -21,7 +23,9 @@ describe('a SetFunctionHandler instance', () => {
 
     describe('with the function called', () => {
       let functionResult;
-      beforeEach(() => functionResult = result('Arg1', 'Arg2'));
+      beforeEach(() => {
+        functionResult = result('Arg1', 'Arg2');
+      });
 
       it('calls delete with 0 args', () => {
         expect(proxy.delete).toHaveBeenCalledTimes(1);

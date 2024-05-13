@@ -62,7 +62,9 @@ describe('a PathProxy with two handlers', () => {
 
     describe('when accessing a property covered by no handlers', () => {
       let result;
-      beforeEach(() => result = path.other);
+      beforeEach(() => {
+        result = path.other;
+      });
 
       it('does not execute the first handler', () => {
         expect(handlers.foo.handle).toHaveBeenCalledTimes(0);
@@ -79,7 +81,9 @@ describe('a PathProxy with two handlers', () => {
 
     describe('when accessing the first handler', () => {
       let result;
-      beforeEach(() => result = path.foo);
+      beforeEach(() => {
+        result = path.foo;
+      });
 
       it('executes the first handler', () => {
         expect(handlers.foo.handle).toHaveBeenCalledTimes(1);
@@ -99,7 +103,9 @@ describe('a PathProxy with two handlers', () => {
 
     describe('when accessing the second handler', () => {
       let result;
-      beforeEach(() => result = path.bar);
+      beforeEach(() => {
+        result = path.bar;
+      });
 
       it('does not execute the first handler', () => {
         expect(handlers.foo.handle).toHaveBeenCalledTimes(0);
@@ -139,7 +145,9 @@ describe('a PathProxy with two resolvers', () => {
 
     describe('when accessing a property matched by no resolvers', () => {
       let result;
-      beforeEach(() => result = path.other);
+      beforeEach(() => {
+        result = path.other;
+      });
 
       it('tests the first resolver', () => {
         expect(resolvers[0].supports).toHaveBeenCalledTimes(1);
@@ -166,7 +174,9 @@ describe('a PathProxy with two resolvers', () => {
 
     describe('when accessing a property matched by the first resolver', () => {
       let result;
-      beforeEach(() => result = path.foo);
+      beforeEach(() => {
+        result = path.foo;
+      });
 
       it('tests the first resolver', () => {
         expect(resolvers[0].supports).toHaveBeenCalledTimes(1);
@@ -196,7 +206,9 @@ describe('a PathProxy with two resolvers', () => {
 
     describe('when accessing a property matched by the second resolver', () => {
       let result;
-      beforeEach(() => result = path.bar);
+      beforeEach(() => {
+        result = path.bar;
+      });
 
       it('tests the first resolver', () => {
         expect(resolvers[0].supports).toHaveBeenCalledTimes(1);
@@ -240,7 +252,9 @@ describe('a PathProxy with a handler and a resolver', () => {
     },
   ];
   let pathProxy;
-  beforeAll(() => (pathProxy = new PathProxy({ handlers, resolvers })));
+  beforeAll(() => {
+    pathProxy = new PathProxy({ handlers, resolvers });
+  });
 
   describe('a created path', () => {
     let path;
@@ -248,7 +262,9 @@ describe('a PathProxy with a handler and a resolver', () => {
 
     describe('when accessing a property matched by no resolvers', () => {
       let result;
-      beforeEach(() => result = path.other);
+      beforeEach(() => {
+        result = path.other;
+      });
 
       it('does not execute the handler', () => {
         expect(handlers.foo.handle).toHaveBeenCalledTimes(0);
@@ -270,7 +286,9 @@ describe('a PathProxy with a handler and a resolver', () => {
 
     describe('when accessing a property matched by both', () => {
       let result;
-      beforeEach(() => result = path.foo);
+      beforeEach(() => {
+        result = path.foo;
+      });
 
       it('executes the handler', () => {
         expect(handlers.foo.handle).toHaveBeenCalledTimes(1);

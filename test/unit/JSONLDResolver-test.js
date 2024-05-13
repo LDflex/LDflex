@@ -4,7 +4,9 @@ import { namedNode, literal } from '@rdfjs/data-model';
 
 describe('a JSONLDResolver instance', () => {
   let resolver;
-  beforeAll(() => resolver = new JSONLDResolver());
+  beforeAll(() => {
+    resolver = new JSONLDResolver();
+  });
 
   it('supports strings', () => {
     expect(resolver.supports('foo')).toBe(true);
@@ -17,7 +19,9 @@ describe('a JSONLDResolver instance', () => {
 
 describe('a JSONLDResolver instance with a context', () => {
   let resolver;
-  beforeAll(() => resolver = new JSONLDResolver(context));
+  beforeAll(() => {
+    resolver = new JSONLDResolver(context);
+  });
 
   describe('expanding a property', () => {
     it('expands knows to foaf:knows', async () => {
@@ -41,7 +45,9 @@ describe('a JSONLDResolver instance with a context', () => {
     const pathData = { extendPath: jest.fn(() => extendedPath) };
 
     let result;
-    beforeEach(() => result = resolver.resolve('knows', pathData));
+    beforeEach(() => {
+      result = resolver.resolve('knows', pathData);
+    });
 
     it('extends the path', () => {
       expect(pathData.extendPath).toHaveBeenCalledTimes(1);
@@ -70,7 +76,9 @@ describe('a JSONLDResolver instance with a context', () => {
     const pathData = { extendPath: jest.fn(data => ({ ...data })) };
 
     let result;
-    beforeEach(() => result = resolver.resolve('knows', pathData));
+    beforeEach(() => {
+      result = resolver.resolve('knows', pathData);
+    });
 
     it('sets up the function through apply', () => {
       expect(result.apply).toBeInstanceOf(Function);
@@ -83,7 +91,9 @@ describe('a JSONLDResolver instance with a context', () => {
 
     describe('with two strings', () => {
       let applied;
-      beforeEach(() => applied = result.apply(['Ruben', 'Joachim'], result, path));
+      beforeEach(() => {
+        applied = result.apply(['Ruben', 'Joachim'], result, path);
+      });
 
       it('returns the proxied path', () => {
         expect(applied).toBe(path);
@@ -99,7 +109,9 @@ describe('a JSONLDResolver instance with a context', () => {
       const joachim = namedNode('Joachim');
 
       let applied;
-      beforeEach(() => applied = result.apply([ruben, joachim], result, path));
+      beforeEach(() => {
+        applied = result.apply([ruben, joachim], result, path);
+      });
 
       it('returns the proxied path', () => {
         expect(applied).toBe(path);
@@ -116,7 +128,9 @@ describe('a JSONLDResolver instance with a context', () => {
     const pathData = { extendPath: jest.fn(() => extendedPath) };
 
     let result;
-    beforeEach(() => result = resolver.resolve('foaf:knows', pathData));
+    beforeEach(() => {
+      result = resolver.resolve('foaf:knows', pathData);
+    });
 
     it('extends the path', () => {
       expect(pathData.extendPath).toHaveBeenCalledTimes(1);
@@ -145,7 +159,9 @@ describe('a JSONLDResolver instance with a context', () => {
     const pathData = { extendPath: jest.fn(() => extendedPath) };
 
     let result;
-    beforeEach(() => result = resolver.resolve('foaf_knows', pathData));
+    beforeEach(() => {
+      result = resolver.resolve('foaf_knows', pathData);
+    });
 
     it('extends the path', () => {
       expect(pathData.extendPath).toHaveBeenCalledTimes(1);
@@ -174,7 +190,9 @@ describe('a JSONLDResolver instance with a context', () => {
     const pathData = { extendPath: jest.fn(() => extendedPath) };
 
     let result;
-    beforeEach(() => result = resolver.resolve('foaf$knows', pathData));
+    beforeEach(() => {
+      result = resolver.resolve('foaf$knows', pathData);
+    });
 
     it('extends the path', () => {
       expect(pathData.extendPath).toHaveBeenCalledTimes(1);
@@ -203,7 +221,9 @@ describe('a JSONLDResolver instance with a context', () => {
     const pathData = { extendPath: jest.fn(() => extendedPath) };
 
     let result;
-    beforeEach(() => result = resolver.resolve('foaf:topic_interest', pathData));
+    beforeEach(() => {
+      result = resolver.resolve('foaf:topic_interest', pathData);
+    });
 
     it('extends the path', () => {
       expect(pathData.extendPath).toHaveBeenCalledTimes(1);
@@ -232,7 +252,9 @@ describe('a JSONLDResolver instance with a context', () => {
     const pathData = { extendPath: jest.fn(() => extendedPath) };
 
     let result;
-    beforeEach(() => result = resolver.resolve('makerOf', pathData));
+    beforeEach(() => {
+      result = resolver.resolve('makerOf', pathData);
+    });
 
     it('extends the path', () => {
       expect(pathData.extendPath).toHaveBeenCalledTimes(1);
@@ -281,7 +303,9 @@ describe('a JSONLDResolver instance with a context', () => {
       });
 
       const pathData = { extendPath: jest.fn() };
-      beforeEach(() => resolver.resolve('sameAs', pathData));
+      beforeEach(() => {
+        resolver.resolve('sameAs', pathData);
+      });
 
       it('sets predicate to a promise for sameAs', async () => {
         const { predicate } = pathData.extendPath.mock.calls[0][0];
@@ -304,7 +328,9 @@ describe('a JSONLDResolver instance with a context', () => {
 
     describe('when accessing a non-cached property', () => {
       let result;
-      beforeEach(() => result = resolver.resolve('foaf:givenName', pathData));
+      beforeEach(() => {
+        result = resolver.resolve('foaf:givenName', pathData);
+      });
 
       it('extends the path without a results cache', async () => {
         expect(pathData.extendPath).toHaveBeenCalledTimes(1);
@@ -320,7 +346,9 @@ describe('a JSONLDResolver instance with a context', () => {
 
     describe('when accessing a cached property', () => {
       let result;
-      beforeEach(() => result = resolver.resolve('foaf:knows', pathData));
+      beforeEach(() => {
+        result = resolver.resolve('foaf:knows', pathData);
+      });
 
       it('extends the path with a results cache', async () => {
         expect(pathData.extendPath).toHaveBeenCalledTimes(1);
@@ -337,7 +365,9 @@ describe('a JSONLDResolver instance with a context', () => {
 
     describe('when accessing the reverse of a cached property', () => {
       let result;
-      beforeEach(() => result = resolver.resolve('friendOf', pathData));
+      beforeEach(() => {
+        result = resolver.resolve('friendOf', pathData);
+      });
 
       it('extends the path without a results cache', async () => {
         expect(pathData.extendPath).toHaveBeenCalledTimes(1);

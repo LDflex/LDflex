@@ -4,7 +4,9 @@ describe('a PredicateHandler instance', () => {
   let handler;
   const newPath = {};
   const extendPath = jest.fn(() => newPath);
-  beforeAll(() => handler = new PredicateHandler());
+  beforeAll(() => {
+    handler = new PredicateHandler();
+  });
 
   describe('when no predicate property is present', () => {
     const pathData = {};
