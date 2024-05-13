@@ -10,7 +10,9 @@ describe('a SortHandler instance', () => {
   };
 
   let handler;
-  beforeAll(() => handler = new SortHandler());
+  beforeAll(() => {
+    handler = new SortHandler();
+  });
 
   describe('returns a function that', () => {
     let sort;

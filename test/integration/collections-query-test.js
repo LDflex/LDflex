@@ -96,7 +96,7 @@ const store = new Store(
                 rdf:_3 2 ;
                 rdf:_4 3 ;
                 ] .
-    `)
+    `),
 );
 const queryEngine = new ComunicaEngine(store);
 

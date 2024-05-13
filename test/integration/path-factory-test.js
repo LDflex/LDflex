@@ -63,7 +63,9 @@ describe('a PathFactory instance returning non-empty results', () => {
 
     describe('the first result', () => {
       let name;
-      beforeEach(async () => name = await person.friends.firstName);
+      beforeEach(async () => {
+        name = await person.friends.firstName;
+      });
 
       it('has the correct value', async () => {
         expect(`${name}`).toBe('Alice');

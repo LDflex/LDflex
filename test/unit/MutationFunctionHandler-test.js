@@ -10,7 +10,9 @@ const pathData = {
 
 describe('a MutationFunctionHandler instance not allowing 0 args', () => {
   let handler;
-  beforeAll(() => handler = new MutationFunctionHandler(mutationType, false));
+  beforeAll(() => {
+    handler = new MutationFunctionHandler(mutationType, false);
+  });
 
   describe('resolving a property', () => {
     let pathExpression;
@@ -29,7 +31,9 @@ describe('a MutationFunctionHandler instance not allowing 0 args', () => {
 
     describe('with the function called with one raw argument', () => {
       let functionResult;
-      beforeEach(async () => functionResult = await result('Ruben'));
+      beforeEach(async () => {
+        functionResult = await result('Ruben');
+      });
 
       it('extends the path', () => {
         expect(pathData.extendPath).toHaveBeenCalledTimes(1);
@@ -59,7 +63,9 @@ describe('a MutationFunctionHandler instance not allowing 0 args', () => {
 
     describe('with the function called with one term argument', () => {
       let functionResult;
-      beforeEach(async () => functionResult = await result(namedNode('http://example.org/')));
+      beforeEach(async () => {
+        functionResult = await result(namedNode('http://example.org/'));
+      });
 
       it('extends the path', () => {
         expect(pathData.extendPath).toHaveBeenCalledTimes(1);
@@ -471,7 +477,9 @@ describe('a MutationFunctionHandler instance not allowing 0 args', () => {
 
     describe('with the function called with one raw argument', () => {
       let functionResult;
-      beforeEach(async () => functionResult = await result('Ruben'));
+      beforeEach(async () => {
+        functionResult = await result('Ruben');
+      });
 
       it('sets mutationExpressions to a promise to the expressions', async () => {
         const { mutationExpressions } = pathData.extendPath.mock.calls[0][0];
@@ -497,7 +505,9 @@ describe('a MutationFunctionHandler instance not allowing 0 args', () => {
 
 describe('a MutationFunctionHandler instance allowing 0 args', () => {
   let handler;
-  beforeAll(() => handler = new MutationFunctionHandler(mutationType, true));
+  beforeAll(() => {
+    handler = new MutationFunctionHandler(mutationType, true);
+  });
 
   describe('#createMutationExpressions', () => {
     describe('without args', () => {

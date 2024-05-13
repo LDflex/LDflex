@@ -63,6 +63,7 @@ describe('when the query engine throws an error', () => {
   let person;
   beforeAll(() => {
     const failingQueryEngine = {
+      // eslint-disable-next-line require-yield
       async *execute() {
         throw new Error('Query engine error');
       },

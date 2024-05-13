@@ -2,7 +2,9 @@ import ThenHandler from '../../src/ThenHandler';
 
 describe('a ThenHandler instance', () => {
   let handler;
-  beforeAll(() => handler = new ThenHandler());
+  beforeAll(() => {
+    handler = new ThenHandler();
+  });
 
   describe('on a path with a non-thenable subject', () => {
     const subject = 'https://example.org/#Alice';

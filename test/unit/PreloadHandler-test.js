@@ -49,7 +49,9 @@ describe('a PreloadHandler instance', () => {
 
   describe('when the function is called without parameters', () => {
     let result;
-    beforeEach(async () => result = await preload());
+    beforeEach(async () => {
+      result = await preload();
+    });
 
     it('returns the original path', () => {
       expect(result).toBe(pathProxy);
@@ -62,7 +64,9 @@ describe('a PreloadHandler instance', () => {
 
   describe('when the function is called with two properties', () => {
     let result;
-    beforeEach(async () => result = await preload('p1', 'p2'));
+    beforeEach(async () => {
+      result = await preload('p1', 'p2');
+    });
 
     it('returns the original path', () => {
       expect(result).toBe(pathProxy);

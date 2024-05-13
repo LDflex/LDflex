@@ -4,7 +4,9 @@ describe('a SubjectHandler instance', () => {
   let handler;
   const newPath = {};
   const extendPath = jest.fn(() => newPath);
-  beforeAll(() => handler = new SubjectHandler());
+  beforeAll(() => {
+    handler = new SubjectHandler();
+  });
 
   describe('when no subject or parent property is present', () => {
     const pathData = { extendPath };

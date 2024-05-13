@@ -4,7 +4,9 @@ import { namedNode } from '@rdfjs/data-model';
 
 describe('a ComplexPathResolver instance', () => {
   let resolver;
-  beforeAll(() => resolver = new ComplexPathResolver());
+  beforeAll(() => {
+    resolver = new ComplexPathResolver();
+  });
 
   it('does not support strings that are not complex paths', () => {
     expect(resolver.supports('foo')).toBe(false);
@@ -56,7 +58,9 @@ describe('a ComplexPathResolver instance', () => {
 
 describe('Error handling on complex paths without prefixes defined', () => {
   let resolver;
-  beforeAll(() => resolver = new ComplexPathResolver());
+  beforeAll(() => {
+    resolver = new ComplexPathResolver();
+  });
 
   it('does not support strings that are not complex paths', async () => {
     await expect(() => resolver.expandProperty('foaf:friend*')).rejects
@@ -66,7 +70,9 @@ describe('Error handling on complex paths without prefixes defined', () => {
 
 describe('a ComplexPathResolver instance with a context', () => {
   let resolver;
-  beforeAll(() => resolver = new ComplexPathResolver(context));
+  beforeAll(() => {
+    resolver = new ComplexPathResolver(context);
+  });
 
   describe('expanding a property', () => {
     it('expands knows to foaf:knows*', async () => {
@@ -182,7 +188,9 @@ describe('a ComplexPathResolver instance with a context', () => {
 
     describe('when accessing a non-cached property', () => {
       let result;
-      beforeEach(() => result = resolver.resolve('<http://xmlns.com/foaf/0.1/givenName>', pathData));
+      beforeEach(() => {
+        result = resolver.resolve('<http://xmlns.com/foaf/0.1/givenName>', pathData);
+      });
 
       it('extends the path without a results cache', async () => {
         expect(pathData.extendPath).toHaveBeenCalledTimes(1);
@@ -198,7 +206,9 @@ describe('a ComplexPathResolver instance with a context', () => {
 
     describe('when accessing a cached property', () => {
       let result;
-      beforeEach(() => result = resolver.resolve('<http://xmlns.com/foaf/0.1/knows>', pathData));
+      beforeEach(() => {
+        result = resolver.resolve('<http://xmlns.com/foaf/0.1/knows>', pathData);
+      });
 
       it('extends the path with a results cache', async () => {
         expect(pathData.extendPath).toHaveBeenCalledTimes(1);
@@ -215,7 +225,9 @@ describe('a ComplexPathResolver instance with a context', () => {
 
     describe('when accessing a cached path foaf:knows/foaf:friend', () => {
       let result;
-      beforeEach(() => result = resolver.resolve('foaf:knows/(foaf:friend)', pathData));
+      beforeEach(() => {
+        result = resolver.resolve('foaf:knows/(foaf:friend)', pathData);
+      });
 
       it('extends the path with a results cache', async () => {
         expect(pathData.extendPath).toHaveBeenCalledTimes(1);
@@ -234,7 +246,9 @@ describe('a ComplexPathResolver instance with a context', () => {
 
     describe('when accessing a cached path foaf:knows/(foaf:friend*)', () => {
       let result;
-      beforeEach(() => result = resolver.resolve('foaf:knows/(foaf:friend*)', pathData));
+      beforeEach(() => {
+        result = resolver.resolve('foaf:knows/(foaf:friend*)', pathData);
+      });
 
       it('extends the path with a results cache', async () => {
         expect(pathData.extendPath).toHaveBeenCalledTimes(1);
@@ -253,7 +267,9 @@ describe('a ComplexPathResolver instance with a context', () => {
 
     describe('when accessing a cached path foaf:knows/(foaf:friend?)', () => {
       let result;
-      beforeEach(() => result = resolver.resolve('foaf:knows/(foaf:friend?)', pathData));
+      beforeEach(() => {
+        result = resolver.resolve('foaf:knows/(foaf:friend?)', pathData);
+      });
 
       it('extends the path with a results cache', async () => {
         expect(pathData.extendPath).toHaveBeenCalledTimes(1);
@@ -272,7 +288,9 @@ describe('a ComplexPathResolver instance with a context', () => {
 
     describe('when accessing a cached path foaf:knows/(foaf:friend+)', () => {
       let result;
-      beforeEach(() => result = resolver.resolve('foaf:knows/(foaf:friend+)', pathData));
+      beforeEach(() => {
+        result = resolver.resolve('foaf:knows/(foaf:friend+)', pathData);
+      });
 
       it('extends the path with a results cache', async () => {
         expect(pathData.extendPath).toHaveBeenCalledTimes(1);
@@ -291,7 +309,9 @@ describe('a ComplexPathResolver instance with a context', () => {
 
     describe('when accessing a cached path foaf:knows/foaf:friend*', () => {
       let result;
-      beforeEach(() => result = resolver.resolve('foaf:knows/(foaf:friend*)', pathData));
+      beforeEach(() => {
+        result = resolver.resolve('foaf:knows/(foaf:friend*)', pathData);
+      });
 
       it('extends the path with a results cache', async () => {
         expect(pathData.extendPath).toHaveBeenCalledTimes(1);
@@ -310,7 +330,9 @@ describe('a ComplexPathResolver instance with a context', () => {
 
     describe('when accessing a cached path foaf:knows|(foaf:friend*)', () => {
       let result;
-      beforeEach(() => result = resolver.resolve('foaf:knows/(foaf:friend*)', pathData));
+      beforeEach(() => {
+        result = resolver.resolve('foaf:knows/(foaf:friend*)', pathData);
+      });
 
       it('extends the path with a results cache', async () => {
         expect(pathData.extendPath).toHaveBeenCalledTimes(1);
@@ -329,7 +351,9 @@ describe('a ComplexPathResolver instance with a context', () => {
 
     describe('when accessing a cached path foaf:knows|(foaf:friend?)', () => {
       let result;
-      beforeEach(() => result = resolver.resolve('foaf:knows/(foaf:friend?)', pathData));
+      beforeEach(() => {
+        result = resolver.resolve('foaf:knows/(foaf:friend?)', pathData);
+      });
 
       it('extends the path with a results cache', async () => {
         expect(pathData.extendPath).toHaveBeenCalledTimes(1);
@@ -348,7 +372,9 @@ describe('a ComplexPathResolver instance with a context', () => {
 
     describe('when accessing a cached path foaf:knows|(foaf:friend+)', () => {
       let result;
-      beforeEach(() => result = resolver.resolve('foaf:knows|(foaf:friend+)', pathData));
+      beforeEach(() => {
+        result = resolver.resolve('foaf:knows|(foaf:friend+)', pathData);
+      });
 
       it('extends the path with a results cache', async () => {
         expect(pathData.extendPath).toHaveBeenCalledTimes(1);
@@ -367,7 +393,9 @@ describe('a ComplexPathResolver instance with a context', () => {
 
     describe('when accessing a cached path foaf:friend+', () => {
       let result;
-      beforeEach(() => result = resolver.resolve('foaf:friend+', pathData));
+      beforeEach(() => {
+        result = resolver.resolve('foaf:friend+', pathData);
+      });
 
       it('extends the path with a results cache', async () => {
         expect(pathData.extendPath).toHaveBeenCalledTimes(1);
@@ -386,7 +414,9 @@ describe('a ComplexPathResolver instance with a context', () => {
 
     describe('when accessing a cached path foaf:friend?', () => {
       let result;
-      beforeEach(() => result = resolver.resolve('foaf:friend?', pathData));
+      beforeEach(() => {
+        result = resolver.resolve('foaf:friend?', pathData);
+      });
 
       it('extends the path with a results cache', async () => {
         expect(pathData.extendPath).toHaveBeenCalledTimes(1);
@@ -405,7 +435,9 @@ describe('a ComplexPathResolver instance with a context', () => {
 
     describe('when accessing a cached path foaf:knows/foaf:friend/foaf:employer', () => {
       let result;
-      beforeEach(() => result = resolver.resolve('foaf:knows/(foaf:friend)/foaf:employer', pathData));
+      beforeEach(() => {
+        result = resolver.resolve('foaf:knows/(foaf:friend)/foaf:employer', pathData);
+      });
 
       it('extends the path with a results cache', async () => {
         expect(pathData.extendPath).toHaveBeenCalledTimes(1);
@@ -424,7 +456,9 @@ describe('a ComplexPathResolver instance with a context', () => {
 
     describe('when accessing a cached path foaf:knows/(foaf:friend*)/foaf:employer', () => {
       let result;
-      beforeEach(() => result = resolver.resolve('foaf:knows/(foaf:friend*)/foaf:employer', pathData));
+      beforeEach(() => {
+        result = resolver.resolve('foaf:knows/(foaf:friend*)/foaf:employer', pathData);
+      });
 
       it('extends the path with a results cache', async () => {
         expect(pathData.extendPath).toHaveBeenCalledTimes(1);
@@ -443,7 +477,9 @@ describe('a ComplexPathResolver instance with a context', () => {
 
     describe('when accessing a cached path foaf:knows/(foaf:friend?)/foaf:employer', () => {
       let result;
-      beforeEach(() => result = resolver.resolve('foaf:knows/(foaf:friend?)/foaf:employer', pathData));
+      beforeEach(() => {
+        result = resolver.resolve('foaf:knows/(foaf:friend?)/foaf:employer', pathData);
+      });
 
       it('extends the path with a results cache', async () => {
         expect(pathData.extendPath).toHaveBeenCalledTimes(1);
@@ -462,7 +498,9 @@ describe('a ComplexPathResolver instance with a context', () => {
 
     describe('when accessing a cached path foaf:knows/(foaf:friend+)/foaf:employer', () => {
       let result;
-      beforeEach(() => result = resolver.resolve('foaf:knows/(foaf:friend+)/foaf:employer', pathData));
+      beforeEach(() => {
+        result = resolver.resolve('foaf:knows/(foaf:friend+)/foaf:employer', pathData);
+      });
 
       it('extends the path with a results cache', async () => {
         expect(pathData.extendPath).toHaveBeenCalledTimes(1);

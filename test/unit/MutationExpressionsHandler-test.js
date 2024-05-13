@@ -3,7 +3,9 @@ import { namedNode, literal } from '@rdfjs/data-model';
 
 describe('a MutationExpressionsHandler instance', () => {
   let handler;
-  beforeAll(() => handler = new MutationExpressionsHandler());
+  beforeAll(() => {
+    handler = new MutationExpressionsHandler();
+  });
 
   it('returns an empty array if no mutationExpressions are set', async () => {
     await expect(handler.handle({})).resolves.toEqual([]);

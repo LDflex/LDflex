@@ -72,7 +72,8 @@ export default class ComplexPathResolver extends AbstractPathResolver {
         prefixes,
       });
     }
-    catch (e) {
+    // eslint-disable-next-line no-unused-vars
+    catch (_) {
       throw new Error(`The Complex Path Resolver cannot expand the '${property}' path`);
     }
 
@@ -90,7 +91,8 @@ export default class ComplexPathResolver extends AbstractPathResolver {
         value: writePathAlgebra(algebra.input),
       };
     }
-    catch (e) {
+    // eslint-disable-next-line no-unused-vars
+    catch (_) {
       throw new Error(`The Complex Path Resolver cannot expand the '${property}' path`);
     }
   }

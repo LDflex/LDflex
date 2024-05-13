@@ -4,7 +4,9 @@ import { iterableToArray } from '../../src/iterableUtils';
 
 describe('a ExecuteQueryHandler instance', () => {
   let handler;
-  beforeAll(() => handler = new ExecuteQueryHandler());
+  beforeAll(() => {
+    handler = new ExecuteQueryHandler();
+  });
 
   it('errors when a path defines no query engine', async () => {
     const pathData = { settings: {}, toString: () => 'path' };

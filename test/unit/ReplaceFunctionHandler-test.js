@@ -13,7 +13,9 @@ describe('a ReplaceFunctionHandler instance', () => {
 
   describe('resolving a property', () => {
     let result;
-    beforeEach(() => result = handler.handle({}, proxy));
+    beforeEach(() => {
+      result = handler.handle({}, proxy);
+    });
 
     it('returns a function', async () => {
       expect(typeof await result).toEqual('function');
@@ -29,7 +31,9 @@ describe('a ReplaceFunctionHandler instance', () => {
 
     describe('with the function called with two args', () => {
       let functionResult;
-      beforeEach(async () => functionResult = await result('Arg1', 'Arg2'));
+      beforeEach(async () => {
+        functionResult = await result('Arg1', 'Arg2');
+      });
 
       it('calls delete with 1 arg', () => {
         expect(proxy.delete).toHaveBeenCalledTimes(1);
@@ -52,7 +56,9 @@ describe('a ReplaceFunctionHandler instance', () => {
 
     describe('with the function called with three args', () => {
       let functionResult;
-      beforeEach(async () => functionResult = await result('Arg1', 'Arg2', 'Arg3'));
+      beforeEach(async () => {
+        functionResult = await result('Arg1', 'Arg2', 'Arg3');
+      });
 
       it('calls delete with 1 arg', () => {
         expect(proxy.delete).toHaveBeenCalledTimes(1);

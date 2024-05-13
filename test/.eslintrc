@@ -1,8 +1,0 @@
-{
-  extends: plugin:jest/recommended,
-  rules: {
-    no-return-assign: off,
-    no-unused-expressions: off,
-    require-yield: off,
-  },
-}
