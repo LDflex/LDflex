@@ -33,10 +33,20 @@ export default class SparqlHandler {
       throw new Error(`${pathData} should at least contain a subject and a predicate`);
 
     // Create triple patterns
-    let queryVar = '?subject', sorts = [], clauses = [];
+    let queryVar = '?subject', sorts = [], clauses = [], languageFilters = [];
+    const closestLanguageRanges = [];
     if (pathExpression.length > 1) {
       queryVar = this.createVar(pathData.property);
-      ({ queryVar, sorts, clauses } = this.expressionToTriplePatterns(pathExpression, queryVar));
+      let pointer = pathData;
+
+      // Grab the languageRanges from the closest path that has it.
+      while (pointer) {
+        if (!closestLanguageRanges.length && pointer.languageRanges?.length)
+          closestLanguageRanges.push(...pointer.languageRanges);
+        pointer = pointer.parent;
+      }
+
+      ({ queryVar, sorts, clauses, languageFilters } = this.expressionToTriplePatterns(pathExpression, queryVar, {}, closestLanguageRanges));
     }
     if (pathData.finalClause)
       clauses.push(pathData.finalClause(queryVar));
@@ -44,7 +54,11 @@ export default class SparqlHandler {
     // Create SPARQL query body
     const distinct = pathData.distinct ? 'DISTINCT ' : '';
     const select = `SELECT ${distinct}${pathData.select ? pathData.select : queryVar}`;
-    const where = ` WHERE {\n  ${clauses.join('\n  ')}\n}`;
+    const languageFilter = languageFilters.length ? languageFilters.map(({ languageRanges, object }) => {
+      const languageRangesAsSparql = languageRanges.map(languageRange => languageRange.exact ? `lang(${object}) = '${languageRange.exact}'` : `langMatches(lang(${object}), '${languageRange}')`);
+      return `FILTER ((isLiteral(?label) && ${languageRangesAsSparql.length === 1 ? languageRangesAsSparql[0] : `(${languageRangesAsSparql.join(' || ')})`}) || !isLiteral(?label))`;
+    }).join('') : '';
+    const where = ` WHERE {\n  ${clauses.join('\n  ')}\n${languageFilter ? `  ${languageFilter}\n` : ''}}`;
     const orderClauses = sorts.map(({ order, variable }) => `${order}(${variable})`);
     const orderBy = orderClauses.length === 0 ? '' : `\nORDER BY ${orderClauses.join(' ')}`;
     return `${select}${where}${orderBy}`;
@@ -91,10 +105,11 @@ export default class SparqlHandler {
       `${mutationType} ${mutationClauses} WHERE {\n  ${where.join('\n  ')}\n}`;
   }
 
-  expressionToTriplePatterns([root, ...pathExpression], lastVar, scope = {}) {
+  expressionToTriplePatterns([root, ...pathExpression], lastVar, scope = {}, closestLanguageRanges = []) {
     const lastIndex = pathExpression.length - 1;
     const clauses = [];
     const sorts = [];
+    const languageFilters = [];
     let object = this.termToString(skolemize(root.subject));
     let queryVar = object;
     let allowValues = false;
@@ -115,6 +130,9 @@ export default class SparqlHandler {
       else {
         object = index < lastIndex ? this.createVar(`v${index}`, scope) : lastVar;
         objects = [object];
+        if (closestLanguageRanges.length)
+          languageFilters.push({ languageRanges: closestLanguageRanges, object });
+
         allowValues = true;
       }
       clauses.push(...this.triplePatterns(subject, predicate, objects, reverse));
@@ -131,7 +149,7 @@ export default class SparqlHandler {
         object = queryVar;
       }
     });
-    return { queryVar, sorts, clauses };
+    return { queryVar, sorts, clauses, languageFilters };
   }
 
   // Creates a unique query variable within the given scope, based on the suggestion
