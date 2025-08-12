@@ -13,7 +13,7 @@ jobs:
       repository-projects: write
     if: github.actor == 'dependabot[bot]'
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - run: gh pr merge ${{ github.event.pull_request.html_url }} --auto --squash
     env:
       GH_TOKEN: ${{ github.token }}
