@@ -41,7 +41,7 @@
     "husky": "^9.0.11",
     "jest": "^30.0.0",
     "n3": "^1.17.3",
-    "semantic-release": "^24.0.0"
+    "semantic-release": "^25.0.0"
   },
   "scripts": {
     "build": "npm run build:lib && npm run build:module",
