@@ -14,6 +14,7 @@ export default class PathExpressionHandler {
           predicate: await current.predicate,
           reverse: await current.reverse,
           sort: current.sort,
+          languageRanges: current.languageRanges,
           values: current.values,
         });
       }
