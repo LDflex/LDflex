@@ -82,13 +82,19 @@ export default class SparqlHandler {
       mutations.push(...this.triplePatterns(subject, predicate, objectStrings, reverse));
     }
     const mutationClauses = `{\n  ${mutations.join('\n  ')}\n}`;
+    function arePredicateObjectsSpecified(predicateObjects2) {
+      return predicateObjects2.filter(({ predicate, objects }) => objects === null || predicate === null).length === 0;
+    }
 
-    // Join clauses into a SPARQL query
-    return where.length === 0 ?
-      // If there are no WHERE clauses, just mutate raw data
-      `${mutationType} DATA ${mutationClauses}` :
-      // Otherwise, return a DELETE/INSERT ... WHERE ... query
-      `${mutationType} ${mutationClauses} WHERE {\n  ${where.join('\n  ')}\n}`;
+    return [
+      mutationType,
+      // Add DATA clause if there are no variables in mutation expression,
+      // that is so when subject is specified (not coming from a WHERE clause) and all predicateObjects have predicates and objects
+      where.length === 0 && arePredicateObjectsSpecified(predicateObjects) ? ' DATA ' : ' ',
+      mutationClauses,
+      // Add WHERE clauses, if any
+      where.length === 0 ? '' : ` WHERE {\n  ${where.join('\n  ')}\n}`,
+    ].join('');
   }
 
   expressionToTriplePatterns([root, ...pathExpression], lastVar, scope = {}) {
