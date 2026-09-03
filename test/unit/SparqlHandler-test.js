@@ -444,7 +444,7 @@ describe('a SparqlHandler instance', () => {
         ];
 
         expect(await handler.handle({}, { mutationExpressions })).toEqual(deindent(`
-          DELETE DATA {
+          DELETE {
             <https://example.org/#D0> <https://example.org/#Dp1> ?Dp1.
           }`));
       });

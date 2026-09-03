@@ -236,7 +236,7 @@ describe('a query path with a path expression handler', () => {
   it('resolves a path where an object map has different conditions', async () => {
     const query = await person.delete({ friends: null, firstName: 'Ruben' }).sparql;
     expect(query).toEqual(deindent(`
-      DELETE DATA {
+      DELETE {
         <https://example.org/#me> <${FOAF}knows> ?knows.
         <https://example.org/#me> <${FOAF}givenName> "Ruben".
       }`));
