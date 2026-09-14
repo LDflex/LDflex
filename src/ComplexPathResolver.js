@@ -65,10 +65,19 @@ export default class ComplexPathResolver extends AbstractPathResolver {
       if (typeof context.contextRaw[key] === 'string')
         prefixes[key] = context.contextRaw[key];
     }
+    // Reject properties containing characters that could break out of the
+    // SPARQL path expression and inject arbitrary query syntax
+    if (/[\s{}'"`;]/.test(property))
+      throw new Error(`The Complex Path Resolver cannot expand the '${property}' path`);
+
+    // Build the query in a separate, validated step before parsing it,
+    // since 'property' has just been checked to only contain safe path syntax
+    const pathQuery = 'SELECT ?s ?o WHERE { ?s ' + property + ' ?o. }';
+
     // Wrap inside try/catch as 'translate' throws error on invalid paths
     let algebra;
     try {
-      algebra = translate(`SELECT ?s ?o WHERE { ?s ${property} ?o. }`, {
+      algebra = translate(pathQuery, {
         prefixes,
       });
     }
