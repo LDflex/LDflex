@@ -43,6 +43,40 @@ you will also need a query engine:
 npm install @ldflex/comunica
 ```
 
+## Supported environments
+
+### Required JavaScript features
+
+LDflex relies on language features that are not transpiled away in the published builds:
+
+- **[`Proxy`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy)** — paths are implemented with `Proxy` (see `PathProxy` in the source).
+- **Promises, `async`/`await`, and async iteration** — querying uses `await` and `for await` on path results.
+
+### Node.js
+
+[`package.json`](package.json) does not declare an `engines` field.
+The [Node.js CI workflow](.github/workflows/nodejs.yml) runs `npm test` on Node **18**, **20**, and **22**;
+treat those versions as the supported Node.js runtimes.
+
+The CommonJS build in `lib/` is transpiled with Babel for the Node target in [`.browserslistrc`](.browserslistrc) (`node >= 10`).
+That target describes the compiled output, not additional runtimes that CI exercises.
+
+### Browsers
+
+The `lib/` and `module/` artifacts are built with [`@babel/preset-env`](.babelrc) using the browser queries in [`.browserslistrc`](.browserslistrc):
+
+- `> 2%`
+- `last 2 Chrome versions`, `last 2 Firefox versions`, `last 2 iOS versions`
+- `not ie <= 11` and `not operamini all` (environments without usable `Proxy` support)
+
+The `module/` build keeps ES modules (`modules: false` in `.babelrc`); use your bundler if you need further downleveling.
+
+### Polyfills
+
+Syntax in `lib/` is downleveled for the `.browserslistrc` targets.
+Whether you need additional polyfills for missing built-ins depends on your bundler targets and query engine, not on LDflex alone.
+**`Proxy` is not polyfilled** — browsers excluded in `.browserslistrc` are not supported.
+
 ## Usage
 When you have obtained a starting subject,
 you can navigate through its properties
